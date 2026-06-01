@@ -9,10 +9,8 @@ Page({
     kaoQin: '考勤查询',
     qingJia: '申请请假',
     bannerList: [
-      'https://picsum.photos/id/1015/750/400',
-      'https://picsum.photos/id/104/750/400',
-      'https://picsum.photos/id/106/750/400',
-      'https://picsum.photos/id/169/750/400'
+      'https://www.kennyspan.xyz:8082/home/轮播图1.png',
+      'https://www.kennyspan.xyz:8082/home/轮播图2.png'
     ],
     showDrawer: false,
     moreCategories: [
@@ -42,6 +40,7 @@ Page({
       }
     ]
   },
+
 
   onShow() {
     if (!Ext.isLogin()) {

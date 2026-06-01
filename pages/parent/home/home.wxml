@@ -1,4 +1,4 @@
-<view class="container">
+<view class="container" style="--status-bar-height: {{statusBarHeight}}px;">
   <!-- 轮播图区域 -->
   <view class="swiper-wrapper">
     <swiper class="top-swiper" indicator-dots="{{true}}" autoplay="{{true}}" interval="3000" duration="500" circular="{{true}}" indicator-color="rgba(255,255,255,0.6)" indicator-active-color="#fff">

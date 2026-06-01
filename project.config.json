@@ -1,19 +1,19 @@
 {
   "compileType": "miniprogram",
-  "libVersion": "3.15.0",
+  "libVersion": "3.16.0",
   "packOptions": {
     "ignore": [
       {
-        "type": "folder",
-        "value": "node_modules"
+        "value": "node_modules",
+        "type": "folder"
       },
       {
-        "type": "folder",
-        "value": "minitest"
+        "value": "minitest",
+        "type": "folder"
       },
       {
-        "type": "folder",
-        "value": "ec-canvas"
+        "value": "ec-canvas",
+        "type": "folder"
       }
     ],
     "include": []
