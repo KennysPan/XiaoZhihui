@@ -1,0 +1,135 @@
+{
+  "pages": [
+    "pages/roleSelect/roleSelect",
+    "pages/teacher/main/home/home",
+    "pages/teacher/main/scan/scan",
+    "pages/teacher/main/profile/TeacherHome"
+  ],
+  "subPackages": [
+    {
+      "root": "pages/agent",
+      "pages": [
+        "login/login",
+        "home/home",
+        "schools/schools",
+        "orders/orders",
+        "create/create",
+        "income/income",
+        "profile/profile"
+      ]
+    },
+    {
+      "root": "pages/teacher/auth",
+      "pages": [
+        "login/login",
+        "repassword/repassword"
+      ]
+    },
+    {
+      "root": "pages/teacher/main/functionCenter",
+      "pages": [
+        "FunctionCenter"
+      ]
+    },
+    {
+      "root": "pages/teacher/attendance",
+      "pages": [
+        "attendance/Attendance",
+        "makeupSign/MakeupSign"
+      ]
+    },
+    {
+      "root": "pages/teacher/leave",
+      "pages": [
+        "management/LeaveManagement",
+        "approval/LeaveApproval"
+      ]
+    },
+    {
+      "root": "pages/teacher/student",
+      "pages": [
+        "management/ParentManagementStudent",
+        "detail/StudentDetail"
+      ]
+    },
+    {
+      "root": "pages/teacher/class",
+      "pages": [
+        "detail/classdetail"
+      ]
+    },
+    {
+      "root": "pages/teacher/appraise",
+      "pages": [
+        "student/StudentAppraise",
+        "class/ClassAppraise"
+      ]
+    },
+    {
+      "root": "pages/teacher/honor",
+      "pages": [
+        "wall/HonorWall"
+      ]
+    },
+    {
+      "root": "pages/teacher/announcement",
+      "pages": [
+        "list/AnnouncementList"
+      ]
+    },
+    {
+      "root": "pages/parent",
+      "pages": [
+        "login/login",
+        "home/home",
+        "scan/scan",
+        "attendance/attendance",
+        "parent-leave-management/parent-leave-management",
+        "parent-management-student/parent-management-student",
+        "parentCenter/parentcenter",
+        "course-table/course-table",
+        "notice/notice",
+        "repassword/repassword",
+        "add-child/add-child",
+        "about/about",
+        "leave-approval-list/leave-approval-list",
+        "moral-evaluation/moral-evaluation",
+        "notice-detail/notice-detail",
+        "badge-replenish/badge-replenish"
+      ]
+    }
+  ],
+  "window": {
+    "navigationStyle": "custom"
+  },
+  "tabBar": {
+    "custom": true,
+    "color": "#999999",
+    "selectedColor": "#74E2B6",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/teacher/main/home/home",
+        "text": "首页",
+        "iconPath": "assets/tabbar/home.png",
+        "selectedIconPath": "assets/tabbar/home-active.png"
+      },
+      {
+        "pagePath": "pages/teacher/main/scan/scan",
+        "text": "扫一扫",
+        "iconPath": "assets/tabbar/scan.png",
+        "selectedIconPath": "assets/tabbar/scan-active.png"
+      },
+      {
+        "pagePath": "pages/teacher/main/profile/TeacherHome",
+        "text": "我的",
+        "iconPath": "assets/tabbar/user.png",
+        "selectedIconPath": "assets/tabbar/user-active.png"
+      }
+    ]
+  },
+  "componentFramework": "glass-easel",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

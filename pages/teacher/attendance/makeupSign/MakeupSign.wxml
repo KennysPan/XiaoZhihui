@@ -1,0 +1,75 @@
+<view class="page">
+  <view class="custom-back teacher-nav" style="margin-top: {{menuButtonTop}}px; height: {{menuButtonHeight}}px; padding: 0 210rpx 72rpx 24rpx; box-sizing: border-box; position: relative; left: 0rpx; top: -6rpx" bindtap="btnBack">
+  <view class="back-icon" style="position: relative; left: 14rpx; top: 34rpx"></view>
+  <text class="back-text" style="position: relative; left: 5rpx; top: 34rpx">教师补签</text>
+</view>
+
+  <scroll-view scroll-y class="content-scroll">
+    <view class="student-card">
+      <view class="student-main">
+        <image class="student-avatar" src="https://www.kennyspan.xyz:8082/icon.png" mode="aspectFill"></image>
+        <view class="student-info">
+          <text class="student-name">{{studentName || '未选择学生'}}</text>
+          <text class="student-meta">{{className || '班级信息待确认'}}</text>
+        </view>
+      </view>
+      <view class="state-pill">直接生效</view>
+    </view>
+
+    <view class="form-panel">
+      <view class="field-block">
+        <text class="field-label">补签日期</text>
+        <picker mode="date" value="{{signDate}}" start="{{dateRangeStart}}" end="{{dateRangeEnd}}" bindchange="bindDateChange">
+          <view class="picker-field">
+            <text>{{signDate}}</text>
+            <text class="picker-arrow">›</text>
+          </view>
+        </picker>
+      </view>
+
+      <view class="field-block">
+        <text class="field-label">补签时段</text>
+        <view class="period-grid">
+          <view
+            wx:for="{{periodOptions}}"
+            wx:key="key"
+            class="period-option {{selectedPeriodKey === item.key ? 'active' : ''}}"
+            bindtap="selectPeriod"
+            data-key="{{item.key}}"
+          >
+            <text class="period-name">{{item.label}}</text>
+            <text class="period-range">{{item.range}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="field-block">
+        <text class="field-label">补签原因</text>
+        <textarea
+          class="reason-input"
+          maxlength="120"
+          value="{{reason}}"
+          bindinput="bindReasonInput"
+          placeholder="例如忘记打卡、设备异常"
+          placeholder-class="reason-placeholder"
+        ></textarea>
+        <text class="word-count">{{reason.length}}/120</text>
+      </view>
+    </view>
+
+    <view class="recent-panel" wx:if="{{records.length > 0}}">
+      <view class="panel-title">已补签记录</view>
+      <view class="record-item" wx:for="{{records}}" wx:key="id">
+        <view>
+          <text class="record-date">{{item.signDate}}</text>
+          <text class="record-period">{{item.periodLabel}}</text>
+        </view>
+        <text class="record-status">{{item.status}}</text>
+      </view>
+    </view>
+  </scroll-view>
+
+  <view class="bottom-bar">
+    <button class="submit-btn" loading="{{submitting}}" disabled="{{submitting}}" bindtap="submitMakeupSign">{{submitting ? '提交中' : '确认补签'}}</button>
+  </view>
+</view>

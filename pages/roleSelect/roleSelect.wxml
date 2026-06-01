@@ -1,0 +1,23 @@
+<view class="role-page">
+  <view class="top-bar"></view>
+  <view class="icon-wrapper">
+    <image class="icon" mode="widthFix" src="{{url}}/icon.png"></image>
+  </view>
+  <view class="header">
+    <text class="title">智慧校园</text>
+    <text class="subtitle">请选择进入的端口</text>
+  </view>
+  <view class="role-card">
+    <view class="role-item" wx:for="{{entries}}" wx:key="role" bindtap="chooseRole" data-item="{{item}}">
+      <view class="role-main">
+        <view class="role-title-row">
+          <text class="role-title">{{item.title}}</text>
+          <text class="role-tag">{{item.tag}}</text>
+        </view>
+        <text class="role-desc">{{item.desc}}</text>
+      </view>
+      <text class="role-arrow">›</text>
+    </view>
+  </view>
+  <image class="bottomIcon" src="{{url}}/tingzi.png" mode="widthFix" />
+</view>

@@ -1,0 +1,326 @@
+.container {
+  width: 100%;
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #87CEFA, #ffffff);
+  padding-bottom: calc(32rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+}
+
+/* 轮播图外层容器 - 相对定位，用于放置弧形遮罩 */
+.swiper-wrapper {
+  position: relative;
+  width: 100%;
+  overflow: visible;
+}
+
+/* 轮播图样式 */
+.top-swiper {
+  width: 100%;
+  height: 400rpx;
+  border-radius: 0 0 60rpx 60rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.swiper-image {
+  width: 100%;
+  height: 100%;
+}
+
+/* 弧形遮罩 - 实现底部凹陷弧线效果 */
+.arc-mask {
+  position: absolute;
+  bottom: -2rpx;
+  left: 0;
+  width: 100%;
+  height: 40rpx;
+  background: radial-gradient(ellipse at center bottom, 
+    rgba(255, 255, 255, 1) 0%, 
+    rgba(255, 255, 255, 1) 35%, 
+    transparent 70%);
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* 个人信息卡片 */
+.user-card {
+  position: relative;
+  width: 90%;
+  margin: -30rpx auto 0;
+  background: #fff;
+  border-radius: 30rpx;
+  display: flex;
+  align-items: center;
+  padding: 24rpx 30rpx;
+  box-shadow: 0 8rpx 28rpx rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  box-sizing: border-box;
+}
+
+.logo-wrapper {
+  width: 110rpx;
+  height: 110rpx;
+  border-radius: 50%;
+  border: 4rpx solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.logo {
+  width: 100%;
+  height: 100%;
+}
+
+.user-info {
+  flex: 1;
+  margin-left: 20rpx;
+}
+
+.name-row,
+.identity-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.label {
+  font-size: 26rpx;
+  color: #999;
+}
+
+.value {
+  font-size: 30rpx;
+  color: #333;
+  font-weight: 500;
+  margin-left: 10rpx;
+}
+
+.info-btn {
+  background: #74E2B6;
+  color: #fff;
+  font-size: 26rpx;
+  padding: 12rpx 28rpx;
+  border-radius: 40rpx;
+  box-shadow: 0 4rpx 12rpx rgba(116, 226, 182, 0.3);
+  line-height: 1.2;
+}
+
+.btn-hover {
+  opacity: 0.8;
+  transform: scale(0.96);
+}
+
+/* 功能区 */
+.func-area {
+  width: 90%;
+  margin: 40rpx auto 0;
+  background: #fff;
+  border-radius: 36rpx;
+  padding: 30rpx 20rpx 10rpx;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.06);
+  box-sizing: border-box;
+}
+
+.func-item {
+  width: 30%;
+  background: #f8fafd;
+  border-radius: 24rpx;
+  padding: 28rpx 0;
+  margin-bottom: 30rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all 0.3s;
+}
+
+.func-item-hover {
+  background: #eef2f7;
+  transform: scale(0.96);
+}
+
+.func-icon {
+  width: 80rpx;
+  height: 80rpx;
+  margin-bottom: 16rpx;
+}
+
+.func-text {
+  font-size: 26rpx;
+  color: #2c3e4e;
+  font-weight: 500;
+}
+
+.func-item.disabled {
+  background: #f2f4f8;
+  opacity: 0.6;
+}
+
+.func-item.disabled .func-text {
+  color: #b0bec5;
+}
+/* ========= 底部抽屉样式 ========= */
+.drawer-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+.drawer-container {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #fff;
+  border-radius: 40rpx 40rpx 0 0;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  max-height: 75vh;
+  box-shadow: 0 -8rpx 32rpx rgba(0, 0, 0, 0.1);
+}
+
+.drawer-container.drawer-show {
+  transform: translateY(0);
+}
+
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx 32rpx 20rpx;
+  border-bottom: 2rpx solid #f0f0f0;
+}
+
+.drawer-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  position: relative;
+  padding-left: 20rpx;
+}
+
+.drawer-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8rpx;
+  height: 32rpx;
+  background: linear-gradient(135deg, #7ee7bc 0%, #5fd9a8 100%);
+  border-radius: 4rpx;
+}
+
+.drawer-close {
+  width: 56rpx;
+  height: 56rpx;
+  background: #f5f5f5;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  color: #999;
+  transition: all 0.2s;
+}
+
+.drawer-close:active {
+  background: #e8e8e8;
+  transform: scale(0.96);
+}
+
+.drawer-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20rpx 20rpx 10rpx;
+}
+
+.drawer-category {
+  margin-bottom: 32rpx;
+}
+
+.category-title {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+  padding-left: 12rpx;
+}
+
+.title-dot {
+  width: 8rpx;
+  height: 32rpx;
+  background: linear-gradient(135deg, #7ee7bc 0%, #5fd9a8 100%);
+  border-radius: 4rpx;
+  margin-right: 16rpx;
+}
+
+.category-name {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #2c3e4e;
+}
+
+.category-funcs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 20rpx;
+}
+
+/* 抽屉内功能项 - 与首页样式一致 */
+.drawer-func-item {
+  width: calc(33.33% - 14rpx);
+  background: #f8fafd;
+  border-radius: 24rpx;
+  padding: 24rpx 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all 0.3s;
+  margin-bottom: 0;
+  box-sizing: border-box;
+}
+
+.drawer-func-icon {
+  width: 72rpx;
+  height: 72rpx;
+  margin-bottom: 12rpx;
+}
+
+.drawer-func-text {
+  font-size: 24rpx;
+  color: #2c3e4e;
+  font-weight: 500;
+}
+
+.drawer-footer {
+  padding: 20rpx 32rpx 40rpx;
+  text-align: center;
+  border-top: 2rpx solid #f5f5f5;
+}
+
+.footer-tip {
+  font-size: 24rpx;
+  color: #aaa;
+}
+
+/* 适配安全区 */
+@supports (bottom: env(safe-area-inset-bottom)) {
+  .drawer-container {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .drawer-footer {
+    padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
+  }
+}

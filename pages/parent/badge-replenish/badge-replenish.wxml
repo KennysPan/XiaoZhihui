@@ -1,0 +1,132 @@
+<view class="container">
+  <!-- 统一返回按钮 -->
+  <view class="custom-back" bindtap="goBack">
+    <view class="back-icon"></view>
+    <text class="back-text">返回</text>
+  </view>
+
+  <view class="page-header">
+    <text class="page-title">增补校徽</text>
+    <text class="page-subtitle">选择孩子并填写补办信息</text>
+  </view>
+
+  <!-- 校徽信息卡片 -->
+  <view class="badge-card">
+    <view class="badge-image-wrapper">
+      <image class="badge-image" src="{{badgeInfo.image}}" mode="aspectFill" />
+    </view>
+    <view class="badge-info">
+      <text class="badge-name">{{badgeInfo.name}}</text>
+      <text class="badge-desc">{{badgeInfo.description}}</text>
+      <view class="badge-price">
+        <text class="price-symbol">¥</text>
+        <text class="price-value">{{badgeInfo.price}}</text>
+        <text class="price-unit">/枚</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 孩子选择区域 -->
+  <view class="section-card">
+    <view class="section-header">
+      <text class="section-title">选择孩子</text>
+      <view class="select-all" bindtap="toggleSelectAll">
+        <view class="checkbox {{isAllSelected() ? 'checked' : ''}}"></view>
+        <text class="select-all-text">全选</text>
+      </view>
+    </view>
+    
+    <view class="children-list">
+      <view 
+        class="child-item" 
+        wx:for="{{childrenList}}" 
+        wx:key="id"
+        wx:for-item="child"
+      >
+        <view class="child-select" bindtap="toggleSelectChild" data-id="{{child.id}}">
+          <view class="checkbox {{selectedChildrenIds.indexOf(child.id) !== -1 ? 'checked' : ''}}"></view>
+          <view class="child-avatar">
+            <text class="avatar-text">{{child.name[0]}}</text>
+          </view>
+          <view class="child-info">
+            <text class="child-name">{{child.name}}</text>
+            <text class="child-class">{{child.className || child.gradeName}}</text>
+          </view>
+        </view>
+        
+        <!-- 数量选择器（仅选中时显示） -->
+        <view class="quantity-control" wx:if="{{selectedChildrenIds.indexOf(child.id) !== -1}}">
+          <view class="qty-btn minus" bindtap="decreaseQuantity" data-id="{{child.id}}">-</view>
+          <text class="qty-number">{{childQuantities[child.id]}}</text>
+          <view class="qty-btn plus" bindtap="increaseQuantity" data-id="{{child.id}}">+</view>
+        </view>
+      </view>
+    </view>
+    
+    <view class="empty-children" wx:if="{{childrenList.length === 0 && !loading}}">
+      <text class="empty-text">暂无孩子信息</text>
+      <text class="empty-desc">请先在"我的孩子"中添加孩子信息</text>
+    </view>
+  </view>
+
+  <!-- 补办原因 -->
+  <view class="section-card">
+    <view class="section-title">补办原因</view>
+    <picker mode="selector" range="{{reasonOptions}}" bindchange="onReasonChange">
+      <view class="picker-input">
+        <text class="{{reason ? '' : 'placeholder'}}">{{reason || '请选择补办原因'}}</text>
+        <text class="picker-arrow">›</text>
+      </view>
+    </picker>
+  </view>
+
+  <!-- 备注信息 -->
+  <view class="section-card">
+    <view class="section-title">备注（选填）</view>
+    <textarea 
+      class="remark-input" 
+      placeholder="如需特殊说明，请在此填写（如：加急、特殊配送等）" 
+      placeholder-class="remark-placeholder"
+      value="{{remark}}"
+      bindinput="onRemarkInput"
+      maxlength="200"
+    />
+    <text class="remark-count">{{remark.length}}/200</text>
+  </view>
+
+  <!-- 订单汇总 -->
+  <view class="summary-card">
+    <view class="summary-row">
+      <text class="summary-label">购买总数</text>
+      <text class="summary-value">{{totalQuantity}} 枚</text>
+    </view>
+    <view class="summary-row">
+      <text class="summary-label">单价</text>
+      <text class="summary-value">¥{{badgeInfo.price}}/枚</text>
+    </view>
+    <view class="summary-row total">
+      <text class="summary-label">总计</text>
+      <text class="summary-price">¥{{totalPrice}}</text>
+    </view>
+  </view>
+
+  <!-- 底部提交按钮 -->
+  <view class="bottom-bar">
+    <view class="total-info">
+      <text class="total-label">合计：</text>
+      <text class="total-price">¥{{totalPrice}}</text>
+    </view>
+    <button 
+      class="submit-btn {{totalQuantity === 0 ? 'disabled' : ''}}" 
+      bindtap="submitOrder"
+      disabled="{{totalQuantity === 0 || submitting}}"
+    >
+      {{submitting ? '生成订单中...' : '立即购买'}}
+    </button>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-mask" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+</view>

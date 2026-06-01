@@ -1,0 +1,52 @@
+<view class="nav-container">
+  <view class="custom-back teacher-nav" style="margin-top: {{menuButtonTop}}px; height: {{menuButtonHeight}}px; padding: 0 210rpx 72rpx 24rpx; box-sizing: border-box; position: relative; left: 0rpx; top: -6rpx" bindtap="btnBack">
+  <view class="back-icon" style="position: relative; left: 14rpx; top: 34rpx"></view>
+  <text class="back-text" style="position: relative; left: 5rpx; top: 34rpx">审批详情</text>
+</view>
+</view>
+
+<scroll-view scroll-y class="container">
+  <view class="info-card student-header main-width">
+    <image class="avatar" src="https://www.kennyspan.xyz:8082/icon.png" mode="aspectFill"></image>
+    <view class="student-meta">
+      <text class="leave-title">{{studentInfo.leaveName || studentInfo.title || studentInfo.name || '请假申请'}}</text>
+      <text class="leave-subtitle">{{studentInfo.type || '请假'}} · {{studentInfo.date || '时间待确认'}}</text>
+      <view class="status-row" wx:if="{{studentInfo.status}}">
+        <text class="status-label">状态</text>
+        <text class="status-tag">{{studentInfo.status}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="info-card detail-content main-width">
+    <view class="section-title">请假信息</view>
+    <view class="detail-row"><text class="label">请假名称</text><text class="value">{{studentInfo.leaveName || studentInfo.title || studentInfo.name || '请假申请'}}</text></view>
+    <view class="detail-row"><text class="label">请假类型</text><text class="value">{{studentInfo.type}}</text></view>
+    <view class="detail-row"><text class="label">开始时间</text><text class="value highlight">{{studentInfo.date}}</text></view>
+    <view class="detail-row"><text class="label">结束时间</text><text class="value highlight">{{studentInfo.endTime}}</text></view>
+
+    <view class="reason-box">
+      <text class="label">请假事由：</text>
+      <text class="value-text">{{studentInfo.reason || '暂无说明'}}</text>
+    </view>
+
+    <view class="section-title" style="margin-top:20rpx;">证明材料</view>
+    <image class="proof-img" src="https://www.kennyspan.xyz:8082/icon.png" mode="aspectFill"></image>
+  </view>
+
+  <view class="info-card remark-card main-width" wx:if="{{canApprove}}">
+    <view class="section-title">审批备注</view>
+    <textarea class="remark-input" placeholder="请输入审批意见" maxlength="50" value="{{approvalRemark}}" bindinput="onRemarkInput"></textarea>
+  </view>
+
+  <view class="action-bar main-width" wx:if="{{canApprove}}">
+    <button class="btn reject" bindtap="onReject" loading="{{approving}}" disabled="{{approving}}">驳回申请</button>
+    <button class="btn approve" bindtap="onApprove" loading="{{approving}}" disabled="{{approving}}">批准请假</button>
+  </view>
+
+  <view class="action-bar main-width" wx:else>
+    <button class="btn reapprove" bindtap="onReapprove" disabled="{{approving}}">重新审批</button>
+  </view>
+
+  <view style="height: 40rpx;"></view>
+</scroll-view>

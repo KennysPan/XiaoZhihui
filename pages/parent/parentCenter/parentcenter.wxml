@@ -1,0 +1,170 @@
+<view class="container">
+  <!-- 顶部占位区域 -->
+  <view class="top-placeholder"></view>
+  
+  <!-- 加载状态 -->
+  <view class="loading-state" wx:if="{{loading}}">
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <block wx:else>
+    <!-- 家长信息卡片 -->
+    <view class="main-card parent-card" style="position: relative; left: 0rpx; top: 43rpx">
+      <view class="avatar-box" bindtap="changeAvatar">
+        <text class="avatar-text">{{parentInfo.name ? parentInfo.name[0] : '我'}}</text>
+        <view class="avatar-edit"></view>
+      </view>
+      <view class="info-content">
+        <view class="info-name">{{parentInfo.name}}</view>
+        <view class="info-relation">{{parentInfo.relation || '家长'}}</view>
+        <view class="info-phone">{{parentInfo.phone}}</view>
+      </view>
+      <view class="edit-btn" bindtap="editProfile">
+        <text>编辑</text>
+      </view>
+    </view>
+
+    <!-- 孩子信息卡片 -->
+    <view class="main-card section-card" style="position: relative; left: 0rpx; top: 49rpx">
+      <view class="section-header">
+        <view class="section-title-wrap">
+          <text class="section-title">我的孩子</text>
+          <text class="section-count">{{children.length}}人</text>
+        </view>
+        <view class="section-more" bindtap="goToManageChildren">
+          <text>管理</text>
+          <text class="more-arrow">›</text>
+        </view>
+      </view>
+      
+      <view class="children-list" wx:if="{{children.length > 0}}">
+        <view class="child-item" wx:for="{{children}}" wx:key="id" bindtap="viewChildDetail" data-child="{{item}}">
+          <view class="child-avatar" style="background: {{item.avatarColor}}">
+            <text>{{item.initials}}</text>
+          </view>
+          <view class="child-info">
+            <text class="child-name">{{item.name}}</text>
+            <text class="child-class">{{item.displayClass}}</text>
+          </view>
+          <text class="child-arrow">›</text>
+        </view>
+      </view>
+      
+      <view class="empty-state" wx:else>
+        <text class="empty-text">暂无孩子信息</text>
+        <button class="empty-add-btn" bindtap="goToAddChild">立即添加</button>
+      </view>
+    </view>
+
+    <!-- 请假审批卡片 -->
+    <view class="main-card section-card" style="position: relative; left: 0rpx; top: 56rpx">
+      <view class="section-header">
+        <view class="section-title-wrap">
+          <text class="section-title">请假审批</text>
+          <text class="section-count" wx:if="{{leaveApprovals.length > 0}}">{{leaveApprovals.length}}条待处理</text>
+        </view>
+        <view class="section-more" bindtap="goToLeaveList" wx:if="{{leaveApprovals.length > 0}}">
+          <text>查看全部</text>
+          <text class="more-arrow">›</text>
+        </view>
+      </view>
+      
+      <view class="approve-list" wx:if="{{leaveApprovals.length > 0}}">
+        <view class="approve-item" wx:for="{{leaveApprovals}}" wx:key="id" bindtap="viewLeaveDetail" data-index="{{index}}">
+          <view class="approve-header">
+            <text class="approve-child">{{item.studentName}}</text>
+            <view class="approve-status status-{{item.statusId}}">
+              {{item.statusName}}
+            </view>
+          </view>
+          <text class="approve-type">{{item.leaveTypeName}}</text>
+          <text class="approve-time">{{item.startTime}} 至 {{item.endTime}}</text>
+          <text class="approve-reason">{{item.reason}}</text>
+        </view>
+      </view>
+      
+      <view class="empty-state" wx:else>
+        <text class="empty-text">暂无请假审批记录</text>
+      </view>
+    </view>
+
+    <!-- 其他功能卡片 -->
+    <view class="main-card function-card" style="position: relative; left: 0rpx; top: 62rpx">
+      <view class="function-item" bindtap="changePassword">
+        <view class="function-left">
+          <text class="function-name">修改密码</text>
+          <text class="function-desc">重置登录密码</text>
+        </view>
+        <text class="function-arrow">›</text>
+      </view>
+      <view class="function-divider"></view>
+      <view class="function-item" bindtap="clearCache">
+        <view class="function-left">
+          <text class="function-name">清除缓存</text>
+          <text class="function-desc">{{cacheSize}}MB</text>
+        </view>
+        <text class="function-arrow">›</text>
+      </view>
+      <view class="function-divider"></view>
+      <view class="function-item" bindtap="showAbout">
+        <view class="function-left">
+          <text class="function-name">关于我们</text>
+          <text class="function-desc">版本 v1.0.0</text>
+        </view>
+        <text class="function-arrow">›</text>
+      </view>
+    </view>
+
+    <!-- 退出登录按钮 -->
+    <view class="logout-wrapper">
+    <button class="logout-btn" bindtap="logout">退出登录</button>
+    </view>
+  </block>
+  
+  <!-- 底部安全区域 -->
+  <view class="bottom-safe"></view>
+</view>
+
+<!-- 请假详情弹窗 -->
+<view class="modal-mask" wx:if="{{showLeaveDetailModal}}" bindtap="closeLeaveDetailModal">
+  <view class="modal-content" catchtap="stopPropagation">
+    <view class="modal-header">
+      <text class="modal-title">请假详情</text>
+      <view class="modal-close" bindtap="closeLeaveDetailModal">✕</view>
+    </view>
+    <scroll-view class="modal-body" scroll-y>
+      <view class="detail-item" wx:if="{{currentLeave}}">
+        <text class="detail-label">孩子姓名</text>
+        <text class="detail-value">{{currentLeave.studentName}}</text>
+      </view>
+      <view class="detail-item" wx:if="{{currentLeave}}">
+        <text class="detail-label">请假类型</text>
+        <text class="detail-value">{{currentLeave.leaveTypeName}}</text>
+      </view>
+      <view class="detail-item" wx:if="{{currentLeave}}">
+        <text class="detail-label">请假时间</text>
+        <text class="detail-value">{{currentLeave.startTime}} 至 {{currentLeave.endTime}}</text>
+      </view>
+      <view class="detail-item" wx:if="{{currentLeave}}">
+        <text class="detail-label">请假原因</text>
+        <text class="detail-value">{{currentLeave.reason}}</text>
+      </view>
+      <view class="detail-item" wx:if="{{currentLeave}}">
+        <text class="detail-label">申请时间</text>
+        <text class="detail-value">{{currentLeave.applyTime}}</text>
+      </view>
+      <view class="detail-item" wx:if="{{currentLeave && currentLeave.remark}}">
+        <text class="detail-label">审批备注</text>
+        <text class="detail-value">{{currentLeave.remark}}</text>
+      </view>
+      <view class="detail-item" wx:if="{{currentLeave}}">
+        <text class="detail-label">审批状态</text>
+        <text class="detail-value status-{{currentLeave.statusId}}">{{currentLeave.statusName}}</text>
+      </view>
+    </scroll-view>
+    <view class="modal-footer">
+      <button class="modal-btn" bindtap="closeLeaveDetailModal">关闭</button>
+    </view>
+  </view>
+</view>
+<custom-tab-bar />

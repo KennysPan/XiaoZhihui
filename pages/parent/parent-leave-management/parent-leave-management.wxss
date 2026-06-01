@@ -1,0 +1,535 @@
+/* 统一返回按钮样式 */
+.custom-back {
+  position: fixed;
+  top: 80rpx;
+  left: 30rpx;
+  display: flex;
+  align-items: center;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 12rpx 24rpx;
+  border-radius: 40rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.back-icon {
+  width: 16rpx;
+  height: 16rpx;
+  border-left: 4rpx solid #333;
+  border-bottom: 4rpx solid #333;
+  transform: rotate(45deg);
+  margin-right: 12rpx;
+}
+
+.back-text {
+  font-size: 28rpx;
+  color: #333;
+}
+
+/* 页面头部标题 */
+.page-header {
+  margin-bottom: 30rpx;
+  padding-top: 20rpx;
+}
+
+.page-title {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #333;
+  display: block;
+  text-align: center;
+}
+
+/* 调整容器内边距 */
+.container {
+  min-height: 100vh;
+  padding: 20rpx;
+  padding-top: 140rpx;
+  padding-bottom: 60rpx;
+  box-sizing: border-box;
+  background: transparent;
+}
+
+page {
+  background: linear-gradient(135deg, #87CEFA 0%, #E6F7FF 50%, #ffffff 100%);
+  font-family: "PingFang SC", sans-serif;
+  min-height: 100vh;
+  background-attachment: fixed;
+}
+
+/* 卡片样式 - 毛玻璃效果 */
+.card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 40rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+  border: 1rpx solid rgba(255, 255, 255, 0.3);
+  width: 100%;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+.card-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 25rpx;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding-bottom: 15rpx;
+  border-bottom: 2rpx solid rgba(126, 231, 188, 0.3);
+}
+
+.title-icon {
+  font-size: 32rpx;
+}
+
+/* 孩子列表 */
+.child-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 10rpx 0;
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  box-sizing: border-box;
+}
+
+.child-item {
+  flex-shrink: 0;
+  width: 160rpx;
+  min-width: 140rpx;
+  margin: 0 12rpx;
+  padding: 20rpx 10rpx;
+  border: 2rpx solid rgba(238, 238, 238, 0.8);
+  border-radius: 30rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.9);
+  transition: all 0.3s ease;
+}
+
+.child-item.active {
+  border-color: #7ee7bc;
+  background: linear-gradient(135deg, rgba(126, 231, 188, 0.1) 0%, rgba(95, 217, 168, 0.1) 100%);
+  transform: scale(1.02);
+  box-shadow: 0 4rpx 12rpx rgba(126, 231, 188, 0.3);
+}
+
+.child-avatar {
+  width: 70rpx;
+  height: 70rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e0e0e0 0%, #d0d0d0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12rpx;
+}
+
+.avatar-icon {
+  font-size: 36rpx;
+  color: #666;
+}
+
+.child-item.active .avatar-icon {
+  color: #7ee7bc;
+}
+
+.child-name {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+  text-align: center;
+}
+
+.child-class {
+  font-size: 22rpx;
+  color: #999;
+  margin-top: 6rpx;
+  text-align: center;
+}
+
+.child-item.active .child-name,
+.child-item.active .child-class {
+  color: #5fd9a8;
+}
+
+/* 表单组 */
+.form-group {
+  margin-bottom: 35rpx;
+}
+
+.label {
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 20rpx;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.label-icon {
+  font-size: 28rpx;
+}
+
+/* 请假类型选项 */
+.type-options {
+  display: flex;
+  justify-content: space-between;
+  gap: 20rpx;
+}
+
+.type-btn {
+  flex: 1;
+  height: 80rpx;
+  border: 2rpx solid rgba(238, 238, 238, 0.8);
+  border-radius: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  color: #666;
+  transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.type-btn.active {
+  border-color: #7ee7bc;
+  color: #5fd9a8;
+  background: rgba(126, 231, 188, 0.1);
+  font-weight: bold;
+}
+
+/* 时间选择 */
+.time-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 20rpx;
+}
+
+.time-item {
+  width: calc(50% - 10rpx);
+  margin-bottom: 10rpx;
+}
+
+.time-label {
+  font-size: 24rpx;
+  color: #999;
+  margin-bottom: 8rpx;
+  display: block;
+}
+
+.picker {
+  border: 1rpx solid rgba(229, 229, 229, 0.8);
+  padding: 20rpx;
+  border-radius: 20rpx;
+  font-size: 28rpx;
+  text-align: center;
+  background: rgba(250, 250, 250, 0.8);
+  color: #333;
+  transition: all 0.2s ease;
+}
+
+.picker:active {
+  background: rgba(240, 240, 240, 0.9);
+}
+
+.date-error {
+  margin-top: 15rpx;
+  padding: 12rpx 20rpx;
+  background: rgba(255, 77, 79, 0.1);
+  border-radius: 20rpx;
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  font-size: 24rpx;
+  color: #ff4d4f;
+}
+
+.error-icon {
+  font-size: 24rpx;
+}
+
+/* 请假原因 */
+.reason-input {
+  width: 100%;
+  min-height: 180rpx;
+  border: 1rpx solid rgba(229, 229, 229, 0.8);
+  border-radius: 30rpx;
+  padding: 25rpx;
+  box-sizing: border-box;
+  font-size: 28rpx;
+  line-height: 1.5;
+  background: rgba(250, 250, 250, 0.8);
+  transition: all 0.2s ease;
+}
+
+.reason-input:focus {
+  border-color: #7ee7bc;
+  background: #fff;
+}
+
+.char-count {
+  text-align: right;
+  font-size: 22rpx;
+  color: #999;
+  margin-top: 10rpx;
+  padding-right: 10rpx;
+}
+
+/* 按钮组 */
+.btn-group {
+  display: flex;
+  justify-content: space-between;
+  gap: 30rpx;
+  margin-top: 50rpx;
+}
+
+.btn {
+  flex: 1;
+  height: 90rpx;
+  border-radius: 45rpx;
+  font-size: 30rpx;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.btn-submit {
+  background: linear-gradient(135deg, #7ee7bc 0%, #5fd9a8 100%);
+  box-shadow: 0 4rpx 12rpx rgba(126, 231, 188, 0.4);
+}
+
+.btn-submit:active {
+  opacity: 0.9;
+  transform: scale(0.98);
+}
+
+.btn-reset {
+  background: rgba(125, 121, 121, 0.9);
+  color: #666;
+  backdrop-filter: blur(5px);
+}
+
+.btn-reset:active {
+  background: rgba(208, 208, 208, 0.9);
+  transform: scale(0.98);
+}
+
+/* 禁用状态 */
+.btn[disabled] {
+  opacity: 0.6;
+  transform: none;
+}
+
+/* 滚动条样式 */
+.child-list::-webkit-scrollbar {
+  height: 4rpx;
+}
+
+.child-list::-webkit-scrollbar-track {
+  background: rgba(238, 238, 238, 0.5);
+  border-radius: 4rpx;
+}
+
+.child-list::-webkit-scrollbar-thumb {
+  background: rgba(126, 231, 188, 0.6);
+  border-radius: 4rpx;
+}
+
+/* 响应式适配 - 小屏幕 */
+@media (max-width: 375px) {
+  .container {
+    padding: 15rpx;
+    padding-top: 140rpx;
+  }
+  
+  .child-item {
+    width: 130rpx;
+    min-width: 110rpx;
+    margin: 0 8rpx;
+  }
+  
+  .child-name {
+    font-size: 24rpx;
+  }
+  
+  .type-btn {
+    height: 70rpx;
+    font-size: 26rpx;
+  }
+  
+  .picker {
+    padding: 16rpx;
+    font-size: 26rpx;
+  }
+  
+  .btn {
+    height: 80rpx;
+    font-size: 28rpx;
+  }
+}
+
+/* 响应式适配 - 大屏幕 */
+@media (min-width: 768px) {
+  .container {
+    max-width: 750rpx;
+    margin: 0 auto;
+    padding-top: 140rpx;
+  }
+  
+  .child-item {
+    width: 180rpx;
+  }
+}
+
+/* 毛玻璃效果兼容处理 */
+@supports (backdrop-filter: blur(10px)) {
+  .card {
+    background: rgba(255, 255, 255, 0.85);
+  }
+}
+
+@supports not (backdrop-filter: blur(10px)) {
+  .card {
+    background: rgba(255, 255, 255, 0.98);
+  }
+}
+/* ========= 附件管理模块样式 ========= */
+.attachment-section {
+  margin-top: 40rpx;
+  margin-bottom: 20rpx;
+}
+
+.attachment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 20rpx;
+}
+
+.attachment-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.attachment-hint {
+  font-size: 22rpx;
+  color: #999;
+}
+
+/* 附件列表 */
+.attachment-list {
+  background: rgba(250, 250, 250, 0.6);
+  border-radius: 24rpx;
+  padding: 10rpx 0;
+  margin-bottom: 20rpx;
+}
+
+.attachment-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 24rpx;
+  border-bottom: 1rpx solid rgba(229, 229, 229, 0.5);
+}
+
+.attachment-item:last-child {
+  border-bottom: none;
+}
+
+.file-info {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.file-icon {
+  font-size: 40rpx;
+}
+
+.file-detail {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.file-name {
+  font-size: 28rpx;
+  color: #333;
+  word-break: break-all;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+
+.file-size {
+  font-size: 22rpx;
+  color: #999;
+}
+
+.delete-btn {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  color: #ff4d4f;
+  background: rgba(255, 77, 79, 0.1);
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.delete-btn:active {
+  background: rgba(255, 77, 79, 0.3);
+  transform: scale(0.9);
+}
+
+/* 添加附件按钮 */
+.add-attachment-btn {
+  width: 100%;
+  background: rgba(126, 231, 188, 0.15);
+  border: 2rpx dashed rgba(126, 231, 188, 0.8);
+  border-radius: 40rpx;
+  color: #5fd9a8;
+  font-size: 28rpx;
+  font-weight: 500;
+  height: 80rpx;
+  line-height: 80rpx;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.add-attachment-btn::after {
+  border: none;
+}
+
+.add-attachment-btn:active {
+  background: rgba(126, 231, 188, 0.3);
+  transform: scale(0.98);
+}

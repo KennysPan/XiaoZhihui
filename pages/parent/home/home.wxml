@@ -1,0 +1,104 @@
+<view class="container">
+  <!-- 轮播图区域 -->
+  <view class="swiper-wrapper">
+    <swiper class="top-swiper" indicator-dots="{{true}}" autoplay="{{true}}" interval="3000" duration="500" circular="{{true}}" indicator-color="rgba(255,255,255,0.6)" indicator-active-color="#fff">
+      <block wx:for="{{bannerList}}" wx:key="index">
+        <swiper-item>
+          <image class="swiper-image" src="{{item}}" mode="aspectFill" />
+        </swiper-item>
+      </block>
+    </swiper>
+    <view class="arc-mask"></view>
+  </view>
+
+  <!-- 个人信息卡片 -->
+  <view class="user-card">
+    <view class="logo-wrapper">
+      <image class="logo" src="https://www.kennyspan.xyz:8082/icon.png" mode="aspectFill" />
+    </view>
+    <view class="user-info">
+      <view class="name-row">
+        <text class="label">名称：</text>
+        <text class="value">{{name}}</text>
+      </view>
+      <view class="identity-row">
+        <text class="label">身份：</text>
+        <text class="value">{{roleName}}</text>
+      </view>
+    </view>
+    <button class="info-btn" bindtap="btnPersonalCenter" hover-class="btn-hover">个人信息</button>
+  </view>
+
+  <!-- 功能菜单区 -->
+  <view class="func-area">
+    <view class="func-item" bindtap="btnManageStudent" hover-class="func-item-hover">
+      <image src="https://www.kennyspan.xyz:8082/home/学生管理.svg" class="func-icon" mode="aspectFit" />
+      <text class="func-text">{{xueSheng}}</text>
+    </view>
+    <view class="func-item" bindtap="btnAttendance" hover-class="func-item-hover">
+      <image src="https://www.kennyspan.xyz:8082/home/考勤.svg" class="func-icon" mode="aspectFit" />
+      <text class="func-text">{{kaoQin}}</text>
+    </view>
+    <view class="func-item" bindtap="LeaveManagement" hover-class="func-item-hover">
+      <image src="https://www.kennyspan.xyz:8082/home/请假.svg" class="func-icon" mode="aspectFit" />
+      <text class="func-text">{{qingJia}}</text>
+    </view>
+    <view class="func-item" bindtap="btnCourseTable" hover-class="func-item-hover">
+      <image src="https://www.kennyspan.xyz:8082/home/课程.svg" class="func-icon" mode="aspectFit" />
+      <text class="func-text">课程表</text>
+    </view>
+    <view class="func-item" bindtap="btnNotice" hover-class="func-item-hover">
+      <image src="https://www.kennyspan.xyz:8082/home/通知.svg" class="func-icon" mode="aspectFit" />
+      <text class="func-text">通知公告</text>
+    </view>
+    <view class="func-item" bindtap="btnMoralEvaluation" hover-class="func-item-hover">
+      <image src="https://www.kennyspan.xyz:8082/home/德育评价.svg" class="func-icon" mode="aspectFit" />
+      <text class="func-text">德育评价</text>
+    </view>
+    <!-- 更多功能按钮 -->
+    <view class="func-item" bindtap="openMoreDrawer" hover-class="func-item-hover">
+      <image src="https://www.kennyspan.xyz:8082/home/更多.svg" class="func-icon" mode="aspectFit" />
+      <text class="func-text">更多功能</text>
+    </view>
+  </view>
+
+  <!-- 底部抽屉遮罩层 -->
+  <view class="drawer-mask" wx:if="{{showDrawer}}" bindtap="closeDrawer" catchtouchmove="preventMove"></view>
+  
+  <!-- 底部抽屉内容 -->
+  <view class="drawer-container {{showDrawer ? 'drawer-show' : ''}}">
+    <view class="drawer-header">
+      <text class="drawer-title">更多服务</text>
+      <view class="drawer-close" bindtap="closeDrawer">✕</view>
+    </view>
+    <scroll-view class="drawer-content" scroll-y enhanced show-scrollbar="{{false}}">
+      <block wx:for="{{moreCategories}}" wx:key="category">
+        <view class="drawer-category">
+          <view class="category-title">
+            <view class="title-dot"></view>
+            <text class="category-name">{{item.category}}</text>
+          </view>
+          <view class="category-funcs">
+            <view 
+              class="func-item drawer-func-item" 
+              wx:for="{{item.items}}" 
+              wx:key="name"
+              wx:for-item="func"
+              bindtap="onDrawerItemTap"
+              data-url="{{func.url}}"
+              data-name="{{func.name}}"
+              hover-class="func-item-hover"
+            >
+              <image class="func-icon drawer-func-icon" src="{{func.icon}}" mode="aspectFit" />
+              <text class="func-text drawer-func-text">{{func.name}}</text>
+            </view>
+          </view>
+        </view>
+      </block>
+    </scroll-view>
+    <view class="drawer-footer">
+      <text class="footer-tip">更多精彩功能，敬请期待</text>
+    </view>
+  </view>
+</view>
+<custom-tab-bar />

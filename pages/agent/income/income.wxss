@@ -1,0 +1,150 @@
+page {
+  height: 100vh;
+  overflow: hidden;
+  background: linear-gradient(to bottom, #87CEFA, #ffffff);
+}
+
+.container {
+  width: 100%;
+  height: 100vh;
+  padding: calc(212rpx + env(safe-area-inset-top)) 30rpx calc(48rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.page-heading {
+  margin-bottom: 44rpx;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.page-title {
+  display: block;
+  font-size: 42rpx;
+  font-weight: 800;
+  color: #263238;
+  line-height: 1.2;
+}
+
+.stats-summary {
+  width: 100%;
+  margin: 0 0 30rpx;
+  padding: 38rpx 30rpx;
+  text-align: center;
+  border-radius: 28rpx;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1rpx solid rgba(95, 217, 168, 0.14);
+  box-shadow: 0 18rpx 40rpx rgba(49, 116, 139, 0.12);
+  flex-shrink: 0;
+}
+
+.summary-label {
+  font-size: 28rpx;
+  color: #6a7680;
+  display: block;
+  line-height: 1.3;
+}
+
+.summary-value {
+  font-size: 64rpx;
+  font-weight: 800;
+  color: #e85252;
+  display: block;
+  margin: 16rpx 0 6rpx;
+  line-height: 1.1;
+}
+
+.sub {
+  margin-top: 24rpx;
+}
+
+.sub-value {
+  font-size: 46rpx;
+  color: #22b87f;
+}
+
+.record-section {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.record-title {
+  font-size: 32rpx;
+  font-weight: 800;
+  color: #263238;
+  margin-bottom: 20rpx;
+  padding-left: 18rpx;
+  border-left: 6rpx solid #5fd9a8;
+  line-height: 1.2;
+  flex-shrink: 0;
+}
+
+.record-list {
+  flex: 1;
+  height: 0;
+  min-height: 0;
+  box-sizing: border-box;
+}
+
+.record-list-inner {
+  padding-bottom: 18rpx;
+  box-sizing: border-box;
+}
+
+.record-item {
+  background: rgba(255, 255, 255, 0.94);
+  border-radius: 24rpx;
+  padding: 26rpx 28rpx;
+  margin-bottom: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
+  border: 1rpx solid rgba(38, 50, 56, 0.06);
+  box-shadow: 0 10rpx 24rpx rgba(49, 116, 139, 0.08);
+  box-sizing: border-box;
+}
+
+.record-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.record-date {
+  font-size: 28rpx;
+  color: #263238;
+  font-weight: 700;
+  display: block;
+  line-height: 1.3;
+}
+
+.record-order {
+  font-size: 24rpx;
+  color: #7d8992;
+  display: block;
+  margin-top: 10rpx;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.record-amount {
+  font-size: 34rpx;
+  font-weight: 800;
+  color: #22b87f;
+  flex-shrink: 0;
+  line-height: 1.2;
+}
+
+.record-state {
+  height: 240rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #7d8992;
+  font-size: 28rpx;
+}

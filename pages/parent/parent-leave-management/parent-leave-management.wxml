@@ -1,0 +1,115 @@
+<view class="container">
+  <!-- 统一返回按钮 -->
+  <view class="custom-back" bindtap="goBack" style="position: fixed; left: 29rpx; top: 97rpx">
+    <view class="back-icon"></view>
+    <text class="back-text">返回</text>
+  </view>
+
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <text class="page-title" style="position: relative; left: 0rpx; top: 35rpx">为孩子申请请假</text>
+  </view>
+
+  <view class="card" style="position: relative; left: 0rpx; top: 38rpx">
+    <view class="card-title">请勾选孩子</view>
+    <view class="child-list">
+      <view 
+        wx:for="{{children}}" 
+        wx:key="id" 
+        class="child-item {{item.checked ? 'active' : ''}}" 
+        bindtap="selectChild" 
+        data-index="{{index}}"
+      >
+        <checkbox checked="{{item.checked}}" color="#7ee7bc" />
+        <text>{{item.name}}</text>
+        <text class="child-class" wx:if="{{item.class}}">{{item.class}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="card leave-form" style="position: relative; left: -3rpx; top: 50rpx">
+    <view class="card-title">请假申请</view>
+    
+    <view class="form-group">
+      <view class="label">请假类型</view>
+      <view class="type-options">
+        <view 
+          wx:for="{{leaveTypes}}" 
+          wx:key="*this"
+          class="type-btn {{currentTypeIndex === index ? 'active' : ''}}" 
+          bindtap="selectType" 
+          data-index="{{index}}">
+          {{item}}
+        </view>
+      </view>
+    </view>
+
+    <view class="time-grid">
+      <view class="time-item">
+        <view class="label">开始日期</view>
+        <picker mode="date" value="{{startDate}}" bindchange="updateDateTime" data-field="startDate">
+          <view class="picker">{{startDate}}</view>
+        </picker>
+      </view>
+      <view class="time-item">
+        <view class="label">开始时间</view>
+        <picker mode="time" value="{{startTime}}" bindchange="updateDateTime" data-field="startTime">
+          <view class="picker">{{startTime}}</view>
+        </picker>
+      </view>
+      <view class="time-item">
+        <view class="label">结束日期</view>
+        <picker mode="date" value="{{endDate}}" bindchange="updateDateTime" data-field="endDate">
+          <view class="picker">{{endDate}}</view>
+        </picker>
+      </view>
+      <view class="time-item">
+        <view class="label">结束时间</view>
+        <picker mode="time" value="{{endTime}}" bindchange="updateDateTime" data-field="endTime">
+          <view class="picker">{{endTime}}</view>
+        </picker>
+      </view>
+    </view>
+
+    <textarea 
+      class="reason-input" 
+      placeholder="点击输入请假缘由（例如：身体不适，需要休息）" 
+      placeholder-style="color:#999;"
+      value="{{reason}}"
+      bindinput="onReasonInput"
+      maxlength="200"
+      auto-height
+    />
+
+    <!-- ========= 新增附件管理模块 ========= -->
+    <view class="attachment-section">
+      <view class="attachment-header">
+        <text class="attachment-title">附件（可选）</text>
+        <text class="attachment-hint">支持图片、文档等</text>
+      </view>
+      
+      <!-- 附件列表 -->
+      <view class="attachment-list" wx:if="{{attachments.length > 0}}">
+        <view class="attachment-item" wx:for="{{attachments}}" wx:key="id" wx:for-item="file">
+          <view class="file-info" bindtap="previewAttachment" data-index="{{index}}">
+            <text class="file-icon">{{file.type === 'image' ? '🖼️' : '📎'}}</text>
+            <view class="file-detail">
+              <text class="file-name">{{file.name}}</text>
+              <text class="file-size">{{file.sizeStr}}</text>
+            </view>
+          </view>
+          <view class="delete-btn" bindtap="removeAttachment" data-index="{{index}}">✖</view>
+        </view>
+      </view>
+
+      <!-- 添加附件按钮 -->
+      <button class="add-attachment-btn" bindtap="addAttachment">+ 添加附件</button>
+    </view>
+
+    <view class="btn-group">
+      <button class="btn btn-submit" bindtap="submitForm" disabled="{{isSubmitting}}">
+        {{isSubmitting ? '提交中...' : '确定提交'}}
+      </button>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,267 @@
+page {
+  height: 100vh;
+  overflow: hidden;
+
+  background: linear-gradient(to bottom, #87CEFA, #ffffff);
+}
+
+.page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 0 32rpx;
+
+  background: linear-gradient(to bottom, #87CEFA, #ffffff);
+}
+
+.custom-back { }
+
+.back-icon {
+  width: 18rpx;
+  height: 18rpx;
+  margin-right: 22rpx;
+  border-left: 5rpx solid #2c3e50;
+  border-bottom: 5rpx solid #2c3e50;
+  transform: rotate(45deg);
+}
+
+.back-text {
+  font-size: 38rpx;
+  line-height: 1.2;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.content-scroll {
+  flex: 1;
+  min-height: 0;
+}
+
+.student-card,
+.form-panel,
+.recent-panel {
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 30rpx;
+  box-shadow: 0 12rpx 30rpx rgba(67, 126, 105, 0.08);
+}
+
+.student-card {
+  margin-top: 24rpx;
+  padding: 28rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.student-main {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.student-avatar {
+  width: 92rpx;
+  height: 92rpx;
+  margin-right: 22rpx;
+  border-radius: 50%;
+  border: 4rpx solid #ffffff;
+  box-shadow: 0 6rpx 14rpx rgba(0, 0, 0, 0.08);
+  flex-shrink: 0;
+}
+
+.student-info {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.student-name {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #253238;
+}
+
+.student-meta {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: #7b8b90;
+}
+
+.state-pill {
+  min-width: 104rpx;
+  height: 48rpx;
+  padding: 0 18rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 24rpx;
+  font-size: 24rpx;
+  color: #4db6ac;
+  background: #e0f2f1;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.form-panel {
+  margin-top: 24rpx;
+  padding: 30rpx 28rpx 26rpx;
+}
+
+.field-block + .field-block {
+  margin-top: 34rpx;
+}
+
+.field-label {
+  display: block;
+  margin-bottom: 16rpx;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.picker-field {
+  min-height: 88rpx;
+  padding: 0 26rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 22rpx;
+  background: #f7fbfa;
+  border: 1rpx solid #e5efeb;
+  box-sizing: border-box;
+  color: #253238;
+  font-size: 30rpx;
+}
+
+.picker-arrow {
+  font-size: 44rpx;
+  color: #94a7a1;
+}
+
+.period-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16rpx;
+}
+
+.period-option {
+  min-height: 128rpx;
+  padding: 18rpx 8rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 24rpx;
+  border: 2rpx solid #e5efeb;
+  background: #f7fbfa;
+  box-sizing: border-box;
+}
+
+.period-option.active {
+  border-color: #74e2b6;
+  background: #e7fbf3;
+  box-shadow: 0 8rpx 18rpx rgba(116, 226, 182, 0.18);
+}
+
+.period-name {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.period-range {
+  margin-top: 8rpx;
+  font-size: 20rpx;
+  color: #7d9190;
+}
+
+.reason-input {
+  width: 100%;
+  min-height: 180rpx;
+  padding: 22rpx 24rpx;
+  border-radius: 22rpx;
+  background: #f7fbfa;
+  border: 1rpx solid #e5efeb;
+  box-sizing: border-box;
+  font-size: 28rpx;
+  line-height: 1.5;
+  color: #253238;
+}
+
+.reason-placeholder {
+  color: #a9b7b4;
+}
+
+.word-count {
+  display: block;
+  margin-top: 10rpx;
+  text-align: right;
+  font-size: 22rpx;
+  color: #9aa8a6;
+}
+
+.recent-panel {
+  margin: 24rpx 0 160rpx;
+  padding: 28rpx;
+}
+
+.panel-title {
+  margin-bottom: 16rpx;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.record-item {
+  min-height: 78rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1rpx solid #edf2f0;
+}
+
+.record-date {
+  margin-right: 16rpx;
+  font-size: 26rpx;
+  color: #253238;
+}
+
+.record-period {
+  font-size: 24rpx;
+  color: #6f8f86;
+}
+
+.record-status {
+  font-size: 24rpx;
+  color: #ff9800;
+}
+
+.bottom-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 20rpx 32rpx calc(20rpx + env(safe-area-inset-bottom));
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 -8rpx 24rpx rgba(0, 0, 0, 0.06);
+  box-sizing: border-box;
+}
+
+.submit-btn {
+  width: 100%;
+  height: 92rpx;
+  line-height: 92rpx;
+  border-radius: 46rpx;
+  background: #74e2b6;
+  color: #ffffff;
+  font-size: 32rpx;
+  font-weight: 700;
+  box-shadow: 0 10rpx 24rpx rgba(116, 226, 182, 0.32);
+}
+
+.submit-btn::after {
+  border: 0;
+}

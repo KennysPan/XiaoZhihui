@@ -1,0 +1,79 @@
+<view class="container">
+  <!-- 统一返回按钮 -->
+  <view class="custom-back" bindtap="goBack" style="position: fixed; left: 43rpx; top: 93rpx">
+    <view class="back-icon"></view>
+    <text class="back-text">返回</text>
+  </view>
+
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <text class="page-title">课程表</text>
+  </view>
+
+  <!-- 孩子选择器（保持不变） -->
+  <view class="child-selector">
+    <view class="child-title">选择孩子</view>
+    <scroll-view class="child-list" scroll-x="{{true}}" show-scrollbar="{{false}}">
+      <view 
+        wx:for="{{children}}" 
+        wx:key="id"
+        class="child-item {{selectedChildId === item.id ? 'active' : ''}}"
+        bindtap="selectChild"
+        data-id="{{item.id}}"
+      >
+        <image class="child-avatar" src="/assets/tabbar/user.png" mode="aspectFill"></image>
+        <text class="child-name">{{item.name}}</text>
+        <text class="child-class" wx:if="{{item.className}}">{{item.className}}</text>
+      </view>
+    </scroll-view>
+  </view>
+
+<!-- 动态时段选择器 -->
+<view class="week-selector">
+  <view class="week-arrow {{tableType === 'semester' ? 'disabled' : ''}}" bindtap="prevPeriod">
+    <text class="arrow-icon">←</text>
+  </view>
+  <view class="week-range">
+    <text wx:if="{{tableType === 'semester'}}">学期课表</text>
+    <text wx:else>{{displayRange}}</text>
+  </view>
+  <view class="week-arrow {{tableType === 'semester' ? 'disabled' : ''}}" bindtap="nextPeriod">
+    <text class="arrow-icon">→</text>
+  </view>
+  <!-- 模拟按钮（调试用） -->
+  <view class="simulate-btn" bindtap="simulateType">
+    <text class="simulate-text">模拟</text>
+  </view>
+</view>
+<!-- 课程表表格 -->
+<view class="course-table">
+  <view class="table-header">
+    <view class="th time-col">节次</view>
+    <view class="th" wx:for="{{weekdays}}" wx:key="index">{{item}}</view>
+  </view>
+  <view class="table-body">
+    <view class="table-row" wx:for="{{coursePeriods}}" wx:key="index" wx:for-index="periodIdx">
+      <view class="td time-col">{{item.timeRange}}</view>
+      <view class="td {{currentPeriodIndex === periodIdx && currentWeekdayIndex === dayIdx ? 'highlight-cell' : ''}}" 
+            wx:for="{{weekdays}}" wx:for-item="weekday" wx:for-index="dayIdx" wx:key="dayIdx">
+        <view class="course-item" wx:if="{{courseData[dayIdx][periodIdx]}}">
+          <text class="course-name">{{courseData[dayIdx][periodIdx].name}}</text>
+          <text class="course-teacher">{{courseData[dayIdx][periodIdx].teacher}}</text>
+          <text class="course-location">{{courseData[dayIdx][periodIdx].location}}</text>
+        </view>
+        <view class="course-empty" wx:else>—</view>
+      </view>
+    </view>
+  </view>
+</view>
+
+  <!-- 加载状态 -->
+  <view class="loading-mask" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{!loading && courseData.length === 0}}">
+    <text class="empty-text">暂无课程表</text>
+  </view>
+</view>

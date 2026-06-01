@@ -1,0 +1,34 @@
+<view class="container">
+  <!-- 统一返回按钮 -->
+  <view class="custom-back" bindtap="goBack">
+    <view class="back-icon"></view>
+    <text class="back-text">返回</text>
+  </view>
+
+  <!-- 加载状态 - 移除内联样式 -->
+  <view class="loading-state" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+
+  <!-- 详情内容 -->
+  <view class="detail-container" wx:else>
+    <view class="detail-header">
+      <view class="title-wrapper">
+        <text class="important-tag" wx:if="{{notice.isImportant}}">重要</text>
+        <text class="detail-title">{{notice.title}}</text>
+      </view>
+      <view class="meta-info">
+        <text class="meta-date">📅 {{notice.publishTime}}</text>
+        <text class="meta-views">👁️ {{notice.viewCount}}次阅读</text>
+      </view>
+    </view>
+
+    <scroll-view class="detail-content" scroll-y enhanced show-scrollbar="{{false}}">
+      <rich-text nodes="{{notice.content}}"></rich-text>
+    </scroll-view>
+
+    <view class="detail-footer">
+      <button class="back-btn" bindtap="goBack">返回列表</button>
+    </view>
+  </view>
+</view>

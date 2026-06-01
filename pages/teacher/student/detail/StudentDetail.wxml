@@ -1,0 +1,26 @@
+<view class="detail-container">
+  <view class="header-bg"></view>
+  <view class="info-card">
+    <image class="detail-avatar" src="https://www.kennyspan.xyz:8082/icon.png" mode="aspectFill"></image>
+    <view class="detail-info-header">
+      <view class="detail-name">{{studentName}}</view>
+      <view class="detail-id">学号：{{studentId}}</view>
+    </view>
+    <view class="divider"></view>
+    <view class="info-list">
+      <view class="info-row">
+        <text class="label">性别：</text>
+        <text class="value">{{Gender}}</text>
+      </view>
+      <view class="info-row">
+        <text class="label">班级：</text>
+        <text class="value">{{className}}</text>
+      </view>
+      <view class="info-row">
+        <text class="label">表现评价：</text>
+        <text class="value">该生在校表现稳定，课堂参与积极，整体状态良好。</text>
+      </view>
+    </view>
+  </view>
+  <button class="back-btn" bindtap="goBack">学生详情</button>
+</view>

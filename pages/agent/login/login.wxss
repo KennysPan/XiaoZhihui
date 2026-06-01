@@ -1,0 +1,161 @@
+page {
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #87CEFA, #ffffff);
+}
+
+/* pages/agent/login/login.wxss */
+.login-container {
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 60rpx 40rpx;
+  box-sizing: border-box;
+}
+
+.login-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+
+  background: linear-gradient(to bottom, #87CEFA, #ffffff);
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 80rpx;
+}
+
+.logo {
+  width: 140rpx;
+  height: 140rpx;
+  background: linear-gradient(135deg, #7ee7bc, #5fd9a8);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 30rpx;
+  box-shadow: 0 16rpx 32rpx rgba(95, 217, 168, 0.3);
+}
+
+.logo-icon {
+  font-size: 70rpx;
+}
+
+.app-name {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #333;
+  display: block;
+  margin-bottom: 12rpx;
+}
+
+.app-subtitle {
+  font-size: 26rpx;
+  color: #999;
+}
+
+.login-form {
+  background: rgba(255, 255, 255, 0.96);
+  padding: 50rpx 40rpx;
+  border-radius: 40rpx;
+}
+
+.form-item {
+  display: flex;
+  align-items: center;
+  background: #f5f7fa;
+  border-radius: 60rpx;
+  padding: 0 30rpx;
+  margin-bottom: 30rpx;
+  height: 96rpx;
+}
+
+.input-icon {
+  font-size: 36rpx;
+  margin-right: 20rpx;
+}
+
+.input-field {
+  flex: 1;
+  font-size: 30rpx;
+  color: #333;
+}
+
+.password-toggle {
+  font-size: 36rpx;
+  color: #999;
+  padding: 10rpx;
+}
+
+.login-btn {
+  background: linear-gradient(135deg, #7ee7bc, #5fd9a8);
+  color: white;
+  border-radius: 60rpx;
+  height: 96rpx;
+  line-height: 96rpx;
+  font-size: 34rpx;
+  font-weight: bold;
+  margin-top: 30rpx;
+  box-shadow: 0 8rpx 24rpx rgba(95, 217, 168, 0.4);
+}
+
+.quick-login {
+  text-align: center;
+  font-size: 28rpx;
+  color: #5fd9a8;
+  margin-top: 30rpx;
+  padding: 20rpx;
+}
+
+.login-footer {
+  text-align: center;
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 60rpx;
+}
+.role-back {
+  position: absolute;
+  left: 52rpx;
+  top: calc(112rpx + env(safe-area-inset-top));
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  height: 64rpx;
+  padding: 0 20rpx 0 12rpx;
+  background: rgba(255, 255, 255, 0.78);
+  border-radius: 32rpx;
+  color: #1E3A8A;
+  box-shadow: 0 8rpx 20rpx rgba(30, 58, 138, 0.12);
+}
+
+.role-back.agent-exit-btn {
+  left: 30rpx;
+  height: 72rpx;
+  padding: 0 22rpx;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1rpx solid rgba(38, 50, 56, 0.08);
+  border-radius: 36rpx;
+  color: #263238;
+  box-shadow: 0 8rpx 20rpx rgba(38, 50, 56, 0.08);
+}
+
+.role-back-icon {
+  font-size: 42rpx;
+  line-height: 1;
+  margin-right: 4rpx;
+}
+
+.role-back-text {
+  font-size: 24rpx;
+  font-weight: 500;
+}
+
+.role-back.agent-exit-btn .role-back-text {
+  font-size: 28rpx;
+  font-weight: 600;
+}

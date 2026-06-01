@@ -1,0 +1,45 @@
+<view class="leave-page">
+  <view class="nav-container">
+    <view class="custom-back teacher-nav" style="margin-top: {{menuButtonTop}}px; height: {{menuButtonHeight}}px; padding: 0 210rpx 72rpx 24rpx; box-sizing: border-box; position: relative; left: 0rpx; top: -6rpx" bindtap="btnBack">
+      <view class="back-icon" style="position: relative; left: 14rpx; top: 34rpx"></view>
+      <text class="back-text" style="position: relative; left: 5rpx; top: 34rpx">请假管理</text>
+    </view>
+  </view>
+
+  <scroll-view scroll-y="true" enhanced="true" show-scrollbar="true" class="leave-scroll">
+    <view class="leave-list">
+      <view wx:if="{{loading}}" class="leave-state">{{tipText}}</view>
+      <view wx:elif="{{leaveList.length === 0}}" class="leave-state">{{tipText || '暂无请假记录'}}</view>
+      <view wx:else>
+        <view class="leave-card {{item.statusClass}}" wx:for="{{leaveList}}" wx:key="id" hover-class="item-hover" bindtap="goToDetail" data-index="{{index}}">
+          <view class="leave-fields">
+            <view class="field-item">
+              <text class="label">姓名</text>
+              <text class="value">{{item.name}}</text>
+            </view>
+            <view class="field-item">
+              <text class="label">状态</text>
+              <text class="value">{{item.status}}</text>
+            </view>
+            <view class="field-item">
+              <text class="label">类型</text>
+              <text class="value">{{item.type}}</text>
+            </view>
+            <view class="field-item">
+              <text class="label">审批老师</text>
+              <text class="value">{{item.teacher}}</text>
+            </view>
+            <view class="field-item field-full">
+              <text class="label">开始</text>
+              <text class="value time-value">{{item.date}}</text>
+            </view>
+            <view class="field-item field-full">
+              <text class="label">结束</text>
+              <text class="value time-value">{{item.endTime}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+</view>

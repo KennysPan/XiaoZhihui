@@ -1,0 +1,107 @@
+.tabbar {
+  position: fixed;
+  left: 32rpx;
+  right: 32rpx;
+  bottom: 24rpx;
+  bottom: calc(24rpx + env(safe-area-inset-bottom));
+  height: 112rpx;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1rpx solid rgba(116, 226, 182, 0.18);
+  border-radius: 40rpx;
+  box-shadow: 0 18rpx 42rpx rgba(24, 38, 55, 0.16);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  box-sizing: border-box;
+  z-index: 9999;
+  overflow: hidden;
+}
+
+.tab-item {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transform: translateZ(0);
+  transition: transform 180ms ease, opacity 180ms ease;
+}
+
+.tab-item::before {
+  content: '';
+  position: absolute;
+  width: 92rpx;
+  height: 64rpx;
+  border-radius: 999rpx;
+  background: rgba(116, 226, 182, 0.12);
+  opacity: 0;
+  transform: scale(0.7);
+  transition: opacity 200ms ease, transform 200ms ease;
+}
+
+.tab-item.active::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.tab-item--tap {
+  animation: tabTap 240ms ease both;
+}
+
+.tab-icon {
+  width: 46rpx;
+  height: 46rpx;
+  position: relative;
+  z-index: 1;
+  transition: transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.tab-item.active .tab-icon {
+  transform: translateY(-4rpx) scale(1.08);
+}
+
+.tab-item--tap .tab-icon {
+  animation: iconPop 260ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.tab-text {
+  color: #999999;
+  font-size: 22rpx;
+  line-height: 1;
+  margin-top: 6rpx;
+  position: relative;
+  z-index: 1;
+  transition: color 180ms ease, font-weight 180ms ease, transform 180ms ease;
+}
+
+.tab-item.active .tab-text {
+  color: #74E2B6;
+  font-weight: 600;
+  transform: translateY(-2rpx);
+}
+
+@keyframes tabTap {
+  0% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(0.92);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes iconPop {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  55% {
+    transform: translateY(-8rpx) scale(1.18);
+  }
+  100% {
+    transform: translateY(-4rpx) scale(1.08);
+  }
+}

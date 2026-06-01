@@ -1,0 +1,57 @@
+.scan-page {
+  min-height: 100vh;
+  padding: 180rpx 40rpx 40rpx;
+  box-sizing: border-box;
+  background: linear-gradient(to bottom, #87CEFA, #ffffff);
+}
+
+.scan-card {
+  padding: 56rpx 36rpx;
+  background: #ffffff;
+  border-radius: 36rpx;
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.scan-icon {
+  width: 120rpx;
+  height: 120rpx;
+  margin-bottom: 28rpx;
+  border-radius: 60rpx;
+  background: linear-gradient(135deg, #7ee7bc 0%, #5fd9a8 100%);
+  color: #ffffff;
+  font-size: 76rpx;
+  line-height: 120rpx;
+  text-align: center;
+}
+
+.scan-title {
+  margin-bottom: 16rpx;
+  color: #2c3e4e;
+  font-size: 34rpx;
+  font-weight: 600;
+}
+
+.scan-desc {
+  margin-bottom: 40rpx;
+  color: #8a8f99;
+  font-size: 26rpx;
+  text-align: center;
+}
+
+.scan-btn {
+  width: 280rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  border: none;
+  border-radius: 40rpx;
+  background: #5fd9a8;
+  color: #ffffff;
+  font-size: 28rpx;
+}
+
+.scan-btn::after {
+  border: none;
+}

@@ -1,0 +1,25 @@
+<view class="container agent-tab-page">
+  <view class="agent-page-title">补货订单</view>
+
+  <view wx:if="{{loading}}" class="loading">加载中...</view>
+  <scroll-view wx:else class="order-scroll" scroll-y="true" enhanced="true" show-scrollbar="true">
+    <view wx:if="{{orders.length > 0}}" class="order-list">
+      <view class="order-card card-common" wx:for="{{orders}}" wx:key="id">
+        <view class="order-header">
+          <text class="order-id">订单号：{{item.id}}</text>
+          <text class="order-status status-{{item.status}}">{{statusMap[item.status]}}</text>
+        </view>
+        <view class="order-info">
+          <text>学校：{{item.schoolName}}</text>
+          <text>数量：{{item.badgeCount}} 枚</text>
+          <text>总金额：¥{{item.totalAmount}}</text>
+          <text>创建时间：{{item.createTime}}</text>
+          <text wx:if="{{item.remark}}">备注：{{item.remark}}</text>
+        </view>
+      </view>
+    </view>
+    <view wx:else class="empty">暂无订单</view>
+  </scroll-view>
+
+  <custom-tab-bar />
+</view>

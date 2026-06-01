@@ -1,0 +1,139 @@
+<view class="container">
+  <view class="custom-back teacher-nav" style="margin-top: {{menuButtonTop}}px; height: {{menuButtonHeight}}px; padding: 0 210rpx 72rpx 24rpx; box-sizing: border-box; position: relative; left: 0rpx; top: -6rpx" bindtap="btnBack">
+  <view class="back-icon" style="position: relative; left: 14rpx; top: 34rpx"></view>
+  <text class="back-text" style="position: relative; left: 5rpx; top: 34rpx">班级详情</text>
+</view>
+
+  <view hidden="{{ show || showModal }}" class="setCircle">
+    <view class="summary-card">
+      <view class="summary-header">
+        <text class="summary-title">{{className}}</text>
+        <text class="summary-subtitle">{{date}}</text>
+      </view>
+      <view class="attendance-chart-box">
+        <ec-canvas
+          id="attendanceChart"
+          canvas-id="attendanceChart"
+          class="attendance-chart-canvas"
+          ec="{{ec}}"
+          force-use-old-canvas="{{true}}"
+        ></ec-canvas>
+      </view>
+      <view class="summary-legend">
+        <view class="summary-legend-item" wx:for="{{attendanceSummary}}" wx:key="name">
+          <view class="summary-legend-left">
+            <view class="summary-legend-dot" style="background: {{item.color}};"></view>
+            <text class="summary-legend-name">{{item.name}}</text>
+          </view>
+          <text class="summary-legend-value">{{item.value}}%</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="date-picker-row">
+    <view class="date-display" bindtap="onDisplay">
+      <text class="date-display-text">{{date}}</text>
+    </view>
+    <van-calendar
+      show="{{ show }}"
+      default-date="{{ calendarDefaultDate }}"
+      min-date="{{ calendarMinDate }}"
+      max-date="{{ calendarMaxDate }}"
+      row-height="48"
+      show-subtitle="{{ false }}"
+      style="--calendar-popup-height: 58vh; --calendar-height: 58vh; --calendar-day-height: 48px; --calendar-selected-day-size: 40px;"
+      bind:close="onClose"
+      bind:confirm="onConfirm"
+    />
+  </view>
+
+  <scroll-view scroll-y="{{ !show }}" class="student-grid-scroll">
+    <view class="grid-layout">
+      <view class="student-card" wx:for="{{students}}" wx:key="id" bindtap="onTapStudent" data-item="{{item}}">
+        <image class="avatar" src="{{item.photo || 'https://www.kennyspan.xyz:8082/icon.png'}}"></image>
+        <view class="stu-name">{{item.name}}</view>
+        <view class="stu-id">No. {{item.studentNo || item.id}}</view>
+      </view>
+    </view>
+
+    <view class="empty-hint" wx:if="{{students.length === 0}}">
+    </view>
+  </scroll-view>
+
+  <view class="modal-mask" wx:if="{{showModal}}" bindtap="closeModal">
+    <view class="modal-content" catchtap="noop">
+      <view class="modal-header">
+        <text class="title">学生详细信息</text>
+        <view class="close-btn" bindtap="closeModal">×</view>
+      </view>
+
+      <view class="student-base-info">
+        <view class="info-item">
+          <text class="label">姓名：</text>
+          <text class="val">{{selectedStudent.name}}</text>
+        </view>
+        <view class="info-item">
+          <text class="label">性别：</text>
+          <text class="val">{{selectedStudent.genderText || (selectedStudent.gender === 0 ? '女' : '男')}}</text>
+        </view>
+        <view class="info-item">
+          <text class="label">学号：</text>
+          <text class="val">{{selectedStudent.studentNo || selectedStudent.id}}</text>
+        </view>
+        <view class="info-item" wx:if="{{selectedStudent.className}}">
+          <text class="label">班级：</text>
+          <text class="val">{{selectedStudent.className}}</text>
+        </view>
+      </view>
+
+      <view class="divider"></view>
+
+      <view class="attendance-module">
+        <view class="module-header">
+          <text class="module-title">考勤时间线</text>
+          <view class="module-actions">
+            <picker mode="date" value="{{studentCurrentDate}}" start="{{ dateRangeStart }}" end="{{ dateRangeEnd }}" bindchange="bindDateChange">
+              <view class="date-picker-btn">{{studentCurrentDate}} 选择</view>
+            </picker>
+            <button class="makeup-btn" bindtap="goMakeupSign">补签</button>
+          </view>
+        </view>
+
+        <scroll-view scroll-y class="timeline-container" style="max-height: 500rpx;">
+          <block wx:if="{{attendanceList.length > 0}}">
+            <view class="timeline-item" wx:for="{{attendanceList}}" wx:key="id">
+              <view class="time-node">
+                <view class="node-dot"
+                  style="background: {{item.statusId === 1 ? '#74E2B6' : (item.statusId === 2 ? '#FFB74D' : '#EF9A9A')}};">
+                </view>
+                <view class="node-line" wx:if="{{index < attendanceList.length - 1}}"></view>
+              </view>
+              <view class="node-content">
+                <view class="record-header">
+                  <text class="record-time">{{item.recognizeTime}}</text>
+                  <text class="record-status" style="background: {{item.direction === 1 ? '#74E2B6' : '#4DB6AC'}};">
+                    {{item.directionText}}
+                  </text>
+                </view>
+                <view class="record-detail">
+                  <text class="record-type" wx:if="{{item.typeName}}">{{item.typeName}}</text>
+                  <text class="record-status-name" wx:if="{{item.statusName}}"
+                    style="color: {{item.statusId === 1 ? '#4CAF50' : (item.statusId === 2 ? '#FF9800' : '#F44336')}};">
+                    {{item.statusName}}
+                  </text>
+                </view>
+              </view>
+            </view>
+          </block>
+          <view class="no-data" wx:if="{{attendanceList.length === 0 && !loading}}">
+            <text>当日无考勤记录</text>
+          </view>
+          <view class="loading-tip" wx:if="{{loading}}">
+            <text>加载中...</text>
+          </view>
+        </scroll-view>
+      </view>
+    </view>
+  </view>
+</view>

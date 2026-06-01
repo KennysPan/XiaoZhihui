@@ -1,0 +1,51 @@
+<view class="page">
+  <view class="custom-back teacher-nav" style="margin-top: {{menuButtonTop}}px; height: {{menuButtonHeight}}px; padding: 0 210rpx 72rpx 24rpx; box-sizing: border-box; position: relative; left: 0rpx; top: -6rpx" bindtap="btnBack">
+  <view class="back-icon" style="position: relative; left: 14rpx; top: 34rpx"></view>
+  <text class="back-text" style="position: relative; left: 5rpx; top: 34rpx">更多公告</text>
+</view>
+
+  <view class="hero-panel">
+    <view>
+      <text class="hero-title">公告</text>
+      <text class="hero-subtitle">查看全部接收公告</text>
+    </view>
+    <view class="hero-icon">告</view>
+  </view>
+
+  <scroll-view class="announcement-scroll" wx:if="{{announcementList.length > 0}}" scroll-y="true" enhanced="true" show-scrollbar="true">
+    <view class="announcement-list">
+      <view class="announcement-card" wx:for="{{announcementList}}" wx:key="id" bindtap="showAnnouncementDetail" data-item="{{item}}">
+        <view class="announcement-icon">告</view>
+        <view class="announcement-content">
+          <view class="announcement-title-row">
+            <text class="announcement-title">{{item.title}}</text>
+            <text class="announcement-time">{{item.time}}</text>
+          </view>
+          <text class="announcement-meta">{{item.publisher}}</text>
+          <text class="announcement-desc">{{item.content}}</text>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+
+  <view class="empty-state" wx:else>
+    <text class="empty-title">暂无公告</text>
+    <text class="empty-desc">收到公告后会展示在这里</text>
+  </view>
+
+  <view class="modal-mask" wx:if="{{detailVisible}}" bindtap="hideAnnouncementDetail">
+    <view class="detail-panel" catchtap="noop">
+      <view class="modal-header">
+        <view class="detail-title-wrap">
+          <view class="announcement-icon detail-icon">告</view>
+          <text class="modal-title">{{selectedAnnouncement.title}}</text>
+        </view>
+        <text class="modal-close" bindtap="hideAnnouncementDetail">×</text>
+      </view>
+      <text class="detail-meta">{{selectedAnnouncement.publisher}} · {{selectedAnnouncement.time}}</text>
+      <scroll-view class="detail-scroll" scroll-y="true">
+        <text class="detail-content">{{selectedAnnouncement.content}}</text>
+      </scroll-view>
+    </view>
+  </view>
+</view>

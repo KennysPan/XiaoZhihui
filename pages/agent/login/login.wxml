@@ -1,0 +1,56 @@
+<view class="login-container">
+  <view class="login-bg"></view>
+
+  <view class="role-back agent-exit-btn" bindtap="backToRoleSelect">
+    <text class="role-back-icon">‹</text>
+    <text class="role-back-text">选择端口</text>
+  </view>
+
+  <view class="login-header">
+    <view class="logo">
+      <text class="logo-icon">代</text>
+    </view>
+    <text class="app-name">智慧校园</text>
+    <text class="app-subtitle">代理商端</text>
+  </view>
+
+  <view class="login-form card-common">
+    <view class="form-item">
+      <view class="input-icon">手机</view>
+      <input
+        class="input-field"
+        placeholder="请输入手机号"
+        value="{{phone}}"
+        bindinput="onPhoneInput"
+        maxlength="11"
+        type="number"
+      />
+    </view>
+
+    <view class="form-item">
+      <view class="input-icon">密码</view>
+      <input
+        class="input-field"
+        placeholder="请输入密码"
+        value="{{password}}"
+        bindinput="onPasswordInput"
+        password="{{!showPassword}}"
+      />
+      <view class="password-toggle" bindtap="togglePassword">
+        {{showPassword ? '隐藏' : '显示'}}
+      </view>
+    </view>
+
+    <button class="login-btn" bindtap="handleLogin" disabled="{{loading}}">
+      {{loading ? '登录中...' : '登录'}}
+    </button>
+
+    <view class="quick-login" bindtap="quickLogin">
+      演示账号快速登录
+    </view>
+  </view>
+
+  <view class="login-footer">
+    <text>登录即表示同意《用户协议》和《隐私政策》</text>
+  </view>
+</view>

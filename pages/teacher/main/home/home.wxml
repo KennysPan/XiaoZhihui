@@ -1,0 +1,116 @@
+<view class="container">
+  <image class="top-bg" src="https://www.kennyspan.xyz:8082/home/top-bg.png" mode="aspectFill" />
+
+  <view class="user-card">
+    <view class="logo-wrapper">
+      <image class="logo" src="https://www.kennyspan.xyz:8082/icon.png" mode="aspectFill" />
+    </view>
+    <view class="user-info">
+      <view class="name-row">
+        <text class="label">姓名：</text>
+        <text class="value">{{name}}</text>
+      </view>
+      <view class="identity-row">
+        <text class="label">身份：</text>
+        <text class="value">{{roleName}}</text>
+      </view>
+      <view class="school-row">
+        <text class="label">学校：</text>
+        <text class="value school-value">{{school}}</text>
+      </view>
+    </view>
+    <button class="info-btn" bindtap="btnPersonalCenter">个人信息</button>
+  </view>
+
+  <view class="notice-ticker-card" wx:if="{{latestAnnouncement}}" bindtap="showAnnouncementDetail" data-item="{{latestAnnouncement}}">
+    <view class="notice-ticker-label">通知</view>
+    <view class="notice-ticker-window">
+      <view class="notice-ticker-track">
+        <text class="notice-ticker-text">{{latestAnnouncement.title}}：{{latestAnnouncement.content}}</text>
+        <text class="notice-ticker-text">{{latestAnnouncement.title}}：{{latestAnnouncement.content}}</text>
+        <text class="notice-ticker-text">{{latestAnnouncement.title}}：{{latestAnnouncement.content}}</text>
+        <text class="notice-ticker-text">{{latestAnnouncement.title}}：{{latestAnnouncement.content}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="func-area">
+    <view class="func-header">
+      <text class="func-title">常用功能</text>
+      <view class="func-more" bindtap="goMoreFunctions">
+        <text>更多功能</text>
+        <text class="func-more-arrow">›</text>
+      </view>
+    </view>
+
+    <view class="func-grid">
+      <view class="func-item" bindtap="btnManageStudent">
+        <image class="func-icon" src="https://www.kennyspan.xyz:8082/home/学生管理.svg" />
+        <text class="func-text">{{xueSheng}}</text>
+      </view>
+      <view class="func-item" bindtap="btnAttendance">
+        <image class="func-icon" src="https://www.kennyspan.xyz:8082/home/考勤.svg" />
+        <text class="func-text">{{kaoQin}}</text>
+      </view>
+      <view class="func-item" bindtap="LeaveManagement">
+        <image class="func-icon" src="https://www.kennyspan.xyz:8082/home/请假.svg" />
+        <text class="func-text">{{qingJia}}</text>
+      </view>
+      <view class="func-item" bindtap="btnStudentAppraise">
+        <image class="func-icon" src="/assets/home/student-appraise.svg" />
+        <text class="func-text">{{pingJia}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="student-section">
+    <view class="section-header">
+      <view class="section-title">所教班级</view>
+      <text class="student-count" wx:if="{{classList.length > 0}}">共 {{classList.length}} 个班级</text>
+      <text class="student-count" wx:else>暂无班级</text>
+    </view>
+
+    <scroll-view class="class-scroll-container" scroll-y="true" enhanced="true" show-scrollbar="true">
+      <view class="class-list" wx:if="{{classList.length > 0}}">
+        <view class="class-item" wx:for="{{classList}}" wx:key="classId" bindtap="goToClassDetail" data-class="{{item}}">
+          <view class="class-avatar" style="background: {{item.bgColor || '#74E2B6'}}">
+            <text class="class-initial">{{item.name[0]}}</text>
+          </view>
+          <view class="class-info">
+            <view class="class-name-row">
+              <text class="class-name">{{item.name}}</text>
+              <text class="course-tag" wx:if="{{item.courseName}}">{{item.courseName}}</text>
+            </view>
+            <view class="class-meta-row">
+              <text class="class-meta" wx:if="{{item.studentCount}}">{{item.studentCount}}人</text>
+              <text class="class-meta" wx:if="{{item.roomNo}}"> · {{item.roomNo}}教室</text>
+            </view>
+          </view>
+          <view class="class-arrow">
+            <text class="arrow-icon">›</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="empty-state" wx:else>
+        <text class="empty-text">暂无班级信息</text>
+      </view>
+    </scroll-view>
+  </view>
+
+  <view class="modal-mask detail-mask" wx:if="{{announcementDetailVisible}}" bindtap="hideAnnouncementDetail">
+    <view class="detail-panel" catchtap="noop">
+      <view class="modal-header">
+        <view class="detail-title-wrap">
+          <view class="announcement-icon detail-icon">🔔</view>
+          <text class="modal-title">{{selectedAnnouncement.title}}</text>
+        </view>
+        <text class="modal-close" bindtap="hideAnnouncementDetail">×</text>
+      </view>
+      <text class="detail-meta">{{selectedAnnouncement.publisher}} · {{selectedAnnouncement.time}}</text>
+      <scroll-view class="detail-scroll" scroll-y="true">
+        <text class="detail-content">{{selectedAnnouncement.content}}</text>
+      </scroll-view>
+    </view>
+  </view>
+</view>

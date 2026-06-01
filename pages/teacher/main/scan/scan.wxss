@@ -1,0 +1,108 @@
+.scan-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48rpx;
+  box-sizing: border-box;
+
+  background: linear-gradient(to bottom, #87CEFA, #ffffff);
+}
+
+.scan-card {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 24rpx;
+  padding: 72rpx 40rpx;
+  box-sizing: border-box;
+  box-shadow: 0 8rpx 20rpx rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.scan-icon {
+  width: 96rpx;
+  height: 96rpx;
+  border: 6rpx solid #74E2B6;
+  border-radius: 20rpx;
+  position: relative;
+  box-sizing: border-box;
+  margin-bottom: 32rpx;
+}
+
+.scan-icon::before,
+.scan-icon::after {
+  content: "";
+  position: absolute;
+  left: 18rpx;
+  right: 18rpx;
+  height: 6rpx;
+  background: #74E2B6;
+  border-radius: 999rpx;
+}
+
+.scan-icon::before {
+  top: 28rpx;
+}
+
+.scan-icon::after {
+  bottom: 28rpx;
+}
+
+.scan-title {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 14rpx;
+}
+
+.scan-desc {
+  font-size: 26rpx;
+  color: #999999;
+  margin-bottom: 44rpx;
+}
+
+.scan-btn {
+  width: 260rpx;
+  height: 72rpx;
+  line-height: 72rpx;
+  border-radius: 36rpx;
+  background: #74E2B6;
+  color: #ffffff;
+  font-size: 28rpx;
+  padding: 0;
+}
+
+.scan-btn[disabled] {
+  background: #a9ead2;
+  color: #ffffff;
+}
+
+.scan-btn::after {
+  border: none;
+}
+
+.scan-result {
+  width: 100%;
+  margin-top: 40rpx;
+  padding: 24rpx;
+  border-radius: 18rpx;
+  background: #f4f7f9;
+  box-sizing: border-box;
+}
+
+.result-label {
+  display: block;
+  color: #666666;
+  font-size: 24rpx;
+  margin-bottom: 12rpx;
+}
+
+.result-text {
+  display: block;
+  color: #333333;
+  font-size: 26rpx;
+  line-height: 1.5;
+  word-break: break-all;
+}

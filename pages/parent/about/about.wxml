@@ -1,0 +1,42 @@
+<view class="container">
+  <view class="custom-back" bindtap="goBack">
+    <view class="back-icon"></view>
+    <text class="back-text">返回</text>
+  </view>
+
+  <view class="page-header">
+    <text class="page-title">关于我们</text>
+  </view>
+
+  <view class="about-card">
+    <view class="logo-wrapper">
+      <view class="logo">智</view>
+    </view>
+    <text class="app-name">智慧校园家长端</text>
+    <text class="app-version">版本 v1.0.0</text>
+    
+    <view class="info-list">
+      <view class="info-item">
+        <text class="info-label">开发者</text>
+        <text class="info-value">智慧校园团队</text>
+      </view>
+      <view class="info-item">
+        <text class="info-label">联系方式</text>
+        <text class="info-value">service@campus.com</text>
+      </view>
+      <view class="info-item">
+        <text class="info-label">服务协议</text>
+        <text class="info-value link" bindtap="viewAgreement">查看详情</text>
+      </view>
+      <view class="info-item">
+        <text class="info-label">隐私政策</text>
+        <text class="info-value link" bindtap="viewPrivacy">查看详情</text>
+      </view>
+    </view>
+
+    <view class="copyright">
+      <text>Copyright 2024-2026</text>
+      <text>智慧校园家长端 版权所有</text>
+    </view>
+  </view>
+</view>

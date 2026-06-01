@@ -1,0 +1,131 @@
+/* pages/teacher/leave/management/LeaveManagement.wxss */
+page {
+  height: 100vh;
+  overflow: hidden;
+  font-family: "PingFang SC", sans-serif;
+  background: linear-gradient(to bottom, #87CEFA, #ffffff);
+}
+
+.leave-page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* 导航栏 */
+.nav-container {
+  position: relative;
+  width: 100%;
+  padding: 0 30rpx;
+  box-sizing: border-box;
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+/* 内容区 */
+.leave-scroll {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.tip-header {
+  font-size: 28rpx;
+  color: #333;
+  text-align: center;
+  margin: 20rpx 0 40rpx 0;
+}
+
+.leave-list {
+  padding: 0 30rpx calc(48rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+}
+
+.leave-state {
+  min-height: 360rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #667783;
+  font-size: 28rpx;
+  text-align: center;
+}
+
+/* 请假条卡片 */
+.leave-card {
+  background: #fff;
+  border-radius: 40rpx;
+  padding: 40rpx 30rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.05);
+	transition: all 0.1s ease;
+}
+
+.leave-card-approved {
+  background: #effaf4;
+  border: 2rpx solid #bfe9cf;
+}
+
+.leave-card-rejected {
+  background: #fff1f0;
+  border: 2rpx solid #f3c5c2;
+}
+
+.leave-card-pending {
+  background: #fff8e8;
+  border: 2rpx solid #f2ddb0;
+}
+
+.item-hover {
+  background-color: #f7f7f7 !important; /* 点击时变灰 */
+  transform: scale(0.96); /* 点击时轻微缩小 */
+  /* 点击时阴影变深变小，模拟按压感 */
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1) !important; 
+}
+
+.leave-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22rpx 28rpx;
+}
+
+.field-item {
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 12rpx;
+  font-size: 28rpx;
+  line-height: 1.45;
+  color: #333;
+}
+
+.field-full {
+  grid-column: 1 / -1;
+}
+
+.label {
+  flex: 0 0 auto;
+  color: #666;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.label::after {
+  content: "：";
+}
+
+.value {
+  min-width: 0;
+  flex: 1;
+  color: #333;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.time-value {
+  line-height: 1.45;
+}

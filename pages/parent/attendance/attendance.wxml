@@ -1,0 +1,195 @@
+<view class="container">
+  <!-- 统一返回按钮 -->
+  <view class="custom-back" bindtap="goBack" style="position: fixed; left: 29rpx; top: 95rpx">
+    <view class="back-icon"></view>
+    <text class="back-text">返回</text>
+  </view>
+
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <text class="page-title">考勤查询</text>
+  </view>
+
+  <!-- 孩子选择区域 -->
+  <view class="child-selector" style="position: relative; left: 0rpx; top: 6rpx">
+    <view class="child-title">选择孩子</view>
+    <scroll-view class="child-list" scroll-x="{{true}}" show-scrollbar="{{false}}">
+      <view 
+        wx:for="{{children}}" 
+        wx:key="uniqueKey"
+        class="child-item {{selectedChildIndex === index ? 'active' : ''}}"
+        bindtap="selectChild"
+        data-index="{{index}}"
+      >
+        <image class="child-avatar" src="/assets/tabbar/user.png" mode="aspectFill"></image>
+        <text class="child-name">{{item.name}}</text>
+        <text class="child-class" wx:if="{{item.class}}">{{item.class}}</text>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 统计卡片 -->
+  <view class="stats-card">
+    <view class="stats-header">
+      <text class="stats-title">考勤统计</text>
+      <view class="stats-date" bindtap="openDatePicker">
+        <text>{{filterYear}}年{{filterMonth}}月</text>
+        <text class="arrow-down">▼</text>
+      </view>
+    </view>
+    <view class="stats-grid">
+      <view class="stat-item">
+        <text class="stat-value">{{statistics.totalDays}}</text>
+        <text class="stat-label">总天数</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-value" style="color: #52c41a;">{{statistics.present}}</text>
+        <text class="stat-label">出勤</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-value" style="color: #faad14;">{{statistics.late}}</text>
+        <text class="stat-label">迟到</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-value" style="color: #fa8c16;">{{statistics.earlyLeave}}</text>
+        <text class="stat-label">早退</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-value" style="color: #ff4d4f;">{{statistics.absent}}</text>
+        <text class="stat-label">缺勤</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-value" style="color: #1890ff;">{{statistics.leave}}</text>
+        <text class="stat-label">请假</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 日期选择器弹窗 -->
+  <view class="date-picker-mask" wx:if="{{showDatePicker}}" bindtap="closeDatePicker">
+    <view class="date-picker-modal" catchtap="stopPropagation">
+      <view class="picker-header">
+        <text class="picker-title">选择月份</text>
+        <text class="picker-close" bindtap="closeDatePicker">✕</text>
+      </view>
+      <view class="picker-content">
+        <view class="picker-row">
+          <text class="picker-label">年份</text>
+          <picker mode="selector" range="{{years}}" bindchange="onYearChange">
+            <view class="picker-value">{{filterYear}}年</view>
+          </picker>
+        </view>
+        <view class="picker-row">
+          <text class="picker-label">月份</text>
+          <picker mode="selector" range="{{months}}" range-key="name" bindchange="onMonthChange">
+            <view class="picker-value">{{months[filterMonth-1].name}}</view>
+          </picker>
+        </view>
+      </view>
+      <view class="picker-footer">
+        <button class="picker-btn cancel" bindtap="closeDatePicker">取消</button>
+        <button class="picker-btn confirm" bindtap="confirmFilter">确定</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 考勤列表 -->
+  <view class="attendance-list">
+    <view class="list-header">
+      <text class="list-title">考勤记录</text>
+      <text class="list-tip">点击日期查看考勤轨迹</text>
+    </view>
+    
+    <block wx:if="{{attendanceRecords.length > 0}}">
+      <view 
+        wx:for="{{attendanceRecords}}" 
+        wx:key="date"
+        class="attendance-item"
+        bindtap="openTimelineModal"
+        data-date="{{item.date}}"
+      >
+        <view class="item-left">
+          <text class="item-date">{{item.dateStr}}</text>
+          <text class="item-weekday">{{item.weekday}}</text>
+        </view>
+        <view class="item-center">
+          <view class="status-badge status-{{item.statusId}}">
+            {{item.statusName}}
+          </view>
+        </view>
+        <view class="item-right">
+          <text class="check-time" wx:if="{{item.checkInTime}}">到: {{item.checkInTime}}</text>
+          <text class="check-time" wx:if="{{item.checkOutTime}}">离: {{item.checkOutTime}}</text>
+          <text class="leave-tag" wx:if="{{item.statusId === 5}}">请假</text>
+        </view>
+        <view class="item-arrow">
+          <text class="arrow-icon">→</text>
+        </view>
+      </view>
+    </block>
+    
+    <view class="empty-state" wx:else>
+      <text class="empty-icon">📋</text>
+      <text class="empty-text">暂无考勤记录</text>
+    </view>
+  </view>
+
+  <!-- 考勤轨迹弹窗 -->
+  <view class="timeline-modal-mask" wx:if="{{showTimelineModal}}" bindtap="closeTimelineModal">
+    <view class="timeline-modal" catchtap="stopPropagation">
+      <!-- 弹窗头部 -->
+      <view class="modal-header">
+        <view class="modal-title">
+          <text class="title-icon">📍</text>
+          <text class="title-text">{{selectedDateStr}} 考勤轨迹</text>
+        </view>
+        <view class="modal-close" bindtap="closeTimelineModal">
+          <text>✕</text>
+        </view>
+      </view>
+      
+      <!-- 弹窗内容 - 时间线 -->
+      <scroll-view class="modal-content" scroll-y="{{true}}">
+        <!-- 状态摘要卡片 -->
+        <view class="status-summary" wx:if="{{selectedRecord}}">
+          <view class="summary-status" style="background: {{attendanceTypes[selectedRecord.statusId].bgColor}}; border-color: {{attendanceTypes[selectedRecord.statusId].borderColor}}">
+            <text class="summary-icon">{{attendanceTypes[selectedRecord.statusId].icon}}</text>
+            <text class="summary-text" style="color: {{attendanceTypes[selectedRecord.statusId].color}}">
+              {{selectedRecord.statusName}}
+            </text>
+          </view>
+          <view class="summary-time" wx:if="{{selectedRecord.checkInTime || selectedRecord.checkOutTime}}">
+            <text wx:if="{{selectedRecord.checkInTime}}">入校: {{selectedRecord.checkInTime}}</text>
+            <text wx:if="{{selectedRecord.checkOutTime}}" style="margin-left: 20rpx;">离校: {{selectedRecord.checkOutTime}}</text>
+          </view>
+        </view>
+        
+        <!-- 时间线轨迹 -->
+        <view class="timeline-container">
+          <view 
+            wx:for="{{timelineData}}" 
+            wx:key="time"
+            class="timeline-item"
+          >
+            <view class="timeline-dot" style="background: {{item.color}};"></view>
+            <view class="timeline-content">
+              <view class="timeline-time">{{item.time}}</view>
+              <view class="timeline-title-text">{{item.title}}</view>
+              <view class="timeline-desc" wx:if="{{item.description}}">{{item.description}}</view>
+            </view>
+          </view>
+        </view>
+        
+        <!-- 温馨提示 -->
+        <view class="timeline-tip">
+          <text class="tip-text">以上为当日考勤轨迹</text>
+        </view>
+      </scroll-view>
+      
+      <!-- 弹窗底部按钮 -->
+      <view class="modal-footer">
+        <button class="modal-btn" bindtap="closeTimelineModal">关闭</button>
+      </view>
+    </view>
+  </view>
+</view>

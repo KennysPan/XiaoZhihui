@@ -1,0 +1,109 @@
+page {
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #87CEFA, #ffffff);
+}
+
+.agent-tab-page {
+  width: 100%;
+  min-height: 100vh;
+  padding: calc(128rpx + env(safe-area-inset-top)) 30rpx calc(180rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+}
+
+.profile-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.user-header {
+  width: 100%;
+  text-align: center;
+  padding: 48rpx 30rpx;
+  border-radius: 24rpx;
+  box-sizing: border-box;
+}
+
+.avatar {
+  font-size: 52rpx;
+  font-weight: 700;
+  width: 140rpx;
+  height: 140rpx;
+  background: linear-gradient(135deg, #7ee7bc, #5fd9a8);
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  margin-bottom: 24rpx;
+  box-shadow: 0 12rpx 28rpx rgba(95, 217, 168, 0.26);
+}
+
+.user-name {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  display: block;
+}
+
+.user-phone {
+  font-size: 28rpx;
+  color: #56616a;
+  display: block;
+  margin-top: 12rpx;
+}
+
+.menu-list {
+  width: 100%;
+  border-radius: 24rpx;
+  box-sizing: border-box;
+}
+
+.menu-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 28rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+  font-size: 30rpx;
+  color: #333;
+  min-height: 48rpx;
+}
+
+.menu-item:last-child {
+  border-bottom: none;
+}
+
+.logout-item {
+  width: 100%;
+  height: 72rpx;
+  margin-top: 24rpx;
+  padding: 0 22rpx;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1rpx solid rgba(38, 50, 56, 0.08);
+  border-radius: 36rpx;
+  box-shadow: 0 8rpx 20rpx rgba(38, 50, 56, 0.08);
+  color: #263238;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30rpx;
+  font-weight: 600;
+  box-sizing: border-box;
+}
+
+.logout-item:active {
+  opacity: 0.86;
+}
+
+.arrow {
+  font-size: 40rpx;
+  color: #b6c0c8;
+}
+
+.version {
+  text-align: center;
+  margin-top: 48rpx;
+  font-size: 24rpx;
+  color: #7d8992;
+}

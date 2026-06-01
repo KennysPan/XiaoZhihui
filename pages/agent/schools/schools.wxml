@@ -1,0 +1,22 @@
+<view class="container school-page">
+  <view class="custom-back school-back agent-exit-btn" bindtap="goBack">
+    <view class="back-icon"></view>
+    <text class="back-text">学校管理</text>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading">加载中...</view>
+  <scroll-view wx:else class="school-scroll" scroll-y="true" enhanced="true" show-scrollbar="true">
+    <view wx:if="{{schools.length > 0}}" class="school-list">
+      <view class="school-card card-common" wx:for="{{schools}}" wx:key="id">
+        <view class="school-info">
+          <text class="school-name">{{item.name}}</text>
+          <text class="school-address">{{item.address}}</text>
+          <text class="school-contact">联系人：{{item.contactPhone}}</text>
+          <text class="school-stock">校徽库存：{{item.badgeStock}} 枚</text>
+        </view>
+        <button class="replenish-btn" bindtap="replenish" data-school="{{item}}">补货</button>
+      </view>
+    </view>
+    <view wx:else class="empty">暂无学校数据</view>
+  </scroll-view>
+</view>

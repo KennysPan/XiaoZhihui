@@ -1,0 +1,231 @@
+/* 统一返回按钮样式 (与home保持一致) */
+.custom-back {
+  position: fixed;
+  top: 80rpx;
+  left: 30rpx;
+  display: flex;
+  align-items: center;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 12rpx 24rpx;
+  border-radius: 40rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.back-icon {
+  width: 16rpx;
+  height: 16rpx;
+  border-left: 4rpx solid #333;
+  border-bottom: 4rpx solid #333;
+  transform: rotate(45deg);
+  margin-right: 12rpx;
+}
+
+.back-text {
+  font-size: 28rpx;
+  color: #333;
+}
+
+.page-header {
+  margin-bottom: 30rpx;
+  padding-top: 20rpx;
+}
+
+.page-title {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #333;
+  display: block;
+  text-align: center;
+}
+
+.container {
+  min-height: 100vh;
+  padding: 20rpx;
+  padding-top: 140rpx;
+  padding-bottom: 60rpx;
+  box-sizing: border-box;
+  background: linear-gradient(135deg, #87CEFA 0%, #E6F7FF 50%, #ffffff 100%);
+}
+
+/* 孩子选择器 */
+.child-selector {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 30rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+}
+.child-title {
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 20rpx;
+  font-weight: 500;
+}
+.child-list {
+  white-space: nowrap;
+  width: 100%;
+}
+.child-item {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  width: 160rpx;
+  margin-right: 30rpx;
+  padding: 20rpx 10rpx;
+  border-radius: 20rpx;
+  background: rgba(249, 249, 249, 0.9);
+  transition: all 0.3s ease;
+}
+.child-item.active {
+  background: linear-gradient(135deg, #7ee7bc 0%, #5fd9a8 100%);
+}
+.child-avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  margin-bottom: 10rpx;
+  background: #e0e0e0;
+}
+.child-name {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+}
+.child-class {
+  font-size: 22rpx;
+  color: #999;
+  margin-top: 6rpx;
+}
+.child-item.active .child-name,
+.child-item.active .child-class {
+  color: #fff;
+}
+
+/* 周次选择器 */
+.week-selector {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  border-radius: 60rpx;
+  padding: 20rpx 30rpx;
+  margin-bottom: 30rpx;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+}
+.week-arrow {
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+  border-radius: 50%;
+}
+.week-range {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #333;
+}
+
+/* 课程表表格 */
+.course-table {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 30rpx;
+  overflow-x: auto;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+}
+.table-header,
+.table-row {
+  display: flex;
+  min-width: 700rpx;
+}
+.th, .td {
+  flex: 1;
+  text-align: center;
+  padding: 20rpx 10rpx;
+  font-size: 26rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+  border-right: 1rpx solid #f0f0f0;
+  box-sizing: border-box;
+}
+.th:last-child, .td:last-child {
+  border-right: none;
+}
+.th {
+  background: rgba(126, 231, 188, 0.2);
+  font-weight: bold;
+  color: #333;
+}
+.time-col {
+  flex: 0.8;
+  background: #f9f9f9;
+}
+.course-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6rpx;
+}
+.course-name {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #2c3e4e;
+}
+.course-teacher,
+.course-location {
+  font-size: 22rpx;
+  color: #999;
+}
+.course-empty {
+  color: #ccc;
+}
+
+/* 加载与空状态 */
+.loading-mask, .empty-state {
+  text-align: center;
+  padding: 100rpx 0;
+}
+.empty-icon {
+  font-size: 100rpx;
+  display: block;
+  margin-bottom: 20rpx;
+}
+/* 在原有样式最后添加以下内容 */
+.week-arrow.disabled {
+  opacity: 0.3;
+  pointer-events: none;   /* 禁止点击 */
+  background: #f0f0f0;
+}
+.simulate-btn {
+  margin-left: 10rpx;
+  background: #F0AD4E;
+  padding: 8rpx 16rpx;
+  border-radius: 20rpx;
+}
+.simulate-text {
+  font-size: 24rpx;
+  color: #fff;
+}
+/* 当前课程高亮样式 */
+.td.highlight-cell {
+  background: linear-gradient(135deg, rgba(255, 235, 59, 0.3) 0%, rgba(255, 193, 7, 0.3) 100%);
+  border-radius: 12rpx;
+  position: relative;
+  box-shadow: 0 0 0 2rpx rgba(255, 193, 7, 0.5);
+  transition: all 0.2s ease;
+}
+
+/* 高亮单元格内的文字颜色略微加深增强可读性 */
+.td.highlight-cell .course-name {
+  font-weight: 600;
+  color: #d48806;
+}
+
+.td.highlight-cell .course-teacher,
+.td.highlight-cell .course-location {
+  color: #a66d02;
+}

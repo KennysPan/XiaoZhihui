@@ -1,0 +1,24 @@
+page { overflow-x: hidden; 
+  background: linear-gradient(to bottom, #87CEFA, #ffffff);
+}
+.role-page { min-height: 100vh; width: 100vw; position: relative; overflow: hidden;
+
+  background: linear-gradient(to bottom, #87CEFA, #ffffff);
+}
+.top-bar { height: 200rpx; padding-top: constant(safe-area-inset-top); padding-top: env(safe-area-inset-top); box-sizing: border-box; }
+.icon-wrapper { display: flex; align-items: center; justify-content: center; margin: 30rpx auto 26rpx; position: relative; z-index: 2; }
+.icon { width: 175rpx; height: 175rpx; border-radius: 50%; overflow: hidden; background: rgba(255, 255, 255, 0.5); padding: 30rpx; }
+.header { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; margin-bottom: 44rpx; }
+.title { font-size: 104rpx; color: #1E3A8A; font-family: "阿里妈妈东方大楷 Regular", sans-serif; letter-spacing: 8rpx; line-height: 1.08; }
+.subtitle { margin-top: 18rpx; font-size: 28rpx; color: #4b5563; }
+.role-card { position: relative; z-index: 3; width: 85%; max-width: 600rpx; margin: 0 auto; padding: 34rpx 30rpx; background: #ffffff; border-radius: 56rpx; box-shadow: 0 10rpx 40rpx rgba(0, 0, 0, 0.08); box-sizing: border-box; }
+.role-item { min-height: 126rpx; padding: 26rpx 24rpx; border-radius: 28rpx; background: #f7fbff; display: flex; align-items: center; justify-content: space-between; box-sizing: border-box; }
+.role-item + .role-item { margin-top: 24rpx; }
+.role-item:active { transform: scale(0.98); opacity: 0.88; }
+.role-main { min-width: 0; flex: 1; }
+.role-title-row { display: flex; align-items: center; }
+.role-title { font-size: 34rpx; font-weight: 700; color: #1f2937; }
+.role-tag { margin-left: 16rpx; padding: 6rpx 14rpx; border-radius: 999rpx; background: rgba(80, 227, 194, 0.16); color: #1d9f8f; font-size: 22rpx; }
+.role-desc { display: block; margin-top: 12rpx; font-size: 24rpx; color: #6b7280; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.role-arrow { flex-shrink: 0; margin-left: 20rpx; font-size: 54rpx; line-height: 1; color: #4A90E2; }
+.bottomIcon { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 500rpx; height: 500rpx; opacity: 0.28; z-index: 1; }

@@ -1,0 +1,39 @@
+<view class="custom-back teacher-nav" style="margin-top: {{menuButtonTop}}px; height: {{menuButtonHeight}}px; padding: 0 210rpx 72rpx 24rpx; box-sizing: border-box; position: relative; left: 0rpx; top: -6rpx" bindtap="btnBack">
+  <view class="back-icon" style="position: relative; left: 14rpx; top: 34rpx"></view>
+  <text class="back-text" style="position: relative; left: 5rpx; top: 34rpx">查看学生</text>
+</view>
+
+<view class="container">
+  <view class="user-profile">
+    <view class="avatar-wrapper">
+      <image class="avatar-img" src="https://www.kennyspan.xyz:8082/icon.png" mode="aspectFill"></image>
+    </view>
+    <view class="user-info">
+      <text class="role">老师：{{tName}}</text>
+    </view>
+  </view>
+
+  <view class="class-filter">
+    <text class="filter-label">班级</text>
+    <picker class="class-picker" mode="selector" range="{{classOptions}}" value="{{selectedClassIndex}}" bindchange="onClassChange">
+      <view class="picker-value">
+        <text>{{classOptions[selectedClassIndex]}}</text>
+        <text class="picker-arrow">›</text>
+      </view>
+    </picker>
+  </view>
+	
+  <scroll-view class="student-card" scroll-y="true">
+    <view class="student-grid" wx:if="{{filteredStudentList.length > 0}}">
+      <block wx:for="{{filteredStudentList}}" wx:key="id">
+        <view class="student-item" hover-class="item-hover" bindtap="goToDetail" data-id="{{item.id}}" data-name="{{item.name}}" data-classname="{{item.className}}" data-gender="{{item.gender}}">
+          <text class="student-name">{{item.name}}</text>
+          <text class="student-class">{{item.className}}</text>
+        </view>
+      </block>
+    </view>
+    <view class="empty-state" wx:else>
+      <text>当前班级暂无学生</text>
+    </view>
+  </scroll-view>
+</view>

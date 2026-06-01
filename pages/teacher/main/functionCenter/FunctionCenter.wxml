@@ -1,0 +1,31 @@
+<view class="page">
+  <view class="custom-back teacher-nav function-nav" style="margin-top: {{menuButtonTop}}px; height: {{menuButtonHeight}}px;" bindtap="btnBack">
+    <view class="back-icon"></view>
+    <text class="back-text">功能中心</text>
+  </view>
+
+  <view class="hero-panel">
+    <view>
+      <text class="hero-title">更多功能</text>
+      <text class="hero-subtitle">{{tName}}，请选择要处理的工作</text>
+    </view>
+    <image class="hero-icon" src="https://www.kennyspan.xyz:8082/icon.png" mode="aspectFill"></image>
+  </view>
+
+  <view class="function-grid">
+    <view
+      class="function-card"
+      wx:for="{{functionList}}"
+      wx:key="key"
+      bindtap="handleFunctionTap"
+      data-key="{{item.key}}"
+    >
+      <image class="function-icon" src="{{item.icon}}" mode="aspectFit"></image>
+      <view class="function-content">
+        <text class="function-name">{{item.name}}</text>
+        <text class="function-desc">{{item.desc}}</text>
+      </view>
+      <text class="function-arrow">›</text>
+    </view>
+  </view>
+</view>

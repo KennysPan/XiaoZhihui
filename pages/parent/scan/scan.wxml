@@ -1,0 +1,9 @@
+<view class="scan-page">
+  <view class="scan-card">
+    <view class="scan-icon">⌁</view>
+    <text class="scan-title">正在打开扫码</text>
+    <text class="scan-desc">如果扫码没有自动打开，请点击下方按钮重试</text>
+    <button class="scan-btn" bindtap="startScan">重新扫码</button>
+  </view>
+</view>
+<custom-tab-bar />

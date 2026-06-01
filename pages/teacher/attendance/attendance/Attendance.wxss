@@ -1,0 +1,96 @@
+/* 基础背景与容器 */
+page {
+  height: 100vh;
+  overflow: hidden;
+
+  background: linear-gradient(to bottom, #87CEFA, #ffffff);
+}
+.container { display: flex; flex-direction: column; height: 100vh; padding: 0 40rpx; box-sizing: border-box; }
+
+/* 顶部返回与搜索框 */
+.custom-back { }
+.back-icon { width: 20rpx; height: 20rpx; border-left: 5rpx solid #333; border-bottom: 5rpx solid #333; transform: rotate(45deg); margin-right: 12rpx; }
+.back-text { font-size: 32rpx; color: #333; font-weight: 500; }
+
+.search-box { background: rgba(255, 255, 255, 0.95); border-radius: 40rpx; padding: 45rpx 40rpx; margin-top: 40rpx; box-shadow: 0 10rpx 40rpx rgba(0,0,0,0.05); position: relative; }
+.label { font-size: 30rpx; color: #666; width: 140rpx; }
+.teacher-name { font-size: 32rpx; font-weight: bold; color: #333; }
+.input-field { flex: 1; background: #f8f8f8; height: 80rpx; border-radius: 20rpx; padding: 0 25rpx; display: flex; align-items: center; border: 1rpx solid #eee; }
+.decor-img-top { position: absolute; right: 20rpx; top: -30rpx; width: 110rpx; height: 110rpx; }
+
+/* 网格列表 */
+.student-list-container { flex: 1; height: 0; margin-top: 30rpx; margin-bottom: 20rpx; }
+.grid-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 25rpx; padding-bottom: 30rpx; }
+.student-card { background: #fff; border-radius: 30rpx; padding: 35rpx; position: relative; box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.03); }
+.student-card .name { font-weight: bold; font-size: 34rpx; color: #333; }
+.view-detail { font-size: 24rpx; color: #87CEFA; margin-top: 10rpx; }
+.decor-img-card { position: absolute; right: 15rpx; bottom: 15rpx; width: 100rpx; height: 100rpx; opacity: 0.2; }
+
+/* --- 融合弹窗样式 --- */
+.modal-mask {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5); z-index: 1000;
+  backdrop-filter: blur(10rpx);
+  display: flex; align-items: center; justify-content: center;
+}
+.modal-content {
+  width: 85%; background: #ffffff; border-radius: 40rpx;
+  padding: 40rpx; position: relative; max-height: 80vh;
+  box-shadow: 0 20rpx 60rpx rgba(0,0,0,0.15);
+}
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30rpx; }
+.title { font-size: 32rpx; font-weight: bold; border-left: 8rpx solid #74E2B6; padding-left: 15rpx; }
+.close-btn { font-size: 50rpx; color: #ccc; }
+
+.divider { height: 2rpx; background: #f0f0f0; margin: 25rpx 0; }
+.info-item { font-size: 28rpx; display: flex; margin-bottom: 10rpx; }
+.label-small { color: #999; width: 100rpx; }
+
+/* 考勤模块 */
+.attendance-module { background: #f9fbfb; border-radius: 20rpx; padding: 20rpx; }
+.module-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15rpx; }
+.module-title { font-size: 28rpx; font-weight: bold; color: #333; }
+.date-picker-btn { font-size: 24rpx; color: #4db6ac; background: #e0f2f1; padding: 10rpx 20rpx; border-radius: 30rpx; }
+.module-actions { display: flex; align-items: center; gap: 12rpx; }
+.makeup-btn {
+  min-width: 96rpx;
+  height: 56rpx;
+  line-height: 56rpx;
+  margin: 0;
+  padding: 0 22rpx;
+  border-radius: 28rpx;
+  background: #74E2B6;
+  color: #fff;
+  font-size: 24rpx;
+  font-weight: 600;
+}
+.makeup-btn::after { border: 0; }
+
+/* 时间线样式 */
+.timeline-container { max-height: 450rpx; margin-top: 20rpx; }
+.timeline-item { display: flex; position: relative; padding-bottom: 30rpx; }
+.time-node { width: 50rpx; display: flex; flex-direction: column; align-items: center; }
+.node-dot { width: 20rpx; height: 20rpx; border-radius: 50%; z-index: 2; border: 4rpx solid #fff; box-shadow: 0 0 8rpx rgba(0,0,0,0.1); }
+.node-line { position: absolute; top: 20rpx; bottom: 0; left: 24rpx; width: 2rpx; background: #ddd; z-index: 1; }
+.node-content { flex: 1; margin-left: 15rpx; background: #fff; padding: 15rpx 20rpx; border-radius: 15rpx; }
+.record-header { display: flex; justify-content: space-between; margin-bottom: 8rpx; }
+.record-time { font-size: 30rpx; font-weight: bold; }
+.record-status {
+  font-size: 26rpx;        /* 建议稍微调小一点，30rpx 在小标签里略显拥挤 */
+  color: #fff;
+  border-radius: 20rpx;
+  
+  /* --- 关键居中逻辑 --- */
+  display: inline-flex;    /* 开启行内弹性布局 */
+  align-items: center;     /* 垂直居中 */
+  justify-content: center; /* 水平居中 */
+  
+  width: 100rpx;           /* 建议给固定宽度，这样列表里的对齐更整齐 */
+  height: 100rpx;           /* 给固定高度 */
+  line-height: 0;          /* 消除默认行高干扰 */
+  box-sizing: border-box;  /* 确保宽高包含边框和内边距 */
+  text-align: center;
+}
+.record-status-name { font-size: 26rpx; margin-right: 15rpx; }
+.record-loc { font-size: 24rpx; color: #999; }
+.no-data, .loading-tip { text-align: center; font-size: 26rpx; color: #999; padding: 40rpx 0; }

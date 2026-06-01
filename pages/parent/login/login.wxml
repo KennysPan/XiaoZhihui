@@ -1,0 +1,52 @@
+<view class="login-page">
+  <view class="role-back parent-exit-btn" bindtap="backToRoleSelect">
+    <text class="role-back-icon">‹</text>
+    <text class="role-back-text">选择端口</text>
+  </view>
+
+  <!-- 顶部标题栏 -->
+  <view class="top-bar">
+    <view class="back-btn">
+      <!-- 如果需要返回按钮，在此处添加 -->
+    </view>
+  </view>
+
+  <!-- Logo区域 -->
+  <view class="icon-wrapper">
+    <image class="icon" mode="widthFix" src="https://www.kennyspan.xyz:8082/icon.png"></image>
+  </view>
+
+  <!-- 标题文字 -->
+  <view class="header">
+    <text class="title">智慧校园家长端</text>
+  </view>
+
+  <!-- 登录卡片容器 -->
+  <view class="login-card">
+    <text class="login-title">登录</text>
+
+    <view class="input-item">
+      <text class="label">账号:</text>
+      <input class="input-field" type="text" bindinput="onPhoneInput" placeholder="请输入手机号" value="{{phone}}" />
+    </view>
+
+    <view class="input-item password-container">
+      <text class="label">密码:</text>
+      <input class="input-field" password="{{isHide}}" bindinput="onPwdInput" placeholder="请输入密码" value="{{password}}" />
+      <view class="eye-icon" bindtap="togglePassword">
+        <text>{{isHide ? '🙈' : '👁️'}}</text>
+      </view>
+    </view>
+
+    <view class="login-actions-row">
+      <button class="quick-login-btn" bindtap="quickLogin">一键登录</button>
+      <text class="forget-pwd" bindtap="ClickForgetPwd">忘记密码?</text>
+    </view>
+    
+    <!-- 登录按钮 -->
+    <button class="login-btn" bindtap="onLogin">登录</button>
+  </view>
+  
+  <!-- 底部背景装饰 -->
+  <image class="bottomIcon" src="https://www.kennyspan.xyz:8082/tingzi.png" mode="widthFix"/>
+</view>

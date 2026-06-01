@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "van-calendar": "@vant/weapp/calendar/index",
+    "ec-canvas": "../ec-canvas/ec-canvas"
+  }
+}

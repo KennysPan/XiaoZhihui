@@ -1,0 +1,69 @@
+<view class="container home-container">
+  <scroll-view class="home-scroll" scroll-y="true" enhanced="true" show-scrollbar="true">
+    <view class="home-content">
+      <view class="welcome-card card-common">
+        <view class="welcome-info">
+          <text class="greeting">欢迎回来，{{agentName || '代理商'}}</text>
+          <text class="date">{{currentDate}}</text>
+        </view>
+        <view class="welcome-avatar">
+          <text class="avatar-icon">代</text>
+        </view>
+      </view>
+
+      <view class="stats-section">
+        <view class="section-title">数据概览</view>
+        <view class="stats-grid">
+          <view class="stat-card card-common">
+            <text class="stat-value">{{statistics.todayIncome}}</text>
+            <text class="stat-label">今日收入(元)</text>
+            <text class="stat-trend">实时统计</text>
+          </view>
+          <view class="stat-card card-common">
+            <text class="stat-value">{{statistics.monthOrderCount}}</text>
+            <text class="stat-label">本月订单</text>
+            <text class="stat-trend">补货订单</text>
+          </view>
+          <view class="stat-card card-common">
+            <text class="stat-value">{{statistics.totalSchools}}</text>
+            <text class="stat-label">合作学校</text>
+            <text class="stat-trend">共 {{statistics.totalSchools}} 所</text>
+          </view>
+          <view class="stat-card card-common">
+            <text class="stat-value">{{statistics.pendingOrders}}</text>
+            <text class="stat-label">待处理</text>
+            <text class="stat-trend">待发货</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="func-section">
+        <view class="section-title">快捷功能</view>
+        <view class="func-grid">
+          <view class="func-item" wx:for="{{quickActions}}" wx:key="name" bindtap="navigateTo" data-url="{{item.url}}" style="background: {{item.color}}14;">
+            <view class="func-icon" style="background: {{item.color}};">{{item.shortName}}</view>
+            <text class="func-name">{{item.name}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="order-section">
+        <view class="section-title">订单概览</view>
+        <view class="order-preview card-common" bindtap="goToOrders">
+          <view class="preview-item">
+            <text>待处理订单</text>
+            <text class="preview-num">{{statistics.pendingOrders}}</text>
+          </view>
+          <view class="preview-divider"></view>
+          <view class="preview-item">
+            <text>本月收入</text>
+            <text class="preview-num">¥{{statistics.monthIncome}}</text>
+          </view>
+          <view class="preview-arrow">›</view>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+
+  <custom-tab-bar />
+</view>

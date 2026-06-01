@@ -1,0 +1,147 @@
+<view class="container">
+  <!-- 统一返回按钮 -->
+  <view class="custom-back" bindtap="goBack" style="position: fixed; left: 29rpx; top: 100rpx">
+    <view class="back-icon"></view>
+    <text class="back-text">返回</text>
+  </view>
+
+  <view class="page-header">
+    <text class="page-title">德育评价</text>
+    <text class="page-subtitle">教师的综合素质评价</text>
+  </view>
+
+  <!-- 孩子选择器 -->
+  <view class="child-selector">
+    <view class="child-title">选择孩子</view>
+    <scroll-view class="child-list" scroll-x="{{true}}" show-scrollbar="{{false}}">
+      <view 
+        wx:for="{{children}}" 
+        wx:key="id"
+        class="child-item {{selectedChildId === item.id ? 'active' : ''}}"
+        bindtap="selectChild"
+        data-id="{{item.id}}"
+      >
+        <view class="child-avatar" style="background: linear-gradient(135deg, #7ee7bc, #5fd9a8)">
+          <text>{{item.name[0]}}</text>
+        </view>
+        <text class="child-name">{{item.name}}</text>
+        <text class="child-class" wx:if="{{item.className}}">{{item.className}}</text>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 综合评级卡片 -->
+  <view class="rating-card" wx:if="{{currentEvaluation}}">
+    <view class="rating-header">
+      <text class="rating-label">综合评级</text>
+      <view class="rating-value grade-{{currentEvaluation.grade}}">
+        {{currentEvaluation.gradeName}}
+      </view>
+    </view>
+    <view class="rating-score">
+      <view class="score-number">{{currentEvaluation.totalScore}}</view>
+      <view class="score-total">/100分</view>
+    </view>
+    <view class="rating-comment">{{currentEvaluation.comment}}</view>
+  </view>
+
+  <!-- 指标卡片 -->
+  <view class="indicator-card" wx:if="{{currentEvaluation}}">
+    <view class="card-title">评价指标</view>
+    <view class="indicator-list">
+      <view class="indicator-item" wx:for="{{currentEvaluation.indicators}}" wx:key="id">
+        <view class="indicator-info">
+          <text class="indicator-name">{{item.name}}</text>
+          <text class="indicator-desc">{{item.description}}</text>
+        </view>
+        <view class="indicator-score">
+          <text class="score-value" style="color: {{item.score >= 85 ? '#52c41a' : item.score >= 70 ? '#faad14' : '#ff4d4f'}}">
+            {{item.score}}
+          </text>
+          <text class="score-unit">分</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 评价记录 -->
+  <view class="record-card" wx:if="{{evaluationRecords.length > 0}}">
+    <view class="card-title">
+      <text>历史评价</text>
+      <text class="record-count">{{evaluationRecords.length}}条记录</text>
+    </view>
+    <view class="record-list">
+      <view class="record-item" wx:for="{{evaluationRecords}}" wx:key="id" bindtap="viewRecordDetail" data-index="{{index}}">
+        <view class="record-header">
+          <text class="record-term">{{item.term}}</text>
+          <view class="record-grade grade-{{item.grade}}">{{item.gradeName}}</view>
+        </view>
+        <text class="record-comment">{{item.comment}}</text>
+        <view class="record-footer">
+          <text class="record-time">{{item.evaluateTime}}</text>
+          <text class="record-teacher">评价人：{{item.teacherName}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{!loading && !currentEvaluation && evaluationRecords.length === 0}}">
+    <text class="empty-icon">📋</text>
+    <text class="empty-text">暂无德育评价记录</text>
+    <text class="empty-desc">请先选择一个孩子查看评价</text>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-state" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+
+  <!-- 评价详情弹窗 -->
+  <view class="modal-mask" wx:if="{{showDetailModal}}" bindtap="closeDetailModal">
+    <view class="modal-content" catchtap="stopPropagation">
+      <view class="modal-header">
+        <text class="modal-title">评价详情</text>
+        <view class="modal-close" bindtap="closeDetailModal">✕</view>
+      </view>
+      <scroll-view class="modal-body" scroll-y>
+        <view class="detail-item" wx:if="{{currentRecordDetail}}">
+          <text class="detail-label">学期</text>
+          <text class="detail-value">{{currentRecordDetail.term}}</text>
+        </view>
+        <view class="detail-item" wx:if="{{currentRecordDetail}}">
+          <text class="detail-label">综合评级</text>
+          <text class="detail-value grade-{{currentRecordDetail.grade}}">{{currentRecordDetail.gradeName}}</text>
+        </view>
+        <view class="detail-item" wx:if="{{currentRecordDetail}}">
+          <text class="detail-label">综合得分</text>
+          <text class="detail-value">{{currentRecordDetail.totalScore}}分</text>
+        </view>
+        <view class="detail-item" wx:if="{{currentRecordDetail}}">
+          <text class="detail-label">教师评语</text>
+          <text class="detail-value">{{currentRecordDetail.comment}}</text>
+        </view>
+        <view class="detail-section" wx:if="{{currentRecordDetail && currentRecordDetail.indicators}}">
+          <text class="section-label">指标详情</text>
+          <view class="indicator-detail-list">
+            <view class="indicator-detail-item" wx:for="{{currentRecordDetail.indicators}}" wx:key="id">
+              <text class="indicator-name">{{item.name}}</text>
+              <text class="indicator-score">{{item.score}}分</text>
+            </view>
+          </view>
+        </view>
+        <view class="detail-item" wx:if="{{currentRecordDetail}}">
+          <text class="detail-label">评价时间</text>
+          <text class="detail-value">{{currentRecordDetail.evaluateTime}}</text>
+        </view>
+        <view class="detail-item" wx:if="{{currentRecordDetail}}">
+          <text class="detail-label">评价教师</text>
+          <text class="detail-value">{{currentRecordDetail.teacherName}}</text>
+        </view>
+      </scroll-view>
+      <view class="modal-footer">
+        <button class="modal-btn" bindtap="closeDetailModal">关闭</button>
+      </view>
+    </view>
+  </view>
+</view>

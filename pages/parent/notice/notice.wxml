@@ -1,0 +1,43 @@
+<view class="container">
+  <!-- 统一返回按钮 -->
+  <view class="custom-back" bindtap="goBack">
+    <view class="back-icon"></view>
+    <text class="back-text">返回</text>
+  </view>
+
+  <view class="page-header">
+    <text class="page-title">通知公告</text>
+  </view>
+
+  <!-- 公告列表 -->
+  <view class="notice-list">
+    <view 
+      class="notice-item" 
+      wx:for="{{noticeList}}" 
+      wx:key="id" 
+      bindtap="goToDetail" 
+      data-id="{{item.id}}"
+    >
+      <view class="notice-title">{{item.title}}</view>
+      <view class="notice-summary">{{item.summary}}</view>
+      <view class="notice-footer">
+        <text class="notice-time">{{item.publishTime}}</text>
+        <view class="right-tags">
+          <text class="view-count">👁️ {{item.viewCount || 0}}</text>
+          <text class="notice-tag" wx:if="{{item.isImportant}}">重要</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-state" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{!loading && noticeList.length === 0}}">
+    <text class="empty-icon">📢</text>
+    <text class="empty-text">暂无通知公告</text>
+  </view>
+</view>

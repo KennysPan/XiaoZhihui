@@ -1,0 +1,144 @@
+<view class="container">
+  <!-- 返回按钮 -->
+  <view class="custom-back" bindtap="goBack" style="position: fixed; left: 29rpx; top: 97rpx">
+    <view class="back-icon"></view>
+    <text class="back-text">返回</text>
+  </view>
+
+  <view class="page-header">
+    <text class="page-title" style="position: relative; left: 0rpx; top: 21rpx">添加孩子</text>
+    <text class="page-subtitle" style="position: relative; left: 0rpx; top: 33rpx">通过身份证号绑定孩子信息</text>
+  </view>
+
+  <!-- 步骤指示器 -->
+  <view class="step-indicator" style="position: relative; left: 0rpx; top: 31rpx">
+    <view class="step {{step >= 1 ? 'active' : ''}} {{step > 1 ? 'done' : ''}}">
+      <view class="step-num">{{step > 1 ? '✓' : '1'}}</view>
+      <text class="step-text">输入身份证</text>
+    </view>
+    <view class="step-line {{step >= 2 ? 'active' : ''}}"></view>
+    <view class="step {{step >= 2 ? 'active' : ''}} {{step > 2 ? 'done' : ''}}">
+      <view class="step-num">{{step > 2 ? '✓' : '2'}}</view>
+      <text class="step-text">确认信息</text>
+    </view>
+    <view class="step-line {{step >= 3 ? 'active' : ''}}"></view>
+    <view class="step {{step >= 3 ? 'active' : ''}}">
+      <view class="step-num">{{step >= 3 ? '✓' : '3'}}</view>
+      <text class="step-text">完成</text>
+    </view>
+  </view>
+
+  <!-- 步骤1：身份证输入 -->
+  <view class="step-panel step1 {{step == 1 ? 'active' : step > 1 ? 'complete' : ''}}">
+    <view class="panel-title">身份验证</view>
+    <view class="panel-desc">请输入孩子的18位身份证号码</view>
+    
+    <view class="id-input-wrapper">
+      <input
+        class="id-input" 
+        placeholder="例如：11010120100307663X" 
+        placeholder-class="id-input-placeholder"
+        value="{{idCard}}" 
+        bindinput="onIdCardInput"
+        maxlength="18"
+        focus="{{step == 1}}"
+      />
+      <view class="id-format-hint" wx:if="{{idCard && !canSearch && idCard.length === 18}}">
+        <text class="hint-error">⚠️ 身份证号格式不正确</text>
+      </view>
+      <view class="id-format-hint" wx:elif="{{idCard && canSearch}}">
+        <text class="hint-success">✓ 格式正确</text>
+      </view>
+    </view>
+
+    <button class="next-btn {{canSearch ? '' : 'disabled'}}" bindtap="nextStep" disabled="{{!canSearch}}">
+      下一步
+    </button>
+    <view class="demo-tip">可直接点击下方按钮模拟填充</view>
+    <view class="demo-buttons">
+      <button class="demo-btn" bindtap="fillDemoBoy">模拟男孩(王阳明)</button>
+      <button class="demo-btn" bindtap="fillDemoGirl">模拟女孩(王兰芳)</button>
+    </view>
+  </view>
+
+  <!-- 步骤2：信息确认 -->
+  <view class="step-panel step2 {{step == 2 ? 'active' : step > 2 ? 'complete' : ''}}">
+    <view class="result-header">
+      <view class="result-avatar" style="background: linear-gradient(135deg, #7ee7bc, #5fd9a8)">
+        <text>{{searchResult.name ? searchResult.name[0] : '?'}}</text>
+      </view>
+      <view class="result-info">
+        <text class="result-name">{{searchResult.name || '未查询到'}}</text>
+        <text class="result-status">待绑定</text>
+      </view>
+      <view class="result-badge" wx:if="{{isRealData}}">
+        <text>真实数据</text>
+      </view>
+      <view class="result-badge mock" wx:else>
+        <text>模拟数据</text>
+      </view>
+    </view>
+
+    <view class="info-card">
+      <view class="info-title">基本信息</view>
+      <view class="info-row">
+        <view class="info-cell">
+          <text class="cell-icon"></text>
+          <text class="cell-label">性别</text>
+          <text class="cell-value">{{searchResult.gender === 1 ? '男' : '女'}}</text>
+        </view>
+        <view class="info-cell">
+          <text class="cell-label">出生日期</text>
+          <text class="cell-value">{{searchResult.birthday || '--'}}</text>
+        </view>
+        <view class="info-cell">
+          <text class="cell-label">班级</text>
+          <text class="cell-value">{{searchResult.className || '待分班'}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="relation-card">
+      <view class="relation-title">选择与孩子的关系</view>
+      <picker mode="selector" range="{{relationOptions}}" bindchange="onRelationChange">
+        <view class="relation-picker">
+          <text>{{relationOptions[relationIndex]}}</text>
+          <text class="picker-arrow">⌵</text>
+        </view>
+      </picker>
+    </view>
+
+    <view class="action-buttons">
+      <button class="back-btn" bindtap="prevStep">上一步</button>
+      <button class="confirm-btn" bindtap="confirmAdd" disabled="{{adding}}">
+        {{adding ? '绑定中...' : '确认绑定'}}
+      </button>
+    </view>
+  </view>
+
+  <!-- 步骤3：绑定成功 -->
+  <view class="step-panel step3 {{step == 3 ? 'active' : ''}}">
+    <view class="success-animation">
+      <view class="success-circle">
+        <text class="success-check">✓</text>
+      </view>
+    </view>
+    <text class="success-title">绑定成功！</text>
+    <text class="success-desc">孩子「{{searchResult.name}}」已成功添加到您的家庭</text>
+    
+    <view class="child-card-show">
+      <view class="child-avatar" style="background: linear-gradient(135deg, #7ee7bc, #5fd9a8)">
+        <text>{{searchResult.name[0]}}</text>
+      </view>
+      <view class="child-info-show">
+        <text class="child-name-show">{{searchResult.name}}</text>
+        <text class="child-relation-show">{{relationOptions[relationIndex]}}</text>
+      </view>
+    </view>
+
+    <view class="action-buttons">
+      <button class="continue-btn" bindtap="continueAdd">继续添加</button>
+      <button class="finish-btn" bindtap="backToList">完成，返回列表</button>
+    </view>
+  </view>
+</view>

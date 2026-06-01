@@ -1,0 +1,123 @@
+<view class="page">
+  <view class="custom-back teacher-nav" style="margin-top: {{menuButtonTop}}px; height: {{menuButtonHeight}}px; padding: 0 210rpx 72rpx 24rpx; box-sizing: border-box; position: relative; left: 0rpx; top: -6rpx" bindtap="btnBack">
+  <view class="back-icon" style="position: relative; left: 14rpx; top: 34rpx"></view>
+  <text class="back-text" style="position: relative; left: 5rpx; top: 34rpx">荣誉墙</text>
+</view>
+
+  <view class="hero-panel">
+    <view class="hero-copy">
+      <text class="hero-title">荣誉墙</text>
+      <text class="hero-subtitle">记录学生亮点与班级荣誉</text>
+    </view>
+    <image class="hero-icon" src="/assets/home/honor-wall.svg" mode="aspectFit"></image>
+  </view>
+
+  <view class="summary-row">
+    <view class="summary-card">
+      <text class="summary-value">{{records.length}}</text>
+      <text class="summary-label">荣誉记录</text>
+    </view>
+    <view class="summary-card">
+      <text class="summary-value">{{coveredClassCount}}</text>
+      <text class="summary-label">覆盖班级</text>
+    </view>
+    <view class="summary-card">
+      <view class="summary-value summary-name">
+        <block wx:for="{{bestStudentNames}}" wx:key="*this">
+          <text>{{item}}</text>
+          <text wx:if="{{index < bestStudentNames.length - 1}}">，</text>
+        </block>
+      </view>
+      <text class="summary-label">最佳学生</text>
+    </view>
+    <view class="summary-card">
+      <text class="summary-value summary-name">{{bestClassName}}</text>
+      <text class="summary-label">最佳班级</text>
+    </view>
+  </view>
+
+  <view class="search-box">
+    <view class="search-icon"></view>
+    <input class="search-input" value="{{searchKeyword}}" bindinput="onSearchInput" placeholder="搜索荣誉名、班级名、学生名" />
+  </view>
+
+  <scroll-view class="honor-scroll" wx:if="{{filteredRecords.length > 0}}" scroll-y="true" enhanced="true" show-scrollbar="true">
+    <view class="honor-list">
+      <view class="honor-card" wx:for="{{filteredRecords}}" wx:key="id" bindtap="showHonorDetail" data-record="{{item}}">
+        <view class="honor-medal">
+          <text>荣</text>
+        </view>
+        <view class="honor-content">
+          <view class="honor-title-row">
+            <text class="honor-title">{{item.title}}</text>
+            <text class="honor-date">{{item.date}}</text>
+          </view>
+          <text class="honor-student">{{item.studentName}} · {{item.className}}</text>
+          <text class="honor-desc">{{item.description}}</text>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+
+  <view class="empty-state" wx:else>
+    <text class="empty-title">{{records.length > 0 ? '未找到匹配荣誉' : '暂无荣誉记录'}}</text>
+    <text class="empty-desc">{{records.length > 0 ? '换个关键词试试' : '点击右下角添加第一条荣誉'}}</text>
+  </view>
+
+  <button class="fab" bindtap="showAddModal" aria-label="添加荣誉">+</button>
+
+  <view class="detail-mask" wx:if="{{detailVisible}}" bindtap="hideHonorDetail">
+    <view class="detail-panel" catchtap="noop">
+      <view class="modal-header">
+        <view class="detail-title-wrap">
+          <image class="detail-icon" src="/assets/home/honor-wall.svg" mode="aspectFit"></image>
+          <text class="modal-title">{{selectedHonor.title}}</text>
+        </view>
+        <text class="modal-close" bindtap="hideHonorDetail">×</text>
+      </view>
+      <text class="detail-meta">{{selectedHonor.studentName}} · {{selectedHonor.className}} · {{selectedHonor.date}}</text>
+      <scroll-view class="detail-scroll" scroll-y="true">
+        <text class="detail-desc">{{selectedHonor.description}}</text>
+      </scroll-view>
+      <view class="detail-actions">
+        <button class="detail-action edit-action" bindtap="editHonor">编辑</button>
+        <button class="detail-action delete-action" bindtap="deleteHonor">删除</button>
+      </view>
+    </view>
+  </view>
+
+  <view class="modal-mask" wx:if="{{addVisible}}" bindtap="hideAddModal">
+    <view class="modal-panel" catchtap="noop">
+      <view class="modal-header">
+        <text class="modal-title">{{editingId ? '编辑荣誉' : '添加荣誉'}}</text>
+        <text class="modal-close" bindtap="hideAddModal">×</text>
+      </view>
+
+      <view class="form-field">
+        <text class="field-label">荣誉名称</text>
+        <input class="field-input" value="{{form.title}}" data-field="title" bindinput="onInput" placeholder="例如：学习之星" maxlength="24" />
+      </view>
+
+      <view class="form-field">
+        <text class="field-label">班级</text>
+        <picker mode="selector" range="{{classOptions}}" range-key="name" value="{{selectedClassIndex}}" bindchange="onClassChange">
+          <view class="picker-value">{{form.className}}</view>
+        </picker>
+      </view>
+
+      <view class="form-field">
+        <text class="field-label">学生</text>
+        <picker mode="selector" range="{{studentOptions}}" range-key="name" value="{{selectedStudentIndex}}" bindchange="onStudentChange">
+          <view class="picker-value">{{form.studentName}}</view>
+        </picker>
+      </view>
+
+      <view class="form-field">
+        <text class="field-label">说明</text>
+        <textarea class="field-textarea" value="{{form.description}}" data-field="description" bindinput="onInput" placeholder="填写荣誉说明" maxlength="-1"></textarea>
+      </view>
+
+      <button class="submit-btn" bindtap="submitHonor">{{editingId ? '保存修改' : '保存'}}</button>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,39 @@
+<view class="container">
+  <view class="custom-back agent-exit-btn" bindtap="goBack">
+    <view class="back-icon"></view>
+    <text class="back-text">退出</text>
+  </view>
+
+  <view class="page-heading">
+    <text class="page-title">补货申请</text>
+  </view>
+
+  <view class="form-card card-common">
+    <view class="form-item">
+      <text class="label">学校</text>
+      <text class="value">{{schoolName}}</text>
+    </view>
+    <view class="form-item">
+      <text class="label">校徽单价</text>
+      <text class="value">¥{{unitPrice}} 元/枚</text>
+    </view>
+    <view class="form-item">
+      <text class="label">数量</text>
+      <view class="quantity-control">
+        <view class="qty-btn" bindtap="decrease">-</view>
+        <text class="qty-num">{{badgeCount}}</text>
+        <view class="qty-btn" bindtap="increase">+</view>
+      </view>
+    </view>
+    <view class="form-item">
+      <text class="label">总金额</text>
+      <text class="value total-price">¥{{badgeCount * unitPrice}}</text>
+    </view>
+    <view class="form-item">
+      <text class="label">备注</text>
+      <textarea class="remark-input" placeholder="选填" value="{{remark}}" bindinput="onRemarkInput" maxlength="200"></textarea>
+    </view>
+  </view>
+
+  <button class="submit-btn" bindtap="submitOrder" disabled="{{submitting}}">{{submitting ? '提交中...' : '确认提交'}}</button>
+</view>

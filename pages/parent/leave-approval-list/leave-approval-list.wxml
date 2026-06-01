@@ -1,0 +1,104 @@
+<view class="container">
+  <!-- 返回按钮 -->
+  <view class="custom-back" bindtap="goBack" style="position: fixed; left: 29rpx; top: 102rpx">
+    <view class="back-icon"></view>
+    <text class="back-text">返回</text>
+  </view>
+
+  <view class="page-header">
+    <text class="page-title" style="position: relative; left: 0rpx; top: 50rpx">请假审批</text>
+  </view>
+
+  <!-- Tab 切换 -->
+  <view class="tab-bar" style="position: relative; left: 0rpx; top: 66rpx">
+    <view class="tab-item {{currentTab === 0 ? 'active' : ''}}" bindtap="switchTab" data-index="0">
+      <text>待审批</text>
+      <view class="tab-badge" wx:if="{{pendingCount > 0}}">{{pendingCount}}</view>
+    </view>
+    <view class="tab-item {{currentTab === 1 ? 'active' : ''}}" bindtap="switchTab" data-index="1">
+      <text>已通过</text>
+    </view>
+    <view class="tab-item {{currentTab === 2 ? 'active' : ''}}" bindtap="switchTab" data-index="2">
+      <text>未通过</text>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-state" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+
+  <!-- 请假列表 -->
+  <view class="leave-list" wx:else style="position: relative; left: 0rpx; top: 81rpx">
+    <block wx:if="{{filteredList.length > 0}}">
+      <view class="leave-item" wx:for="{{filteredList}}" wx:key="id" bindtap="viewDetail" data-index="{{index}}" style="position: relative; left: 1rpx; top: 1rpx">
+        <view class="leave-header">
+          <view class="leave-child">
+            <view class="child-avatar">{{item.studentName[0]}}</view>
+            <text class="child-name">{{item.studentName}}</text>
+          </view>
+          <view class="leave-status status-{{item.statusId}}">
+            {{item.statusName}}
+          </view>
+        </view>
+        <view class="leave-info">
+          <text class="leave-type">{{item.leaveTypeName}}</text>
+          <text class="leave-time">{{item.startTime}} 至 {{item.endTime}}</text>
+        </view>
+        <text class="leave-reason">{{item.reason}}</text>
+        <view class="leave-footer" wx:if="{{item.statusId === 2 && item.remark}}">
+          <text class="approve-remark">审批备注：{{item.remark}}</text>
+        </view>
+      </view>
+    </block>
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:else>
+      <text class="empty-icon">📋</text>
+      <text class="empty-text">暂无相关请假记录</text>
+    </view>
+  </view>
+
+  <!-- 请假详情弹窗 -->
+  <view class="modal-mask" wx:if="{{showDetailModal}}" bindtap="closeDetailModal">
+    <view class="modal-content" catchtap="stopPropagation">
+      <view class="modal-header">
+        <text class="modal-title">请假详情</text>
+        <view class="modal-close" bindtap="closeDetailModal">✕</view>
+      </view>
+      <scroll-view class="modal-body" scroll-y>
+        <view class="detail-item">
+          <text class="detail-label">孩子姓名</text>
+          <text class="detail-value">{{currentLeave.studentName}}</text>
+        </view>
+        <view class="detail-item">
+          <text class="detail-label">请假类型</text>
+          <text class="detail-value">{{currentLeave.leaveTypeName}}</text>
+        </view>
+        <view class="detail-item">
+          <text class="detail-label">请假时间</text>
+          <text class="detail-value">{{currentLeave.startTime}} 至 {{currentLeave.endTime}}</text>
+        </view>
+        <view class="detail-item">
+          <text class="detail-label">请假原因</text>
+          <text class="detail-value">{{currentLeave.reason}}</text>
+        </view>
+        <view class="detail-item">
+          <text class="detail-label">申请时间</text>
+          <text class="detail-value">{{currentLeave.applyTime}}</text>
+        </view>
+        <view class="detail-item" wx:if="{{currentLeave.remark}}">
+          <text class="detail-label">审批备注</text>
+          <text class="detail-value">{{currentLeave.remark}}</text>
+        </view>
+        <view class="detail-item">
+          <text class="detail-label">审批状态</text>
+          <text class="detail-value status-{{currentLeave.statusId}}">{{currentLeave.statusName}}</text>
+        </view>
+      </scroll-view>
+      <view class="modal-footer">
+        <button class="modal-btn" bindtap="closeDetailModal">关闭</button>
+      </view>
+    </view>
+  </view>
+</view>

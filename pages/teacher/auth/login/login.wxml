@@ -1,0 +1,40 @@
+<view class="login-page">
+  <view class="role-back" bindtap="backToRoleSelect">
+    <text class="role-back-icon">‹</text>
+    <text class="role-back-text">选择端口</text>
+  </view>
+  <view class="top-bar"></view>
+
+  <view class="icon-wrapper" style="position: relative; z-index: 100;">
+    <image class="icon" mode="widthFix" src="{{url}}/icon.png"></image>
+  </view>
+
+  <view class="header">
+    <text class="title" style="position: relative; left: 0rpx; top: -300rpx">智慧校园</text>
+  </view>
+
+  <view class="login-card" style="position: relative; left: 0rpx; top: -281rpx">
+    <text class="login-title">教师登录</text>
+
+    <view class="input-item">
+      <text class="label">账号</text>
+      <input class="input-field" type="text" bindinput="etLoginKey" placeholder="请输入账号" value="{{loginKey}}" />
+    </view>
+
+    <view class="input-item password-container">
+      <text class="label">密码</text>
+      <input class="input-field" password="{{isHide}}" bindinput="etPassword" placeholder="请输入密码" value="{{password}}" />
+      <view class="eye-icon" bindtap="togglePassword">
+        <view class="password-icon {{isHide ? 'password-icon-hide' : 'password-icon-show'}}"></view>
+      </view>
+    </view>
+
+    <view class="login-actions-row">
+      <button class="quick-login-btn" bindtap="quickLogin">一键登录</button>
+      <text class="forget-pwd" bindtap="ClickForgetPwd">忘记密码？</text>
+    </view>
+    <button class="login-btn" bindtap="btnLogin">登录</button>
+  </view>
+
+  <image class="bottomIcon" src="{{url}}/tingzi.png" mode="widthFix" />
+</view>

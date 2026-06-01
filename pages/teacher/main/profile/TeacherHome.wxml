@@ -1,0 +1,39 @@
+<view class="container">
+  <view class="top-bar">
+  </view>
+
+  <view class="header">
+    <view class="avatar-wrapper">
+      <image class="avatar" mode="aspectFill" src="https://www.kennyspan.xyz:8082/icon.png"></image>
+    </view>
+    <view class="info-header">
+      <text class="name">姓名：{{name}}</text>
+      <text class="welcome">欢迎来到个人信息页</text>
+    </view>
+  </view>
+
+  <view class="info-section">
+    <view class="info-card">
+      <text class="card-item">管理班级：{{managedClass}}</text>
+      <text class="card-item">职务：{{duty}}</text>
+    </view>
+
+    <view class="info-card">
+      <text class="card-item">学校：{{school}}</text>
+      <text class="card-item">学校部门：{{department}}</text>
+    </view>
+
+    <view class="info-card">
+      <text class="card-item">当前状态：{{status}}</text>
+      <text class="card-item">邮箱：{{email}}</text>
+      <text class="card-item">加入时间：{{joinDate}}</text>
+    </view>
+  </view>
+
+  <button class="my-button" bindtap="btnExitLogin">退出登录</button>
+  <text class="version-text">{{miniProgramVersion}}</text>
+
+  <view class="decoration">
+    <image src="https://www.kennyspan.xyz:8082/tingzi.png" mode="aspectFit" />
+  </view>
+</view>

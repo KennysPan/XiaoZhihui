@@ -1,0 +1,178 @@
+<view class="page">
+  <view class="header-bg"></view>
+
+  <view class="custom-back teacher-nav" style="margin-top: {{menuButtonTop}}px; height: {{menuButtonHeight}}px; padding: 0 210rpx 72rpx 24rpx; box-sizing: border-box; position: relative; left: 0rpx; top: -6rpx" bindtap="goBack">
+  <view class="back-icon" style="position: relative; left: 14rpx; top: 34rpx"></view>
+  <text class="back-text" style="position: relative; left: 5rpx; top: 34rpx">班级评比</text>
+</view>
+
+  <scroll-view scroll-y class="content-scroll">
+    <view class="class-card">
+      <view class="class-main">
+        <view class="class-avatar" style="background: {{selectedClass.bgColor || '#74E2B6'}};">
+          <text class="class-initial">{{selectedClass.name[0]}}</text>
+        </view>
+        <view class="class-info">
+          <picker mode="selector" range="{{classNames}}" value="{{classIndex}}" bindchange="onClassChange">
+            <view class="class-name-row">
+              <text class="class-name">{{selectedClass.name || '请选择班级'}}</text>
+              <text class="picker-arrow">切换</text>
+            </view>
+          </picker>
+          <text class="class-meta">{{selectedClass.courseName}} · {{studentCount}}人 · {{selectedClass.roomNo}}教室</text>
+        </view>
+      </view>
+
+      <view class="summary-row">
+        <view class="summary-item">
+          <text class="summary-value">{{totalScore}}</text>
+          <text class="summary-label">当前分</text>
+        </view>
+        <view class="summary-item">
+          <text class="summary-value">{{levelText}}</text>
+          <text class="summary-label">等级</text>
+        </view>
+        <view class="summary-item">
+          <text class="summary-value">{{firstRankName}}</text>
+          <text class="summary-label">当前第一</text>
+        </view>
+        <view class="summary-item">
+          <text class="summary-value">{{currentRecordCount}}</text>
+          <text class="summary-label">历史评比</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="form-section">
+      <view class="section-title">评比信息</view>
+      <view class="editing-tip" wx:if="{{editingRecordId}}">正在编辑历史评比，保存后将覆盖原记录</view>
+      <view class="field-row">
+        <text class="field-label">评比日期</text>
+        <picker mode="date" value="{{evaluateDate}}" bindchange="onDateChange">
+          <view class="picker-value">{{evaluateDate}}</view>
+        </picker>
+      </view>
+      <view class="field-row">
+        <text class="field-label">评比周期</text>
+        <picker mode="selector" range="{{periodTypes}}" value="{{periodIndex}}" bindchange="onPeriodChange">
+          <view class="picker-value">{{periodTypes[periodIndex]}}</view>
+        </picker>
+      </view>
+    </view>
+
+    <view class="form-section">
+      <view class="section-title">评比指标</view>
+      <view class="dimension-item" wx:for="{{dimensionList}}" wx:for-index="dimensionIndex" wx:key="key">
+        <view class="dimension-head">
+          <text class="dimension-name">{{item.name}}</text>
+          <text class="dimension-score">{{item.score}}分</text>
+        </view>
+        <view class="score-row">
+          <view
+            wx:for="{{scoreOptions}}"
+            wx:for-item="score"
+            wx:key="*this"
+            class="score-option {{!item.isCustom && score == item.score ? 'active' : ''}}"
+            data-index="{{dimensionIndex}}"
+            data-score="{{score}}"
+            bindtap="onDimensionScoreTap"
+          >{{score}}</view>
+          <view
+            class="score-option custom {{item.isCustom ? 'active' : ''}}"
+            data-index="{{dimensionIndex}}"
+            bindtap="onDimensionCustomTap"
+          >自定义</view>
+        </view>
+        <input
+          wx:if="{{item.isCustom}}"
+          class="custom-score-input"
+          type="digit"
+          value="{{item.customScore}}"
+          data-index="{{dimensionIndex}}"
+          placeholder="输入 0-30 分"
+          bindinput="onCustomScoreInput"
+        />
+      </view>
+    </view>
+
+    <view class="form-section">
+      <view class="section-title">表现标签</view>
+      <view class="tag-wrap">
+        <view
+          wx:for="{{tagList}}"
+          wx:key="text"
+          class="tag {{item.selected ? 'selected' : ''}}"
+          data-index="{{index}}"
+          bindtap="onTagTap"
+        >{{item.text}}</view>
+      </view>
+    </view>
+
+    <view class="form-section">
+      <view class="section-header">
+        <view class="section-title">评比说明</view>
+        <button class="text-btn" bindtap="generateComment">生成说明</button>
+      </view>
+      <textarea
+        class="comment-input"
+        value="{{comment}}"
+        maxlength="300"
+        placeholder="请输入班级评比说明"
+        bindinput="onCommentInput"
+      ></textarea>
+      <view class="action-row">
+        <button class="reset-btn" bindtap="resetForm">重置</button>
+        <button class="save-btn" bindtap="saveAppraise">保存评比</button>
+      </view>
+    </view>
+
+    <view class="ranking-section">
+      <view class="section-title">班级排行</view>
+      <view class="rank-card {{item.isCurrent ? 'current' : ''}}" wx:for="{{rankingList}}" wx:key="classId">
+        <view class="rank-no top{{item.rank}}">{{item.rank}}</view>
+        <view class="rank-info">
+          <text class="rank-name">{{item.name}}</text>
+          <text class="rank-meta">{{item.studentCount}}人 · {{item.sourceText}}</text>
+        </view>
+        <view class="rank-score">
+          <text class="rank-score-value">{{item.score}}</text>
+          <text class="rank-level">{{item.levelText}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="history-section">
+      <view class="history-title-row">
+        <view class="section-title">历史评比</view>
+        <text class="history-hint">长按可编辑或删除</text>
+      </view>
+      <view
+        class="history-card {{item.isEditing ? 'editing' : ''}}"
+        wx:for="{{records}}"
+        wx:key="id"
+        data-id="{{item.id}}"
+        bindlongpress="onHistoryLongPress"
+      >
+        <view class="history-head">
+          <text class="history-title">{{item.period}} · {{item.totalScore}}分</text>
+          <text class="history-date">{{item.createdAt}}</text>
+        </view>
+        <view class="history-tags">
+          <text wx:for="{{item.tags}}" wx:key="*this" class="history-tag">{{item}}</text>
+        </view>
+        <view class="history-comment">{{item.comment}}</view>
+      </view>
+      <view class="empty-tip" wx:if="{{records.length === 0}}">暂无评比记录</view>
+    </view>
+  </scroll-view>
+
+  <view class="dialog-mask" wx:if="{{showRecordActionDialog}}" bindtap="closeRecordActionDialog">
+    <view class="record-dialog" catchtap="noop">
+      <view class="record-dialog-title">评比操作</view>
+      <view class="record-dialog-desc">请选择要对这条历史评比执行的操作</view>
+      <button class="dialog-action edit" bindtap="handleEditRecord">编辑评比</button>
+      <button class="dialog-action delete" bindtap="handleDeleteRecord">删除评比</button>
+      <button class="dialog-action cancel" bindtap="closeRecordActionDialog">取消</button>
+    </view>
+  </view>
+</view>
