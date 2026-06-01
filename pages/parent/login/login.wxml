@@ -34,7 +34,7 @@
       <text class="label">密码:</text>
       <input class="input-field" password="{{isHide}}" bindinput="onPwdInput" placeholder="请输入密码" value="{{password}}" />
       <view class="eye-icon" bindtap="togglePassword">
-        <text>{{isHide ? '🙈' : '👁️'}}</text>
+        <text>{{isHide ? '🕶' : '👀'}}</text>
       </view>
     </view>
 

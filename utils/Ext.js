@@ -202,7 +202,9 @@ class Ext {
     wx.setStorageSync('accessToken', token);
     wx.setStorageSync('tokenType', type);
     
-    const expireTime = Date.now() + 10 * 24 * 60 * 60 * 1000;
+    // expiresIn 兼容“秒数”和“Unix 秒级时间戳”两种返回格式
+    const expires = Number(tokenData.expiresIn) || 3600;
+    const expireTime = expires > 1000000000 ? expires * 1000 : Date.now() + (expires * 1000);
     wx.setStorageSync('token_expire', expireTime);
     
     console.log('Token 已成功写入缓存');
@@ -232,11 +234,6 @@ class Ext {
         'accessToken', 
         'tokenType', 
         'token_expire', 
-        'session_data',
-        'session_response',
-        'teacher_class_list',
-        'selected_role',
-        'selected_role_path',
         'user_info', 
         'user_role', // 如果你想退出时连角色选择也重置，就加上这一行
         'teacher_Info', // 之前提到的教师详情缓存

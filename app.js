@@ -27,7 +27,6 @@ App({
     this.globalData.token = token;
     this.globalData.agentInfo = agentInfo;
     wx.setStorageSync('accessToken', token);
-    wx.setStorageSync('token_expire', Date.now() + 10 * 24 * 60 * 60 * 1000);
     wx.setStorageSync('agentInfo', agentInfo);
   },
 
@@ -35,7 +34,6 @@ App({
     this.globalData.token = null;
     this.globalData.agentInfo = null;
     wx.removeStorageSync('accessToken');
-    wx.removeStorageSync('token_expire');
     wx.removeStorageSync('agentInfo');
   },
 
@@ -45,4 +43,7 @@ App({
     agentInfo: null,
     selectedRole: 'teacher'
   }
+
+
+  
 });

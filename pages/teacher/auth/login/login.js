@@ -1,5 +1,4 @@
 const dataService = require('../../../../utils/dataService.js');
-const Ext = require('../../../../utils/Ext.js');
 
 const QUICK_LOGIN_ACCOUNT = {
   loginKey: 'g123456',
@@ -15,20 +14,7 @@ Page({
     isHide: true
   },
 
-  onLoad() {
-    if (!Ext.isLogin()) {
-      return;
-    }
-
-    wx.setStorageSync('selected_role', 'teacher');
-    wx.showLoading({ title: '登录中...' });
-    dataService.initializeAppState()
-      .catch(() => {})
-      .then(() => {
-        wx.hideLoading();
-        wx.switchTab({ url: '/pages/teacher/main/home/home' });
-      });
-  },
+  onLoad() {},
 
   backToRoleSelect() {
     wx.removeStorageSync('selected_role');

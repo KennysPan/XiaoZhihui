@@ -145,7 +145,7 @@ static handleResponse(res, resolve, reject) {
     if (token) {
       // 保存到本地存储
       wx.setStorageSync('accessToken', token);
-      wx.setStorageSync("token_expire", Date.now() + 10 * 24 * 60 * 60 * 1000);
+      wx.setStorageSync("token_expire", Date.now() + 24 * 60 * 60 * 1000);
       
       // 保存到全局
       try {
