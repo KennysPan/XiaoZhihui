@@ -701,6 +701,7 @@ page {
   .status-badge {
     padding: 6rpx 16rpx;
     font-size: 22rpx;
+
   }
 }
 

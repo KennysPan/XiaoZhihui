@@ -1,0 +1,108 @@
+<view class="container repair-page">
+
+<view class="agent-page-title">
+  维修管理
+</view>
+
+<scroll-view
+  class="repair-scroll"
+  scroll-y="true">
+
+  <view
+    class="repair-card card-common"
+    wx:for="{{list}}"
+    wx:key="id"
+    bindtap="openDetail"
+    data-item="{{item}}">
+
+    <view class="row">
+      <text class="label">学校</text>
+      <text>{{item.schoolName}}</text>
+    </view>
+
+    <view class="row">
+      <text class="label">申报人</text>
+      <text>{{item.reportUser}}</text>
+    </view>
+
+    <view class="row">
+      <text class="label">状态</text>
+
+      <text class="status status-{{item.status}}">
+        {{item.status}}
+      </text>
+    </view>
+
+  </view>
+
+</scroll-view>
+
+</view>
+
+<!-- 底部弹窗 -->
+
+<view
+wx:if="{{showDetail}}"
+class="mask"
+bindtap="closeDetail">
+
+<view
+  class="detail-panel"
+  catchtap="">
+
+  <view class="panel-title">
+    维修详情
+  </view>
+
+  <view class="detail-item">
+    学校：{{currentItem.schoolName}}
+  </view>
+
+  <view class="detail-item">
+    申报人：{{currentItem.reportUser}}
+  </view>
+
+  <view class="detail-item">
+    联系电话：{{currentItem.phone}}
+  </view>
+
+  <view class="detail-item">
+    报修内容：{{currentItem.content}}
+  </view>
+
+  <view class="detail-item">
+    报修时间：{{currentItem.createTime}}
+  </view>
+
+  <view class="detail-item">
+    当前状态：{{currentItem.status}}
+  </view>
+
+  <view class="status-group">
+
+    <button
+      size="mini"
+      data-status="未维修"
+      bindtap="changeStatus">
+      未维修
+    </button>
+
+    <button
+      size="mini"
+      data-status="维修中"
+      bindtap="changeStatus">
+      维修中
+    </button>
+
+    <button
+      size="mini"
+      data-status="已维修"
+      bindtap="changeStatus">
+      已维修
+    </button>
+
+  </view>
+
+</view>
+
+</view>

@@ -1,3 +1,4 @@
+<!-- pages/agent/home/home.wxml -->
 <view class="container home-container">
   <scroll-view class="home-scroll" scroll-y="true" enhanced="true" show-scrollbar="true">
     <view class="home-content">
@@ -39,12 +40,15 @@
 
       <view class="func-section">
         <view class="section-title">快捷功能</view>
-        <view class="func-grid">
-          <view class="func-item" wx:for="{{quickActions}}" wx:key="name" bindtap="navigateTo" data-url="{{item.url}}" style="background: {{item.color}}14;">
-            <view class="func-icon" style="background: {{item.color}};">{{item.shortName}}</view>
-            <text class="func-name">{{item.name}}</text>
+        <!-- 横向滑动区域 -->
+        <scroll-view class="func-scroll" scroll-x="true" enhanced="true" show-scrollbar="false">
+          <view class="func-grid">
+            <view class="func-item" wx:for="{{quickActions}}" wx:key="name" bindtap="navigateTo" data-url="{{item.url}}" style="background: {{item.color}}14;">
+              <view class="func-icon" style="background: {{item.color}};">{{item.shortName}}</view>
+              <text class="func-name">{{item.name}}</text>
+            </view>
           </view>
-        </view>
+        </scroll-view>
       </view>
 
       <view class="order-section">

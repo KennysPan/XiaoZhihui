@@ -15,7 +15,8 @@
         "orders/orders",
         "create/create",
         "income/income",
-        "profile/profile"
+        "profile/profile",
+        "repair/repair"
       ]
     },
     {

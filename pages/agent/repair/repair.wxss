@@ -1,0 +1,90 @@
+.repair-page {
+  height: 100vh;
+  padding: calc(90rpx + env(safe-area-inset-top))
+           30rpx
+           40rpx;
+  box-sizing: border-box;
+}
+
+.agent-page-title {
+  font-size: 42rpx;
+  font-weight: 700;
+  color: #263238;
+  margin-bottom: 30rpx;
+}
+
+.repair-scroll {
+  height: calc(100vh - 180rpx);
+}
+
+.repair-card {
+  border-radius: 24rpx;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 18rpx;
+}
+
+.label {
+  color: #888;
+}
+
+.status {
+  padding: 8rpx 20rpx;
+  border-radius: 24rpx;
+  font-size: 24rpx;
+}
+.status-0 { background: #fff7e6; color: #fa8c16; }  /* 未维修 */
+.status-1 { background: #e6f7ff; color: #1890ff; }  /* 维修中 */
+.status-2 { background: #f6ffed; color: #52c41a; }  /* 已维修 */
+
+.mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.4);
+  display: flex;
+  align-items: flex-end;
+}
+
+.detail-panel {
+  width: 100%;
+  background: white;
+  border-radius: 36rpx 36rpx 0 0;
+  padding: 40rpx;
+  box-sizing: border-box;
+
+  animation: up .25s;
+}
+
+@keyframes up {
+
+  from {
+    transform: translateY(100%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+
+}
+
+.panel-title {
+  text-align: center;
+  font-size: 34rpx;
+  font-weight: bold;
+  margin-bottom: 30rpx;
+}
+
+.detail-item {
+  margin-bottom: 18rpx;
+  color: #333;
+  line-height: 1.6;
+}
+
+.status-group {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 40rpx;
+}
