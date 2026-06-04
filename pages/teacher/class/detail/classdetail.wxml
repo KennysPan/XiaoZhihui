@@ -112,7 +112,7 @@
               <view class="node-content">
                 <view class="record-header">
                   <text class="record-time">{{item.recognizeTime}}</text>
-                  <text class="record-status" style="background: {{item.direction === 1 ? '#74E2B6' : '#4DB6AC'}};">
+                  <text class="record-status" wx:if="{{item.directionText}}" style="background: {{item.direction === 1 ? '#74E2B6' : '#4DB6AC'}};">
                     {{item.directionText}}
                   </text>
                 </view>

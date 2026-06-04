@@ -7,11 +7,36 @@ const TEACHER_CLASSES_STORAGE_KEY = 'teacher_class_list';
 const ANNOUNCEMENT_STORAGE_KEY = 'home_announcement_records_v2';
 const LEAVE_RECORD_STORAGE_KEY = 'teacher_leave_records_v2';
 const TEACHER_STATUS_DICT_STORAGE_KEY = 'teacher_status_dictionary_v1';
-const DEFAULT_TEACHER_STATUS_DICT = [
-  { value: 1, code: 'WORKING', name: '在职' },
-  { value: 2, code: 'LEAVE', name: '请假' },
-  { value: 3, code: 'QUIT', name: '离职' }
-];
+const DICTIONARY_STORAGE_PREFIX = 'dictionary_';
+const DEFAULT_DICTIONARIES = {
+  'teacher-statuses': [
+    { value: 1, code: 'WORKING', name: '在职' },
+    { value: 2, code: 'LEAVE', name: '请假' },
+    { value: 3, code: 'QUIT', name: '离职' }
+  ],
+  'attendance-statuses': [
+    { value: 1, code: 'NORMAL', name: '正常' },
+    { value: 2, code: 'LATE', name: '迟到' },
+    { value: 3, code: 'EARLY_LEAVE', name: '早退' },
+    { value: 4, code: 'ABSENT', name: '缺勤' },
+    { value: 5, code: 'OUT', name: '外出' },
+    { value: 6, code: 'LEAVE', name: '请假' },
+    { value: 7, code: 'MAKEUP', name: '补卡' },
+    { value: 8, code: 'RETURN', name: '返校' },
+    { value: 9, code: 'STAY', name: '住宿' },
+    { value: 11, code: 'HOLIDAY', name: '节假日' },
+    { value: 12, code: 'UNKNOWN', name: '未知' }
+  ],
+  'attendance-directions': [
+    { value: 1, code: 'IN', name: '进校' },
+    { value: 2, code: 'OUT', name: '离校' }
+  ],
+  'attendance-methods': [],
+  'leave-status': [],
+  'leave-types': [],
+  'student-statuses': []
+};
+const DEFAULT_TEACHER_STATUS_DICT = DEFAULT_DICTIONARIES['teacher-statuses'];
 
 function isSuccess(response) {
   return response && SUCCESS_CODES.includes(Number(response.code));
@@ -86,9 +111,106 @@ function unwrapData(response) {
   return response.data;
 }
 
+function getDictionaryStorageKey(code) {
+  return `${DICTIONARY_STORAGE_PREFIX}${code}_v1`;
+}
+
+function getDefaultDictionary(code) {
+  return DEFAULT_DICTIONARIES[code] || [];
+}
+
+function normalizeDictionaryRecords(data, code) {
+  const fallback = getDefaultDictionary(code);
+  if (!Array.isArray(data)) {
+    return fallback;
+  }
+  const records = data.filter(item => item && item.disabled !== true);
+  return records.length ? records : fallback;
+}
+
+function getStoredDictionary(code) {
+  const fallback = getDefaultDictionary(code);
+  try {
+    const records = wx.getStorageSync(getDictionaryStorageKey(code));
+    if (Array.isArray(records) && records.length) {
+      return records;
+    }
+
+    if (code === 'teacher-statuses') {
+      const legacyRecords = wx.getStorageSync(TEACHER_STATUS_DICT_STORAGE_KEY);
+      if (Array.isArray(legacyRecords) && legacyRecords.length) {
+        return legacyRecords;
+      }
+    }
+  } catch (error) {}
+  return fallback;
+}
+
+function saveDictionary(code, records) {
+  try {
+    wx.setStorageSync(getDictionaryStorageKey(code), records);
+    if (code === 'teacher-statuses') {
+      wx.setStorageSync(TEACHER_STATUS_DICT_STORAGE_KEY, records);
+    }
+  } catch (error) {}
+}
+
+function fetchDictionary(code) {
+  return apiGet(`/API/commons/dictionaries/${code}`)
+    .then(unwrapData)
+    .then(data => {
+      const records = normalizeDictionaryRecords(data, code);
+      saveDictionary(code, records);
+      return records;
+    })
+    .catch(error => {
+      console.error(`字典加载失败: ${code}`, error);
+      return getStoredDictionary(code);
+    });
+}
+
+function fetchDictionaries(codes = []) {
+  return Promise.all(codes.map(code => fetchDictionary(code).then(records => [code, records])))
+    .then(entries => entries.reduce((result, [code, records]) => {
+      result[code] = records;
+      return result;
+    }, {}));
+}
+
+function getDictionary(dictionaries = {}, code) {
+  if (Array.isArray(dictionaries)) {
+    return dictionaries;
+  }
+  if (dictionaries && Array.isArray(dictionaries[code])) {
+    return dictionaries[code];
+  }
+  return getStoredDictionary(code);
+}
+
+function resolveDictionaryName(dict = [], value, text = '', fallback = '') {
+  const normalizedText = text === undefined || text === null ? '' : String(text);
+  const matched = (Array.isArray(dict) ? dict : []).find(item => {
+    if (!item) {
+      return false;
+    }
+    return (
+      String(item.value) === String(value)
+      || String(item.code) === String(value)
+      || String(item.code) === normalizedText
+      || String(item.name) === normalizedText
+    );
+  });
+
+  if (matched && matched.name) {
+    return matched.name;
+  }
+
+  return normalizedText || fallback;
+}
+
 function getStoredTeacherStatusDict() {
   try {
-    const records = wx.getStorageSync(TEACHER_STATUS_DICT_STORAGE_KEY);
+    const records = getStoredDictionary('teacher-statuses');
     return Array.isArray(records) && records.length ? records : DEFAULT_TEACHER_STATUS_DICT;
   } catch (error) {
     return DEFAULT_TEACHER_STATUS_DICT;
@@ -96,17 +218,7 @@ function getStoredTeacherStatusDict() {
 }
 
 function fetchTeacherStatusDict() {
-  return apiGet('/API/commons/dictionaries/teacher-statuses')
-    .then(unwrapData)
-    .then(data => {
-      const records = Array.isArray(data) ? data : DEFAULT_TEACHER_STATUS_DICT;
-      wx.setStorageSync(TEACHER_STATUS_DICT_STORAGE_KEY, records);
-      return records;
-    })
-    .catch(error => {
-      console.error('教师状态字典加载失败', error);
-      return getStoredTeacherStatusDict();
-    });
+  return fetchDictionary('teacher-statuses');
 }
 
 function buildUrl(path, params = {}) {
@@ -268,8 +380,14 @@ function normalizeAnnouncement(item = {}) {
   };
 }
 
-function getLeaveStatusText(item = {}) {
+function getLeaveStatusText(item = {}, dictionaries = {}) {
+  const statusId = item.statusId || item.status || item.approvalStatus || '';
   const text = item.statusName || item.statusText || item.status || '';
+  const dictionaryText = resolveDictionaryName(getDictionary(dictionaries, 'leave-status'), statusId, text, '');
+  if (dictionaryText) {
+    return dictionaryText;
+  }
+
   if (text) {
     if (String(text).indexOf('通过') !== -1 || String(text).indexOf('批准') !== -1) {
       return '已通过';
@@ -283,23 +401,26 @@ function getLeaveStatusText(item = {}) {
     return String(text);
   }
 
-  const statusId = Number(item.statusId || item.status || item.approvalStatus || 0);
-  if (statusId === 1) {
+  const numericStatusId = Number(statusId || 0);
+  if (numericStatusId === 1) {
     return '已通过';
   }
-  if (statusId === 2) {
+  if (numericStatusId === 2) {
     return '已驳回';
   }
   return '未处理';
 }
 
-function normalizeLeaveRecord(item = {}) {
+function normalizeLeaveRecord(item = {}, dictionaries = {}) {
   const startTime = item.startTime || item.beginTime || item.date || item.createdTime || '';
   const endTime = item.endTime || item.finishTime || '';
   const student = item.student || {};
   const approver = item.approver || {};
-  const status = getLeaveStatusText(item);
+  const status = getLeaveStatusText(item, dictionaries);
   const teacher = item.approverName || item.teacherName || approver.name || '';
+  const typeId = item.typeId || item.leaveTypeId || item.type || '';
+  const typeText = item.typeName || item.leaveTypeName || item.type || '';
+  const type = resolveDictionaryName(getDictionary(dictionaries, 'leave-types'), typeId, typeText, '');
 
   return {
     ...item,
@@ -311,8 +432,8 @@ function normalizeLeaveRecord(item = {}) {
     endTime,
     status,
     statusId: item.statusId || item.status || item.approvalStatus || 0,
-    type: item.typeName || item.leaveTypeName || item.type || '',
-    typeId: item.typeId || item.leaveTypeId || '',
+    type,
+    typeId,
     teacher: status === '未处理' ? '' : teacher,
     reason: item.reason || item.remark || '',
     approverRemark: item.approverRemark || ''
@@ -333,20 +454,20 @@ function getAnnouncementTimeValue(item = {}) {
   return Number.isNaN(timestamp) ? 0 : timestamp;
 }
 
-function getDirectionText(direction, directionName) {
-  if (directionName) {
-    return directionName;
+function getDirectionText(direction, directionName, dictionaries = {}) {
+  if (!direction && !directionName) {
+    return '';
   }
-  if (Number(direction) === 1) {
-    return '进校';
-  }
-  if (Number(direction) === 2) {
-    return '离校';
-  }
-  return '未知';
+
+  return resolveDictionaryName(
+    getDictionary(dictionaries, 'attendance-directions'),
+    direction,
+    directionName,
+    ''
+  );
 }
 
-function normalizeAttendanceRecord(item = {}) {
+function normalizeAttendanceRecord(item = {}, dictionaries = {}) {
   const direction = Number(item.direction || 0);
   const recognizeTime = item.recognizeTime
     || item.recordTime
@@ -356,7 +477,21 @@ function normalizeAttendanceRecord(item = {}) {
     || item.createdTime
     || '';
   const statusId = item.statusId || item.resultStatus || item.status || 0;
-  const statusName = item.statusName || item.resultStatusName || item.statusText || '';
+  const statusText = item.statusName || item.resultStatusName || item.statusText || '';
+  const statusName = resolveDictionaryName(
+    getDictionary(dictionaries, 'attendance-statuses'),
+    statusId,
+    statusText,
+    ''
+  );
+  const methodId = item.methodId || item.attendanceMethodId || item.method || '';
+  const methodText = item.typeName || item.methodName || item.methodText || '';
+  const typeName = resolveDictionaryName(
+    getDictionary(dictionaries, 'attendance-methods'),
+    methodId,
+    methodText,
+    '考勤'
+  );
 
   return {
     ...item,
@@ -365,9 +500,9 @@ function normalizeAttendanceRecord(item = {}) {
     studentName: item.studentName || '',
     recognizeTime,
     recordDate: item.recordDate || item.attendanceDate || toDateOnly(recognizeTime),
-    typeName: item.typeName || item.methodName || '考勤',
+    typeName,
     direction,
-    directionText: getDirectionText(direction, item.directionName || item.directionText || statusName || '考勤结果'),
+    directionText: getDirectionText(direction, item.directionName || item.directionText || '', dictionaries),
     statusId,
     statusName,
     deviceName: item.deviceName || '',
@@ -391,11 +526,12 @@ function getAttendanceStatusType(item = {}) {
   return 'normal';
 }
 
-function getDailyStudentStatus(records = []) {
+function getDailyStudentStatus(records = [], dictionaries = {}) {
+  const attendanceStatusDict = getDictionary(dictionaries, 'attendance-statuses');
   if (!records.length) {
     return {
       statusType: 'absent',
-      statusName: '缺勤'
+      statusName: resolveDictionaryName(attendanceStatusDict, 4, '', '缺勤')
     };
   }
 
@@ -403,24 +539,24 @@ function getDailyStudentStatus(records = []) {
   if (types.includes('absent')) {
     return {
       statusType: 'absent',
-      statusName: '缺勤'
+      statusName: resolveDictionaryName(attendanceStatusDict, 4, '', '缺勤')
     };
   }
   if (types.includes('late')) {
     return {
       statusType: 'late',
-      statusName: '迟到'
+      statusName: resolveDictionaryName(attendanceStatusDict, 2, '', '迟到')
     };
   }
   if (types.includes('earlyLeave')) {
     return {
       statusType: 'earlyLeave',
-      statusName: '早退'
+      statusName: resolveDictionaryName(attendanceStatusDict, 3, '', '早退')
     };
   }
   return {
     statusType: 'normal',
-    statusName: '正常'
+    statusName: resolveDictionaryName(attendanceStatusDict, 1, '', '正常')
   };
 }
 
@@ -437,12 +573,12 @@ function getRecordTimeValue(item = {}) {
   return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
 }
 
-function buildClassDailyAttendance(classItem = {}, students = [], results = [], date = getDefaultDate()) {
+function buildClassDailyAttendance(classItem = {}, students = [], results = [], date = getDefaultDate(), dictionaries = {}) {
   const normalizedStudents = students.map(normalizeStudent);
   const classId = String(classItem.classId || classItem.id || '');
   const className = classItem.name || classItem.className || '未命名班级';
   const records = results
-    .map(normalizeAttendanceRecord)
+    .map(item => normalizeAttendanceRecord(item, dictionaries))
     .filter(item => !date || getRecordDateValue(item) === date)
     .filter(item => !classId || !item.classId || String(item.classId) === classId)
     .sort((a, b) => {
@@ -466,7 +602,7 @@ function buildClassDailyAttendance(classItem = {}, students = [], results = [], 
 
   const studentDetails = normalizedStudents.map(student => {
     const studentRecords = recordsByStudent[String(student.id)] || recordsByStudent[String(student.studentId)] || [];
-    const status = getDailyStudentStatus(studentRecords);
+    const status = getDailyStudentStatus(studentRecords, dictionaries);
     return {
       ...student,
       ...status,
@@ -631,18 +767,7 @@ function resolveTeacherStatusName(item = {}, statusDict = DEFAULT_TEACHER_STATUS
   const statusValue = getTeacherStatusValue(item);
   const statusText = item.statusName || item.statusText || item.statusCode || '';
   const normalizedDict = Array.isArray(statusDict) && statusDict.length ? statusDict : DEFAULT_TEACHER_STATUS_DICT;
-  const matched = normalizedDict.find(status => (
-    String(status.value) === String(statusValue)
-    || String(status.code) === String(statusValue)
-    || String(status.code) === String(statusText)
-    || String(status.name) === String(statusText)
-  ));
-
-  if (matched && matched.name) {
-    return matched.name;
-  }
-
-  return statusText || '在职';
+  return resolveDictionaryName(normalizedDict, statusValue, statusText, '在职');
 }
 
 function normalizeTeacher(item = {}, statusDict = DEFAULT_TEACHER_STATUS_DICT) {
@@ -816,14 +941,16 @@ function getDefaultDate() {
 }
 
 function getAttendanceByStudentId(studentId, date) {
-  return apiGet('/api/attendances/results', {
-    StudentId: studentId,
-    AttendanceDate: date,
-    PageSize: 100
-  })
-    .then(unwrapData)
-    .then(data => unwrapItems(data)
-      .map(normalizeAttendanceRecord)
+  return Promise.all([
+    fetchDictionaries(['attendance-statuses', 'attendance-directions', 'attendance-methods']),
+    apiGet('/api/attendances/results', {
+      StudentId: studentId,
+      AttendanceDate: date,
+      PageSize: 100
+    }).then(unwrapData)
+  ])
+    .then(([dictionaries, data]) => unwrapItems(data)
+      .map(item => normalizeAttendanceRecord(item, dictionaries))
       .filter(item => String(item.studentId) === String(studentId))
       .filter(item => !date || toDateOnly(item.recordDate || item.recognizeTime) === date)
       .sort((a, b) => new Date(a.recognizeTime.replace(/-/g, '/')) - new Date(b.recognizeTime.replace(/-/g, '/'))))
@@ -899,8 +1026,10 @@ function getClassAttendanceSummary(classId, date) {
 
 function getClassDailyAttendance(classItem, date) {
   const classId = classItem.classId || classItem.id || '';
-  return getStudentsByClassId(classId)
-    .then(students => apiGet('/api/attendances/results', {
+  return Promise.all([
+    getStudentsByClassId(classId),
+    fetchDictionaries(['attendance-statuses', 'attendance-directions', 'attendance-methods']),
+    apiGet('/api/attendances/results', {
       ClassId: classId,
       AttendanceDate: date,
       PageSize: 500
@@ -911,7 +1040,8 @@ function getClassDailyAttendance(classItem, date) {
         console.error('班级考勤记录加载失败', error);
         return [];
       })
-      .then(results => buildClassDailyAttendance(classItem, students, results, date)))
+  ])
+    .then(([students, dictionaries, results]) => buildClassDailyAttendance(classItem, students, results, date, dictionaries))
     .catch(error => {
       console.error('班级逐日考勤加载失败', error);
       return buildClassDailyAttendance(classItem, [], [], date);
@@ -969,9 +1099,11 @@ function submitMakeupAttendance(data) {
 }
 
 function getLeaveList() {
-  return apiGet('/api/leaves/records')
-    .then(unwrapData)
-    .then(data => unwrapItems(data).map(normalizeLeaveRecord))
+  return Promise.all([
+    fetchDictionaries(['leave-status', 'leave-types']),
+    apiGet('/api/leaves/records').then(unwrapData)
+  ])
+    .then(([dictionaries, data]) => unwrapItems(data).map(item => normalizeLeaveRecord(item, dictionaries)))
     .then(records => {
       wx.setStorageSync(LEAVE_RECORD_STORAGE_KEY, records);
       return records.length ? records : clone(mockData.getLeaveList());
@@ -1025,11 +1157,17 @@ module.exports = {
   getAttendanceByStudentId,
   getClassAttendanceSummary,
   getClassDailyAttendance,
+  fetchDictionary,
+  fetchDictionaries,
+  resolveDictionaryName,
   submitMakeupAttendance,
   getLeaveList,
   getLeaveByIndex,
   approveLeaveRecord,
   __test__: {
+    resolveDictionaryName,
+    normalizeAttendanceRecord,
+    normalizeLeaveRecord,
     normalizeTeacher,
     resolveTeacherStatusName,
     buildClassDailyAttendance

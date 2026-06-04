@@ -1,9 +1,17 @@
 const Ext = require('../utils/Ext');
+const dataService = require('../../../utils/dataService.js');
+
+const DEFAULT_LEAVE_TYPES = [
+  { value: 1, name: '事假' },
+  { value: 2, name: '病假' },
+  { value: 3, name: '公假' },
+  { value: 4, name: '其他' }
+];
 
 Page({
   data: {
     children: [],
-    leaveTypes: ['事假', '病假', '公假', '其他'],
+    leaveTypes: DEFAULT_LEAVE_TYPES,
     currentTypeIndex: 0,
     startDate: '',
     startTime: '09:00',
@@ -16,7 +24,18 @@ Page({
 
   onLoad(options) {
     this.initDates();
+    this.loadLeaveTypes();
     this.loadChildren();
+  },
+
+  async loadLeaveTypes() {
+    const dict = await dataService.fetchDictionary('leave-types');
+    const leaveTypes = dict.length ? dict.map(item => ({
+      value: item.value,
+      code: item.code,
+      name: item.name
+    })) : DEFAULT_LEAVE_TYPES;
+    this.setData({ leaveTypes });
   },
 
   initDates() {
@@ -166,13 +185,14 @@ async submitForm() {
     
     // 根据API文档，正确的参数格式
     for (const child of selectedChildren) {
+      const selectedType = this.data.leaveTypes[this.data.currentTypeIndex] || DEFAULT_LEAVE_TYPES[0];
       // 构建开始和结束时间（完整格式）
       const startDateTime = `${this.data.startDate} ${this.data.startTime}:00`;
       const endDateTime = `${this.data.endDate} ${this.data.endTime}:00`;
       
       console.log('[请假申请] 提交参数:', {
         StudentId: child.id,
-        TypeId: this.data.currentTypeIndex + 1,
+        TypeId: selectedType.value || this.data.currentTypeIndex + 1,
         StartTime: startDateTime,
         EndTime: endDateTime,
         Reason: this.data.reason
@@ -180,7 +200,7 @@ async submitForm() {
       
       const res = await Ext.Post(`${Ext.Url}/api/leaves/records`, {
         StudentId: child.id,
-        TypeId: this.data.currentTypeIndex + 1,
+        TypeId: selectedType.value || this.data.currentTypeIndex + 1,
         StartTime: startDateTime,
         EndTime: endDateTime,
         Reason: this.data.reason

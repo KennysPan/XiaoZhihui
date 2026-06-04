@@ -348,7 +348,7 @@ Page({
         id: record.id,
         recognizeTime: this.formatTime(record.recognizeTime),
         typeName: record.typeName,
-        directionText: record.directionText || (record.direction === 1 ? '进校' : '离校'),
+        directionText: record.directionText || '',
         direction: record.direction,
         statusId: record.statusId,
         statusName: record.statusName

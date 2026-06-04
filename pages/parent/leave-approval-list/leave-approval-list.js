@@ -1,4 +1,5 @@
 const Ext = require('../utils/Ext');
+const dataService = require('../../../utils/dataService.js');
 
 Page({
   data: {
@@ -18,9 +19,26 @@ Page({
   async loadLeaveData() {
     this.setData({ loading: true });
     try {
-      const res = await Ext.Get(`${Ext.Url}/api/leaves/records`);
+      const [dictionaries, res] = await Promise.all([
+        dataService.fetchDictionaries(['leave-status', 'leave-types']),
+        Ext.Get(`${Ext.Url}/api/leaves/records`)
+      ]);
       if ((res.code === 0 || res.code === 20000) && res.data) {
-        const records = res.data.items || [];
+        const records = (res.data.items || []).map(item => ({
+          ...item,
+          statusName: dataService.resolveDictionaryName(
+            dictionaries['leave-status'],
+            item.statusId || item.status || item.approvalStatus,
+            item.statusName || item.statusText,
+            item.statusName || '未知'
+          ),
+          leaveTypeName: dataService.resolveDictionaryName(
+            dictionaries['leave-types'],
+            item.leaveTypeId || item.typeId || item.type,
+            item.leaveTypeName || item.typeName || item.type,
+            item.leaveTypeName || item.typeName || ''
+          )
+        }));
         this.setData({ leaveList: records });
       } else {
         this.setData({ leaveList: [] });

@@ -1,4 +1,5 @@
 const Ext = require('../utils/Ext');
+const dataService = require('../../../utils/dataService.js');
 
 Page({
   data: {
@@ -29,12 +30,13 @@ Page({
   async loadData() {
     this.setData({ loading: true });
     try {
+      const dictionaries = await dataService.fetchDictionaries(['student-statuses', 'leave-status', 'leave-types']);
       // 获取家长信息和孩子列表（同一个接口）
       const meRes = await Ext.Get(`${Ext.Url}/api/parents/me`);
       
       if ((meRes.code === 0 || meRes.code === 20000) && meRes.data) {
         const parent = meRes.data;
-        const children = this.normalizeChildren(parent.students || []);
+        const children = this.normalizeChildren(parent.students || [], dictionaries);
         this.setData({
           parentInfo: {
             name: parent.name || parent.phone || '家长',
@@ -48,7 +50,22 @@ Page({
       // 获取待审批的请假记录
       const leaveRes = await Ext.Get(`${Ext.Url}/api/leaves/records`, { statusId: 1 });
       if ((leaveRes.code === 0 || leaveRes.code === 20000) && leaveRes.data) {
-        this.setData({ leaveApprovals: leaveRes.data.items || [] });
+        const leaveApprovals = (leaveRes.data.items || []).map(item => ({
+          ...item,
+          statusName: dataService.resolveDictionaryName(
+            dictionaries['leave-status'],
+            item.statusId || item.status || item.approvalStatus,
+            item.statusName || item.statusText,
+            item.statusName || '未知'
+          ),
+          leaveTypeName: dataService.resolveDictionaryName(
+            dictionaries['leave-types'],
+            item.leaveTypeId || item.typeId || item.type,
+            item.leaveTypeName || item.typeName || item.type,
+            item.leaveTypeName || item.typeName || ''
+          )
+        }));
+        this.setData({ leaveApprovals });
       }
     } catch (err) {
       console.error('加载数据失败', err);
@@ -58,12 +75,18 @@ Page({
     }
   },
 
-  normalizeChildren(students) {
+  normalizeChildren(students, dictionaries = {}) {
     const colors = ['#667eea', '#f093fb', '#4facfe', '#43e97b', '#fa709a', '#fee140'];
     return (students || []).map((student, index) => {
       const name = student.studentName || student.name || '学生';
       const className = student.className || student.class || '未分班';
       const gradeName = student.gradeName || student.grade || '';
+      const statusName = dataService.resolveDictionaryName(
+        dictionaries['student-statuses'],
+        student.statusId || student.status || student.studentStatusId,
+        student.statusName || student.statusText,
+        student.statusName || ''
+      );
       return {
         ...student,
         id: student.studentId || student.id || student.studentNumber || index,
@@ -73,6 +96,7 @@ Page({
         className,
         displayClass: gradeName ? `${gradeName} ${className}` : className,
         relationName: student.relationName || student.relation || '家长',
+        statusName,
         studentNumber: student.studentNumber || student.studentNo || '',
         avatarColor: colors[index % colors.length]
       };

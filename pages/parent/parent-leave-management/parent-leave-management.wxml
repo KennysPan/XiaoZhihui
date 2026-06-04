@@ -35,11 +35,11 @@
       <view class="type-options">
         <view 
           wx:for="{{leaveTypes}}" 
-          wx:key="*this"
+          wx:key="value"
           class="type-btn {{currentTypeIndex === index ? 'active' : ''}}" 
           bindtap="selectType" 
           data-index="{{index}}">
-          {{item}}
+          {{item.name}}
         </view>
       </view>
     </view>

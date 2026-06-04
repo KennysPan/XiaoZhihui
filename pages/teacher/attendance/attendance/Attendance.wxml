@@ -128,7 +128,7 @@
           <block wx:if="{{selectedStudentDetail.records.length > 0}}">
             <view class="record-row" wx:for="{{selectedStudentDetail.records}}" wx:for-item="record" wx:key="id">
               <text class="record-time">{{record.time}}</text>
-              <text class="record-direction">{{record.directionText}}</text>
+              <text class="record-direction" wx:if="{{record.directionText}}">{{record.directionText}}</text>
               <text class="record-device">{{record.deviceName || record.location || ''}}</text>
             </view>
           </block>
