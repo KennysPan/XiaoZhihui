@@ -10,7 +10,8 @@ Page({
       description: '考勤校徽，可佩戴于左胸'
     },
     childrenList: [],
-    selectedChildrenIds: [],
+    selectedChildrenKeys: [],
+    allSelected: false,
     childQuantities: {},
     totalQuantity: 0,
     totalPrice: 0,
@@ -31,20 +32,19 @@ Page({
       const res = await Ext.Get(`${Ext.Url}/api/parents/me`);
       if ((res.code === 0 || res.code === 20000) && res.data) {
         const students = res.data.students || [];
-        const childrenList = students.map(s => ({
-          id: s.studentId || s.id,
-          name: s.studentName || s.name,
-          className: s.className,
-          gradeName: s.gradeName,
-          avatar: ''
-        }));
+        const childrenList = this.normalizeChildren(students);
         
         const childQuantities = {};
         childrenList.forEach(child => {
-          childQuantities[child.id] = 1;
+          childQuantities[child.selectKey] = 1;
         });
         
-        this.setData({ childrenList, childQuantities });
+        this.setData({
+          childrenList,
+          selectedChildrenKeys: [],
+          allSelected: false,
+          childQuantities
+        });
       }
     } catch (err) {
       console.error('加载孩子失败', err);
@@ -54,49 +54,96 @@ Page({
     }
   },
 
+  normalizeChildren(students) {
+    return (students || []).map((student, index) => {
+      const studentId = this.resolveChildStudentId(student);
+      const keyId = studentId !== null && studentId !== undefined && studentId !== ''
+        ? studentId
+        : (student.studentNumber || `child-${index}`);
+      return {
+        ...student,
+        id: keyId,
+        studentId,
+        selectKey: `${keyId}-${index}`,
+        uniqueKey: `${keyId}-${index}`,
+        name: student.studentName || student.name || '学生',
+        className: student.className || student.class || '',
+        gradeName: student.gradeName || student.grade || '',
+        avatar: student.avatar || '',
+        selected: false
+      };
+    });
+  },
+
+  resolveChildStudentId(student) {
+    const keys = ['studentId', 'id', 'childId', 'studentNumber'];
+    for (let i = 0; i < keys.length; i++) {
+      const value = student[keys[i]];
+      if (value !== undefined && value !== null && value !== '') {
+        return value;
+      }
+    }
+    return null;
+  },
+
   toggleSelectChild(e) {
-    const childId = e.currentTarget.dataset.id;
-    let selectedIds = [...this.data.selectedChildrenIds];
-    const index = selectedIds.indexOf(childId);
+    const childKey = e.currentTarget.dataset.key;
+    let selectedKeys = [...this.data.selectedChildrenKeys];
+    const index = selectedKeys.indexOf(childKey);
     
     if (index === -1) {
-      selectedIds.push(childId);
+      selectedKeys.push(childKey);
     } else {
-      selectedIds.splice(index, 1);
+      selectedKeys.splice(index, 1);
     }
     
-    this.setData({ selectedChildrenIds: selectedIds });
+    const childrenList = this.data.childrenList.map(child => ({
+      ...child,
+      selected: selectedKeys.indexOf(child.selectKey) !== -1
+    }));
+
+    this.setData({
+      childrenList,
+      selectedChildrenKeys: selectedKeys,
+      allSelected: childrenList.length > 0 && selectedKeys.length === childrenList.length
+    });
     this.calculateTotal();
   },
 
   toggleSelectAll() {
-    if (this.data.selectedChildrenIds.length === this.data.childrenList.length) {
-      this.setData({ selectedChildrenIds: [] });
-    } else {
-      const allIds = this.data.childrenList.map(child => child.id);
-      this.setData({ selectedChildrenIds: allIds });
-    }
+    const nextSelected = !this.data.allSelected;
+    const childrenList = this.data.childrenList.map(child => ({
+      ...child,
+      selected: nextSelected
+    }));
+    const selectedChildrenKeys = nextSelected
+      ? childrenList.map(child => child.selectKey)
+      : [];
+
+    this.setData({
+      childrenList,
+      selectedChildrenKeys,
+      allSelected: nextSelected && childrenList.length > 0
+    });
     this.calculateTotal();
   },
 
   decreaseQuantity(e) {
-    const childId = e.currentTarget.dataset.id;
-    const currentQty = this.data.childQuantities[childId];
+    const childKey = e.currentTarget.dataset.key;
+    const currentQty = this.data.childQuantities[childKey];
     if (currentQty > 1) {
-      this.setData({
-        [`childQuantities.${childId}`]: currentQty - 1
-      });
+      const childQuantities = { ...this.data.childQuantities, [childKey]: currentQty - 1 };
+      this.setData({ childQuantities });
       this.calculateTotal();
     }
   },
 
   increaseQuantity(e) {
-    const childId = e.currentTarget.dataset.id;
-    const currentQty = this.data.childQuantities[childId];
+    const childKey = e.currentTarget.dataset.key;
+    const currentQty = this.data.childQuantities[childKey];
     if (currentQty < 10) {
-      this.setData({
-        [`childQuantities.${childId}`]: currentQty + 1
-      });
+      const childQuantities = { ...this.data.childQuantities, [childKey]: currentQty + 1 };
+      this.setData({ childQuantities });
       this.calculateTotal();
     } else {
       wx.showToast({ title: '单个孩子最多补办10枚', icon: 'none' });
@@ -105,10 +152,10 @@ Page({
 
   calculateTotal() {
     let totalQuantity = 0;
-    const selectedIds = this.data.selectedChildrenIds;
+    const selectedKeys = this.data.selectedChildrenKeys;
     
-    selectedIds.forEach(id => {
-      totalQuantity += this.data.childQuantities[id] || 0;
+    selectedKeys.forEach(key => {
+      totalQuantity += this.data.childQuantities[key] || 0;
     });
     
     const totalPrice = (totalQuantity * this.data.badgeInfo.price).toFixed(2);
@@ -125,17 +172,17 @@ Page({
     this.setData({ remark: e.detail.value });
   },
 
-  isSelected(childId) {
-    return this.data.selectedChildrenIds.indexOf(childId) !== -1;
+  isSelected(childKey) {
+    return this.data.selectedChildrenKeys.indexOf(childKey) !== -1;
   },
 
   isAllSelected() {
     return this.data.childrenList.length > 0 && 
-           this.data.selectedChildrenIds.length === this.data.childrenList.length;
+           this.data.selectedChildrenKeys.length === this.data.childrenList.length;
   },
 
   async submitOrder() {
-    if (this.data.selectedChildrenIds.length === 0) {
+    if (this.data.selectedChildrenKeys.length === 0) {
       wx.showToast({ title: '请至少选择一个孩子', icon: 'none' });
       return;
     }
@@ -150,11 +197,12 @@ Page({
     
     try {
       const orderItems = [];
-      for (const childId of this.data.selectedChildrenIds) {
+      for (const childKey of this.data.selectedChildrenKeys) {
+        const child = this.data.childrenList.find(c => c.selectKey === childKey) || {};
         orderItems.push({
-          childId: childId,
-          childName: this.data.childrenList.find(c => c.id === childId)?.name,
-          quantity: this.data.childQuantities[childId],
+          childId: child.studentId,
+          childName: child.name,
+          quantity: this.data.childQuantities[childKey],
           price: this.data.badgeInfo.price,
           badgeId: this.data.badgeInfo.id,
           badgeName: this.data.badgeInfo.name

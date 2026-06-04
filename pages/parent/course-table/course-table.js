@@ -3,7 +3,9 @@ const Ext = require('../utils/Ext.js');
 Page({
   data: {
     children: [],
+    selectedChild: null,
     selectedChildId: null,
+    selectedChildIndex: -1,
     weekdays: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
     coursePeriods: [
       { index: 1, timeRange: '08:00-08:40' },
@@ -50,17 +52,15 @@ Page({
       
       if ((res.code === 0 || res.code === 20000) && res.data) {
         const students = res.data.students || [];
-        const children = students.map(s => ({
-          id: s.studentId,
-          name: s.studentName,
-          className: s.className
-        }));
+        const children = this.normalizeChildren(students);
         
         this.setData({ children });
         
         if (children.length > 0) {
           this.setData({
-            selectedChildId: children[0].id,
+            selectedChild: children[0],
+            selectedChildId: children[0].studentId,
+            selectedChildIndex: 0,
             weekOffset: 0,
             monthOffset: 0,
             tableType: 'week'
@@ -68,22 +68,55 @@ Page({
           this.loadCourseTable();
         }
       } else {
-        this.setData({ children: [] });
+        this.setData({ children: [], selectedChild: null, selectedChildId: null, selectedChildIndex: -1 });
         wx.showToast({ title: '获取孩子信息失败', icon: 'none' });
       }
     } catch (err) {
       console.error('[课程表] 加载孩子失败:', err);
-      this.setData({ children: [] });
+      this.setData({ children: [], selectedChild: null, selectedChildId: null, selectedChildIndex: -1 });
       wx.showToast({ title: '加载失败', icon: 'none' });
     } finally {
       this.setData({ loading: false });
     }
   },
 
+  normalizeChildren(students) {
+    return (students || []).map((student, index) => {
+      const studentId = this.resolveChildStudentId(student);
+      const keyId = studentId !== null && studentId !== undefined && studentId !== ''
+        ? studentId
+        : (student.studentNumber || `child-${index}`);
+      return {
+        ...student,
+        id: keyId,
+        studentId,
+        uniqueKey: `${keyId}-${index}`,
+        name: student.studentName || student.name || '学生',
+        className: student.className || student.class || ''
+      };
+    });
+  },
+
+  resolveChildStudentId(student) {
+    const keys = ['studentId', 'id', 'childId', 'studentNumber'];
+    for (let i = 0; i < keys.length; i++) {
+      const value = student[keys[i]];
+      if (value !== undefined && value !== null && value !== '') {
+        return value;
+      }
+    }
+    return null;
+  },
+
   selectChild(e) {
-    const childId = e.currentTarget.dataset.id;
+    const index = Number(e.currentTarget.dataset.index);
+    const child = this.data.children[index];
+    if (!child) return;
+
     this.setData({
-      selectedChildId: childId,
+      selectedChild: child,
+      selectedChildId: child.studentId,
+      selectedChildIndex: index,
       weekOffset: 0,
       monthOffset: 0,
       tableType: 'week'
@@ -93,7 +126,7 @@ Page({
   },
 
   async loadCourseTable() {
-    if (!this.data.selectedChildId) return;
+    if (this.data.selectedChildId === null || this.data.selectedChildId === undefined || this.data.selectedChildId === '') return;
     this.setData({ loading: true });
     
     try {
