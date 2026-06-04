@@ -391,6 +391,117 @@ function getAttendanceStatusType(item = {}) {
   return 'normal';
 }
 
+function getDailyStudentStatus(records = []) {
+  if (!records.length) {
+    return {
+      statusType: 'absent',
+      statusName: '缺勤'
+    };
+  }
+
+  const types = records.map(getAttendanceStatusType);
+  if (types.includes('absent')) {
+    return {
+      statusType: 'absent',
+      statusName: '缺勤'
+    };
+  }
+  if (types.includes('late')) {
+    return {
+      statusType: 'late',
+      statusName: '迟到'
+    };
+  }
+  if (types.includes('earlyLeave')) {
+    return {
+      statusType: 'earlyLeave',
+      statusName: '早退'
+    };
+  }
+  return {
+    statusType: 'normal',
+    statusName: '正常'
+  };
+}
+
+function getRecordDateValue(item = {}) {
+  return toDateOnly(item.recordDate || item.attendanceDate || item.recognizeTime || item.createdTime || '');
+}
+
+function getRecordTimeValue(item = {}) {
+  const value = item.recognizeTime || item.recordTime || item.attendanceTime || '';
+  const date = new Date(String(value).replace(/-/g, '/').replace('T', ' '));
+  if (Number.isNaN(date.getTime())) {
+    return '--:--';
+  }
+  return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+}
+
+function buildClassDailyAttendance(classItem = {}, students = [], results = [], date = getDefaultDate()) {
+  const normalizedStudents = students.map(normalizeStudent);
+  const classId = String(classItem.classId || classItem.id || '');
+  const className = classItem.name || classItem.className || '未命名班级';
+  const records = results
+    .map(normalizeAttendanceRecord)
+    .filter(item => !date || getRecordDateValue(item) === date)
+    .filter(item => !classId || !item.classId || String(item.classId) === classId)
+    .sort((a, b) => {
+      const aTime = new Date(String(a.recognizeTime || '').replace(/-/g, '/')).getTime();
+      const bTime = new Date(String(b.recognizeTime || '').replace(/-/g, '/')).getTime();
+      return (Number.isNaN(aTime) ? 0 : aTime) - (Number.isNaN(bTime) ? 0 : bTime);
+    });
+  const recordsByStudent = {};
+
+  records.forEach(record => {
+    const studentId = String(record.studentId || '');
+    if (!recordsByStudent[studentId]) {
+      recordsByStudent[studentId] = [];
+    }
+    recordsByStudent[studentId].push({
+      ...record,
+      time: getRecordTimeValue(record),
+      directionText: record.directionText || (record.direction === 1 ? '进校' : '离校')
+    });
+  });
+
+  const studentDetails = normalizedStudents.map(student => {
+    const studentRecords = recordsByStudent[String(student.id)] || recordsByStudent[String(student.studentId)] || [];
+    const status = getDailyStudentStatus(studentRecords);
+    return {
+      ...student,
+      ...status,
+      records: studentRecords
+    };
+  });
+  const summary = {
+    normal: 0,
+    late: 0,
+    earlyLeave: 0,
+    absent: 0
+  };
+
+  studentDetails.forEach(student => {
+    summary[student.statusType] += 1;
+  });
+
+  const total = studentDetails.length;
+  const denominator = total || 1;
+
+  return {
+    classId,
+    className,
+    date,
+    total,
+    normal: summary.normal,
+    late: summary.late,
+    earlyLeave: summary.earlyLeave,
+    absent: summary.absent,
+    attendanceRate: Math.round(((summary.normal + summary.late + summary.earlyLeave) / denominator) * 100),
+    students: studentDetails,
+    records
+  };
+}
+
 function getTeacherClassRefs(teacher = wx.getStorageSync('teacher_Info') || {}) {
   return Array.isArray(teacher.teachingClasses) ? teacher.teachingClasses : [];
 }
@@ -786,6 +897,27 @@ function getClassAttendanceSummary(classId, date) {
     });
 }
 
+function getClassDailyAttendance(classItem, date) {
+  const classId = classItem.classId || classItem.id || '';
+  return getStudentsByClassId(classId)
+    .then(students => apiGet('/api/attendances/results', {
+      ClassId: classId,
+      AttendanceDate: date,
+      PageSize: 500
+    })
+      .then(unwrapData)
+      .then(unwrapItems)
+      .catch(error => {
+        console.error('班级考勤记录加载失败', error);
+        return [];
+      })
+      .then(results => buildClassDailyAttendance(classItem, students, results, date)))
+    .catch(error => {
+      console.error('班级逐日考勤加载失败', error);
+      return buildClassDailyAttendance(classItem, [], [], date);
+    });
+}
+
 function getMakeupPeriodTime(periodKey) {
   const map = {
     morning: { time: '08:00', direction: 1 },
@@ -892,12 +1024,14 @@ module.exports = {
   getDefaultDate,
   getAttendanceByStudentId,
   getClassAttendanceSummary,
+  getClassDailyAttendance,
   submitMakeupAttendance,
   getLeaveList,
   getLeaveByIndex,
   approveLeaveRecord,
   __test__: {
     normalizeTeacher,
-    resolveTeacherStatusName
+    resolveTeacherStatusName,
+    buildClassDailyAttendance
   }
 };

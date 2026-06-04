@@ -1,88 +1,143 @@
 <view class="container">
   <view class="custom-back teacher-nav" style="margin-top: {{menuButtonTop}}px; height: {{menuButtonHeight}}px; padding: 0 210rpx 72rpx 24rpx; box-sizing: border-box; position: relative; left: -39rpx; top: 4rpx" bindtap="btnBack">
-  <view class="back-icon" style="position: relative; left: 14rpx; top: 34rpx"></view>
-  <text class="back-text" style="position: relative; left: 5rpx; top: 33rpx">管理考勤</text>
-</view>
+    <view class="back-icon" style="position: relative; left: 14rpx; top: 34rpx"></view>
+    <text class="back-text" style="position: relative; left: 5rpx; top: 33rpx">管理考勤</text>
+  </view>
 
-  <view class="search-box" style="width: 674rpx; display: block; box-sizing: border-box; left: 0rpx; top: -14rpx; position: relative">
+  <view class="search-box">
     <view class="input-row">
       <text class="label">班主任：</text>
       <text class="teacher-name">{{tName}}</text>
     </view>
 
-    <view class="input-row mt-25">
-      <text class="label" style="position: relative; left: 0rpx; top: 40rpx">班级：</text>
-      <picker class="input-field picker-field" mode="selector" range="{{classes}}" value="{{classIndex}}" bindchange="bindClassChange" style="width: 519rpx; display: flex; box-sizing: border-box; position: relative; left: 89rpx; top: -20rpx">
-        <view class="picker-inner">{{classes[classIndex]}}</view>
+    <view class="input-row date-row">
+      <text class="label">日期：</text>
+      <picker class="input-field date-field" mode="date" value="{{currentDate}}" bindchange="bindDateChange">
+        <view class="picker-inner">{{currentDate}}</view>
       </picker>
     </view>
+
     <image class="decor-img-top" src="https://www.kennyspan.xyz:8082/tingzi.png" mode="aspectFit"></image>
   </view>
 
-  <scroll-view scroll-y class="student-list-container" style="height: 1139rpx; display: block; box-sizing: border-box">
-    <view class="grid-container">
-      <view class="student-card" wx:for="{{displayStudents}}" wx:key="id" bindtap="onTapStudent" data-student="{{item}}">
-        <view class="name">{{item.name}}</view>
-        <view class="view-detail">点击查看考勤</view>
-        <image class="decor-img-card" src="https://www.kennyspan.xyz:8082/tingzi.png" mode="aspectFit"></image>
+  <scroll-view scroll-y class="class-list-container">
+    <view class="class-card" wx:for="{{classDailyList}}" wx:key="classId" bindtap="onTapClass" data-class="{{item}}">
+      <view class="class-card-header">
+        <view class="class-title-group">
+          <view class="class-name">{{item.className}}</view>
+          <view class="class-date">{{item.date}} 考勤情况</view>
+        </view>
+        <view class="rate-box">
+          <text class="rate-number">{{item.attendanceRate}}</text>
+          <text class="rate-unit">%</text>
+        </view>
       </view>
+
+      <view class="summary-grid">
+        <view class="summary-item normal">
+          <text class="summary-value">{{item.normal}}</text>
+          <text class="summary-label">正常</text>
+        </view>
+        <view class="summary-item late">
+          <text class="summary-value">{{item.late}}</text>
+          <text class="summary-label">迟到</text>
+        </view>
+        <view class="summary-item early">
+          <text class="summary-value">{{item.earlyLeave}}</text>
+          <text class="summary-label">早退</text>
+        </view>
+        <view class="summary-item absent">
+          <text class="summary-value">{{item.absent}}</text>
+          <text class="summary-label">缺勤</text>
+        </view>
+      </view>
+
+      <view class="class-card-footer">
+        <text>共 {{item.total}} 名学生</text>
+        <text>点击查看详细</text>
+      </view>
+      <image class="decor-img-card" src="https://www.kennyspan.xyz:8082/tingzi.png" mode="aspectFit"></image>
     </view>
+
+    <view class="no-data page-empty" wx:if="{{classDailyList.length === 0 && !loading}}">暂无班级考勤数据</view>
+    <view class="loading-tip page-empty" wx:if="{{loading}}">加载中...</view>
   </scroll-view>
 
-  <view class="modal-mask" wx:if="{{showModal}}" bindtap="closeModal">
-    <view class="modal-content" catchtap="true">
+  <view class="modal-mask" wx:if="{{showClassModal}}" bindtap="closeModal">
+    <view class="modal-content" catchtap="noop">
       <view class="modal-header">
-        <text class="title">考勤详情：{{selectedStudent.name}}</text>
+        <text class="title">{{selectedClassDetail.className}}：{{currentDate}}</text>
         <view class="close-btn" bindtap="closeModal">×</view>
       </view>
 
-      <view class="student-base-info">
-        <view class="info-item">
-          <text class="label-small">学号：</text>
-          <text class="val">{{selectedStudent.studentNumber || selectedStudent.id}}</text>
+      <view class="class-detail-summary">
+        <view class="detail-stat">
+          <text class="detail-number">{{selectedClassDetail.normal}}</text>
+          <text class="detail-label">正常</text>
+        </view>
+        <view class="detail-stat">
+          <text class="detail-number">{{selectedClassDetail.late}}</text>
+          <text class="detail-label">迟到</text>
+        </view>
+        <view class="detail-stat">
+          <text class="detail-number">{{selectedClassDetail.earlyLeave}}</text>
+          <text class="detail-label">早退</text>
+        </view>
+        <view class="detail-stat">
+          <text class="detail-number">{{selectedClassDetail.absent}}</text>
+          <text class="detail-label">缺勤</text>
         </view>
       </view>
-      <view class="divider"></view>
 
-      <view class="attendance-module">
-        <view class="module-header">
-          <text class="module-title">考勤时间线</text>
-          <view class="module-actions">
-            <picker mode="date" value="{{currentDate}}" bindchange="bindDateChange">
-              <view class="date-picker-btn">{{currentDate}} 选择</view>
-            </picker>
-            <button class="makeup-btn" bindtap="goMakeupSign">补签</button>
+      <block wx:if="{{!selectedStudentDetail}}">
+        <scroll-view scroll-y class="student-list-panel">
+          <view class="student-list-card" wx:for="{{selectedClassDetail.students}}" wx:key="id" bindtap="onTapStudent" data-student="{{item}}">
+            <view class="student-list-main">
+              <text class="student-name">{{item.name}}</text>
+              <text class="student-number">{{item.studentNumber || item.id}}</text>
+            </view>
+            <view class="student-list-side">
+              <text class="student-status status-{{item.statusType}}">{{item.statusName}}</text>
+              <text class="student-detail-link">查看考勤</text>
+            </view>
           </view>
+
+          <view class="record-empty" wx:if="{{selectedClassDetail.students.length === 0}}">暂无学生数据</view>
+        </scroll-view>
+      </block>
+
+      <block wx:else>
+        <view class="student-record-header">
+          <view class="student-record-title">
+            <text class="student-name">{{selectedStudentDetail.name}}</text>
+            <text class="student-number">{{selectedStudentDetail.studentNumber || selectedStudentDetail.id}}</text>
+          </view>
+          <button class="back-list-btn" catchtap="backToStudentList">返回学生</button>
         </view>
 
-        <scroll-view scroll-y class="timeline-container">
-          <block wx:if="{{attendanceList.length > 0}}">
-            <view class="timeline-item" wx:for="{{attendanceList}}" wx:key="id">
-              <view class="time-node">
-                <view class="node-dot" style="background: {{item.statusId === 1 ? '#74E2B6' : '#FFB74D'}};"></view>
-                <view class="node-line" wx:if="{{index < attendanceList.length - 1}}"></view>
-              </view>
-              <view class="node-content">
-                <view class="record-header">
-                  <text class="record-time">{{item.time}}</text>
-                  <text class="record-status" style="background: {{item.direction === 1 ? '#74E2B6' : '#4DB6AC'}};">
-                    {{item.directionText || (item.direction === 1 ? '进校' : '离校')}}
-                  </text>
-                </view>
-                <view class="record-detail">
-                  <text class="record-status-name" style="color: {{item.statusId === 1 ? '#4CAF50' : '#F44336'}};">
-                    {{item.statusName || '正常'}}
-                  </text>
-                  <text class="record-loc">{{item.deviceName || ''}}</text>
-                </view>
-              </view>
+        <scroll-view scroll-y class="student-detail-list">
+          <view class="student-detail-card">
+          <view class="student-detail-header">
+            <view class="student-title">
+              <text class="student-name">考勤时间线</text>
+              <text class="student-number">{{currentDate}}</text>
+            </view>
+            <view class="student-status status-{{selectedStudentDetail.statusType}}">{{selectedStudentDetail.statusName}}</view>
+          </view>
+
+          <block wx:if="{{selectedStudentDetail.records.length > 0}}">
+            <view class="record-row" wx:for="{{selectedStudentDetail.records}}" wx:for-item="record" wx:key="id">
+              <text class="record-time">{{record.time}}</text>
+              <text class="record-direction">{{record.directionText}}</text>
+              <text class="record-device">{{record.deviceName || record.location || ''}}</text>
             </view>
           </block>
+          <view class="record-empty" wx:else>当日暂无打卡记录</view>
 
-          <view class="no-data" wx:if="{{attendanceList.length === 0 && !loading}}">当日无考勤记录</view>
-          <view class="loading-tip" wx:if="{{loading}}">加载中...</view>
+          <button class="makeup-btn" catchtap="goMakeupSign" data-student="{{selectedStudentDetail}}">补签</button>
+        </view>
         </scroll-view>
-      </view>
+      </block>
     </view>
   </view>
 </view>

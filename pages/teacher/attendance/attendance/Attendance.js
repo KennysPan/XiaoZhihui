@@ -5,17 +5,13 @@ Page({
     menuButtonTop: 48,
     menuButtonHeight: 32,
     tName: '',
-    classes: [],
-    classIndex: 0,
     classList: [],
-    studentList: [],
-    groupMap: {},
-    displayStudents: [],
-    selectedStudent: null,
+    classDailyList: [],
+    selectedClassDetail: null,
+    selectedStudentDetail: null,
     currentDate: '',
-    attendanceList: [],
     loading: false,
-    showModal: false
+    showClassModal: false
   },
   setMenuButtonLayout() {
     const menu = wx.getMenuButtonBoundingClientRect ? wx.getMenuButtonBoundingClientRect() : null;
@@ -35,18 +31,37 @@ Page({
       tName: options.tName ? decodeURIComponent(options.tName) : teacher.name,
       currentDate: dataService.getDefaultDate()
     });
-    this.loadClassList();
+    this.loadClassDailyList();
   },
 
   onShow() {
-    if (this.data.showModal && this.data.selectedStudent) {
-      this.fetchAttendance();
+    if (!this.data.currentDate) {
+      return;
     }
+    this.loadClassDailyList();
   },
 
   closeModal() {
     this.setData({
-      showModal: false
+      showClassModal: false,
+      selectedStudentDetail: null
+    });
+  },
+
+  onTapClass(e) {
+    const classDetail = e.currentTarget.dataset.class;
+    if (!classDetail || !classDetail.classId) {
+      wx.showToast({
+        title: '班级信息异常',
+        icon: 'none'
+      });
+      return;
+    }
+
+    this.setData({
+      selectedClassDetail: classDetail,
+      selectedStudentDetail: null,
+      showClassModal: true
     });
   },
 
@@ -61,133 +76,69 @@ Page({
     }
 
     this.setData({
-      selectedStudent: student,
-      showModal: true,
-      attendanceList: []
+      selectedStudentDetail: student
     });
-    this.fetchAttendance();
   },
 
-  async loadClassList() {
-    const classList = await dataService.getClasses();
+  backToStudentList() {
     this.setData({
-      classes: classList.map(item => item.name),
-      classList
+      selectedStudentDetail: null
     });
-    this.loadStudentList();
   },
 
-  async loadStudentList() {
-    const students = await dataService.getStudents();
-    const map = {};
-
-    students.forEach(stu => {
-      const className = stu.className || '未分配班级';
-      if (!map[className]) {
-        map[className] = [];
-      }
-      map[className].push(stu);
-    });
-
+  async loadClassDailyList() {
     this.setData({
-      studentList: students,
-      groupMap: map,
-      displayStudents: students
-    }, () => {
-      this.updateDisplayStudents(this.data.classIndex);
+      loading: true
     });
-  },
 
-  updateDisplayStudents(index) {
-    const selectedClassName = this.data.classes[index];
-    const students = this.data.groupMap[selectedClassName] || [];
+    try {
+      const classList = await dataService.getClasses();
+      const classDailyList = await Promise.all(
+        classList.map(item => dataService.getClassDailyAttendance(item, this.data.currentDate))
+      );
 
-    this.setData({
-      classIndex: index,
-      displayStudents: students,
-      selectedStudent: students.length > 0 ? students[0] : null,
-      attendanceList: []
-    }, () => {
-      if (this.data.selectedStudent) {
-        this.fetchAttendance();
-      }
-    });
-  },
-
-  bindClassChange(e) {
-    this.updateDisplayStudents(parseInt(e.detail.value, 10));
+      this.setData({
+        loading: false,
+        classList,
+        classDailyList
+      });
+    } catch (err) {
+      this.setData({
+        loading: false,
+        classDailyList: []
+      });
+      wx.showToast({
+        title: '考勤加载失败',
+        icon: 'none'
+      });
+    }
   },
 
   bindDateChange(e) {
     this.setData({
       currentDate: e.detail.value
     }, () => {
-      this.fetchAttendance();
+      this.loadClassDailyList();
     });
   },
 
-  goMakeupSign() {
-    const student = this.data.selectedStudent;
+  goMakeupSign(e) {
+    const student = e.currentTarget.dataset.student;
     if (!student || !student.id) {
       wx.showToast({
-        title: '请先选择学生',
+        title: '学生信息异常',
         icon: 'none'
       });
       return;
     }
 
-    const className = student.className || this.data.classes[this.data.classIndex] || '';
+    const className = student.className || (this.data.selectedClassDetail && this.data.selectedClassDetail.className) || '';
     wx.navigateTo({
       url: `/pages/teacher/attendance/makeupSign/MakeupSign?studentId=${student.id}&studentName=${encodeURIComponent(student.name || '')}&className=${encodeURIComponent(className)}&date=${this.data.currentDate}`
     });
   },
 
-  onSelectStudent(e) {
-    this.onTapStudent(e);
-  },
-
-  async fetchAttendance() {
-    const student = this.data.selectedStudent;
-    if (!student || !student.id) {
-      this.setData({
-        attendanceList: []
-      });
-      return;
-    }
-
-    this.setData({
-      loading: true
-    });
-
-    try {
-      const records = await dataService.getAttendanceByStudentId(student.id, this.data.currentDate);
-      const attendanceList = records.map(item => ({
-        ...item,
-        time: this.formatTime(item.recognizeTime),
-        directionText: item.directionText || (item.direction === 1 ? '进校' : '离校')
-      }));
-
-      this.setData({
-        loading: false,
-        attendanceList
-      });
-    } catch (err) {
-      this.setData({
-        loading: false,
-        attendanceList: []
-      });
-    }
-  },
-
-  formatTime(dateStr) {
-    if (!dateStr) {
-      return '--:--';
-    }
-    const d = new Date(String(dateStr).replace(/-/g, '/').replace('T', ' '));
-    if (isNaN(d.getTime())) {
-      return '--:--';
-    }
-    return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
+  noop() {
   },
 
   btnBack() {
