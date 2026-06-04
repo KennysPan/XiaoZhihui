@@ -6,6 +6,12 @@ const SESSION_RESPONSE_STORAGE_KEY = 'session_response';
 const TEACHER_CLASSES_STORAGE_KEY = 'teacher_class_list';
 const ANNOUNCEMENT_STORAGE_KEY = 'home_announcement_records_v2';
 const LEAVE_RECORD_STORAGE_KEY = 'teacher_leave_records_v2';
+const TEACHER_STATUS_DICT_STORAGE_KEY = 'teacher_status_dictionary_v1';
+const DEFAULT_TEACHER_STATUS_DICT = [
+  { value: 1, code: 'WORKING', name: '在职' },
+  { value: 2, code: 'LEAVE', name: '请假' },
+  { value: 3, code: 'QUIT', name: '离职' }
+];
 
 function isSuccess(response) {
   return response && SUCCESS_CODES.includes(Number(response.code));
@@ -78,6 +84,29 @@ function unwrapData(response) {
     throw new Error(getApiMessage(response));
   }
   return response.data;
+}
+
+function getStoredTeacherStatusDict() {
+  try {
+    const records = wx.getStorageSync(TEACHER_STATUS_DICT_STORAGE_KEY);
+    return Array.isArray(records) && records.length ? records : DEFAULT_TEACHER_STATUS_DICT;
+  } catch (error) {
+    return DEFAULT_TEACHER_STATUS_DICT;
+  }
+}
+
+function fetchTeacherStatusDict() {
+  return apiGet('/API/commons/dictionaries/teacher-statuses')
+    .then(unwrapData)
+    .then(data => {
+      const records = Array.isArray(data) ? data : DEFAULT_TEACHER_STATUS_DICT;
+      wx.setStorageSync(TEACHER_STATUS_DICT_STORAGE_KEY, records);
+      return records;
+    })
+    .catch(error => {
+      console.error('教师状态字典加载失败', error);
+      return getStoredTeacherStatusDict();
+    });
 }
 
 function buildUrl(path, params = {}) {
@@ -474,18 +503,51 @@ function login(loginKey, password) {
   });
 }
 
-function normalizeTeacher(item = {}) {
+function getTeacherStatusValue(item = {}) {
+  if (item.statusId !== undefined && item.statusId !== null && item.statusId !== '') {
+    return item.statusId;
+  }
+  if (item.status !== undefined && item.status !== null && item.status !== '') {
+    return item.status;
+  }
+  if (item.teacherStatusId !== undefined && item.teacherStatusId !== null && item.teacherStatusId !== '') {
+    return item.teacherStatusId;
+  }
+  return item.teacherStatus || '';
+}
+
+function resolveTeacherStatusName(item = {}, statusDict = DEFAULT_TEACHER_STATUS_DICT) {
+  const statusValue = getTeacherStatusValue(item);
+  const statusText = item.statusName || item.statusText || item.statusCode || '';
+  const normalizedDict = Array.isArray(statusDict) && statusDict.length ? statusDict : DEFAULT_TEACHER_STATUS_DICT;
+  const matched = normalizedDict.find(status => (
+    String(status.value) === String(statusValue)
+    || String(status.code) === String(statusValue)
+    || String(status.code) === String(statusText)
+    || String(status.name) === String(statusText)
+  ));
+
+  if (matched && matched.name) {
+    return matched.name;
+  }
+
+  return statusText || '在职';
+}
+
+function normalizeTeacher(item = {}, statusDict = DEFAULT_TEACHER_STATUS_DICT) {
   const teachingClasses = Array.isArray(item.teachingClasses) ? item.teachingClasses : [];
   const managedClass = teachingClasses
     .map(item => (typeof item === 'object' ? (item.name || item.className) : ''))
     .filter(Boolean)
     .join('、');
+  const statusValue = getTeacherStatusValue(item);
 
   return {
     ...item,
     id: item.id || item.teacherId || item.userId || '',
     name: item.name || item.teacherName || item.userName || '教师',
-    statusName: item.statusName || '',
+    status: statusValue,
+    statusName: resolveTeacherStatusName(item, statusDict),
     email: item.email || '',
     joinDate: item.joinDate || item.enrollmentDate || item.createdTime || '',
     school: item.schoolName || item.school || '',
@@ -502,9 +564,11 @@ function getCurrentTeacher() {
         throw new Error(getApiMessage(response, '教师信息获取失败'));
       }
 
-      const teacher = normalizeTeacher(response.data || {});
-      wx.setStorageSync('teacher_Info', teacher);
-      return teacher;
+      return fetchTeacherStatusDict().then(statusDict => {
+        const teacher = normalizeTeacher(response.data || {}, statusDict);
+        wx.setStorageSync('teacher_Info', teacher);
+        return teacher;
+      });
     });
 }
 
@@ -520,7 +584,10 @@ function getCurrentUser() {
 }
 
 function getTeacherProfile() {
-  return Promise.resolve(wx.getStorageSync('teacher_Info') || mockData.getTeacherProfile());
+  const storedTeacher = wx.getStorageSync('teacher_Info');
+  const teacher = storedTeacher || mockData.getTeacherProfile();
+  const statusDict = storedTeacher ? getStoredTeacherStatusDict() : DEFAULT_TEACHER_STATUS_DICT;
+  return Promise.resolve(normalizeTeacher(teacher, statusDict));
 }
 
 function getTeacherById() {
@@ -828,5 +895,9 @@ module.exports = {
   submitMakeupAttendance,
   getLeaveList,
   getLeaveByIndex,
-  approveLeaveRecord
+  approveLeaveRecord,
+  __test__: {
+    normalizeTeacher,
+    resolveTeacherStatusName
+  }
 };
