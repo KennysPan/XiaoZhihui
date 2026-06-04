@@ -1,5 +1,5 @@
 <view class="page">
-  <view class="custom-back teacher-nav" style="margin-top: {{menuButtonTop}}px; height: {{menuButtonHeight}}px; padding: 0 210rpx 72rpx 24rpx; box-sizing: border-box; position: relative; left: 0rpx; top: -6rpx" bindtap="btnBack">
+  <view class="custom-back teacher-nav" style="margin-top: {{menuButtonTop}}px; height: {{menuButtonHeight}}px; padding: 0 210rpx 72rpx 24rpx; box-sizing: border-box; position: relative; left: -31rpx; top: -6rpx" bindtap="btnBack">
   <view class="back-icon" style="position: relative; left: 14rpx; top: 34rpx"></view>
   <text class="back-text" style="position: relative; left: 5rpx; top: 34rpx">更多公告</text>
 </view>

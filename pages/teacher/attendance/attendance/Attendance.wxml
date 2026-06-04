@@ -1,10 +1,10 @@
 <view class="container">
-  <view class="custom-back teacher-nav" style="margin-top: {{menuButtonTop}}px; height: {{menuButtonHeight}}px; padding: 0 210rpx 72rpx 24rpx; box-sizing: border-box; position: relative; left: 0rpx; top: -6rpx" bindtap="btnBack">
+  <view class="custom-back teacher-nav" style="margin-top: {{menuButtonTop}}px; height: {{menuButtonHeight}}px; padding: 0 210rpx 72rpx 24rpx; box-sizing: border-box; position: relative; left: -39rpx; top: 4rpx" bindtap="btnBack">
   <view class="back-icon" style="position: relative; left: 14rpx; top: 34rpx"></view>
-  <text class="back-text" style="position: relative; left: 5rpx; top: 34rpx">管理考勤</text>
+  <text class="back-text" style="position: relative; left: 5rpx; top: 33rpx">管理考勤</text>
 </view>
 
-  <view class="search-box" style="width: 674rpx; display: block; box-sizing: border-box; left: 0rpx; top: 0rpx">
+  <view class="search-box" style="width: 674rpx; display: block; box-sizing: border-box; left: 0rpx; top: -14rpx; position: relative">
     <view class="input-row">
       <text class="label">班主任：</text>
       <text class="teacher-name">{{tName}}</text>
@@ -19,7 +19,7 @@
     <image class="decor-img-top" src="https://www.kennyspan.xyz:8082/tingzi.png" mode="aspectFit"></image>
   </view>
 
-  <scroll-view scroll-y class="student-list-container">
+  <scroll-view scroll-y class="student-list-container" style="height: 1139rpx; display: block; box-sizing: border-box">
     <view class="grid-container">
       <view class="student-card" wx:for="{{displayStudents}}" wx:key="id" bindtap="onTapStudent" data-student="{{item}}">
         <view class="name">{{item.name}}</view>
