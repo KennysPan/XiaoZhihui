@@ -1,6 +1,9 @@
+const Ext = require('../../utils/Ext.js');
+
 Page({
   data: {
     url: 'https://www.kennyspan.xyz:8082',
+    tokenNotice: '',
     entries: [
       { role: 'teacher', title: '教师端', desc: '班级、考勤、请假与评价管理', tag: '教学管理', path: '/pages/teacher/auth/login/login' },
       { role: 'parent', title: '家长端', desc: '孩子、考勤、请假与校园通知', tag: '家校协同', path: '/pages/parent/login/login' },
@@ -9,6 +12,15 @@ Page({
   },
 
   onLoad(options = {}) {
+    if (options.tokenExpired !== '1' && !Ext.isLogin() && wx.getStorageSync('accessToken')) {
+      Ext.handleTokenExpired();
+      return;
+    }
+
+    if (options.tokenExpired === '1') {
+      this.setData({ tokenNotice: 'token失效重新选择登录' });
+    }
+
     if (options.manual === '1') return;
 
     const savedPath = wx.getStorageSync('selected_role_path');

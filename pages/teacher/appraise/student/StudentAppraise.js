@@ -21,7 +21,11 @@ Page({
     menuButtonTop: 48,
     menuButtonHeight: 32,
     students: [],
-    studentIndex: 0,
+    filteredStudents: [],
+    classOptions: ['全部班级'],
+    selectedClassIndex: 0,
+    showAppraiseForm: false,
+    studentIndex: -1,
     selectedStudent: {},
     evaluateDate: getToday(),
     appraiseTypes: ['日常表现', '课堂表现', '阶段总结', '家校沟通'],
@@ -67,32 +71,103 @@ Page({
     this.setMenuButtonLayout();
     const students = await dataService.getStudents();
     const optionStudentId = options.studentId || options.id;
-    const studentIndex = Math.max(0, students.findIndex(item => String(item.id) === String(optionStudentId)));
+    const optionStudentIndex = students.findIndex(item => String(item.id) === String(optionStudentId));
+    const hasOptionStudent = optionStudentIndex >= 0;
+    const selectedStudent = hasOptionStudent ? students[optionStudentIndex] : {};
+    const classOptions = this.getClassOptions(students);
+    const selectedClassIndex = hasOptionStudent
+      ? Math.max(0, classOptions.findIndex(item => item === selectedStudent.className))
+      : 0;
 
     this.setData({
       students,
-      studentIndex,
-      selectedStudent: students[studentIndex] || {}
+      filteredStudents: this.filterStudentsByClass(students, classOptions[selectedClassIndex]),
+      classOptions,
+      selectedClassIndex,
+      studentIndex: hasOptionStudent ? optionStudentIndex : -1,
+      selectedStudent,
+      showAppraiseForm: hasOptionStudent
     }, () => {
-      this.generateComment();
-      this.loadRecords();
+      if (hasOptionStudent) {
+        this.generateComment();
+        this.loadRecords();
+      }
     });
   },
 
   onShow() {
-    this.loadRecords();
+    if (this.data.showAppraiseForm) {
+      this.loadRecords();
+    }
   },
 
-  onStudentChange(e) {
-    const studentIndex = Number(e.detail.value);
+  getClassOptions(students = []) {
+    const classNames = Array.from(new Set(students.map(item => item.className).filter(Boolean)));
+    return ['全部班级'].concat(classNames);
+  },
+
+  filterStudentsByClass(students = this.data.students, className = this.data.classOptions[this.data.selectedClassIndex]) {
+    if (!className || className === '全部班级') {
+      return students;
+    }
+    return students.filter(item => item.className === className);
+  },
+
+  onClassChange(e) {
+    const selectedClassIndex = Number(e.detail.value);
+    const selectedClassName = this.data.classOptions[selectedClassIndex];
+    this.setData({
+      selectedClassIndex,
+      filteredStudents: this.filterStudentsByClass(this.data.students, selectedClassName)
+    });
+  },
+
+  onStudentCardTap(e) {
+    const studentId = e.currentTarget.dataset.id;
+    const student = this.data.students.find(item => String(item.id) === String(studentId));
+    if (!student) {
+      wx.showToast({
+        title: '学生信息不存在',
+        icon: 'none'
+      });
+      return;
+    }
+    this.selectStudent(student);
+  },
+
+  selectStudent(student) {
+    const studentIndex = this.data.students.findIndex(item => String(item.id) === String(student.id));
+    const selectedClassIndex = Math.max(0, this.data.classOptions.findIndex(item => item === student.className));
     this.setData({
       studentIndex,
-      selectedStudent: this.data.students[studentIndex],
-      editingRecordId: ''
+      selectedClassIndex,
+      filteredStudents: this.filterStudentsByClass(this.data.students, this.data.classOptions[selectedClassIndex]),
+      selectedStudent: student,
+      showAppraiseForm: true,
+      editingRecordId: '',
+      activeRecordId: '',
+      showRecordActionDialog: false
     }, () => {
       this.generateComment();
       this.loadRecords();
     });
+  },
+
+  backToStudentSelect() {
+    this.setData({
+      showAppraiseForm: false,
+      editingRecordId: '',
+      activeRecordId: '',
+      showRecordActionDialog: false
+    });
+  },
+
+  onStudentChange(e) {
+    const studentIndex = Number(e.detail.value);
+    const student = this.data.students[studentIndex];
+    if (student) {
+      this.selectStudent(student);
+    }
   },
 
   onDateChange(e) {
@@ -245,6 +320,14 @@ Page({
   loadRecords() {
     const allRecords = this.getStoredRecords();
     const student = this.data.selectedStudent;
+    if (!student || !student.id) {
+      this.setData({
+        records: [],
+        currentRecordCount: 0,
+        historyScoreDelta: 0
+      });
+      return;
+    }
     const rawRecords = student
       && student.id
       ? allRecords.filter(item => String(item.studentId) === String(student.id))

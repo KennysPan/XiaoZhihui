@@ -306,7 +306,7 @@
 }
 
 .class-name {
-	font-size: 28rpx;
+	font-size: 34rpx;
 	font-weight: 500;
 	color: #333;
 }

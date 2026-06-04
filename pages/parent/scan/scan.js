@@ -7,7 +7,7 @@ Page({
 
   onShow() {
     if (!Ext.isLogin()) {
-      wx.reLaunch({ url: '/pages/parent/login/login' });
+      Ext.handleTokenExpired();
       return;
     }
 

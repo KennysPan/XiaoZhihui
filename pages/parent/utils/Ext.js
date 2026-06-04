@@ -1,6 +1,8 @@
 // utils/Ext.js
 const MockData = require('./MockData');
 
+let tokenExpiredRedirecting = false;
+
 class Ext {
   static Url = 'https://sms.kennyspan.xyz:8665';
   static Role = 4;
@@ -122,11 +124,7 @@ static handleResponse(res, resolve, reject) {
     // 成功响应
     resolve(res.data);
   } else if (res.statusCode === 401) {
-    this.clearToken();
-    wx.showToast({ title: '登录已过期，请重新登录', icon: 'none' });
-    setTimeout(() => {
-      wx.reLaunch({ url: '/pages/parent/login/login' });
-    }, 1500);
+    this.handleTokenExpired();
     reject(new Error('登录过期'));
   } else if (res.statusCode === 404) {
     reject(new Error(`接口不存在: ${res.statusCode}`));
@@ -163,20 +161,50 @@ static handleResponse(res, resolve, reject) {
 
   // 7. 清除 token
   static clearToken() {
-    wx.removeStorageSync('accessToken');
-    wx.removeStorageSync('token_expire');
-    wx.removeStorageSync('userId');
-    wx.removeStorageSync('userRoles');
+    [
+      'auth_token',
+      'accessToken',
+      'tokenType',
+      'token_expire',
+      'session_data',
+      'session_response',
+      'teacher_class_list',
+      'selected_role',
+      'selected_role_path',
+      'user_info',
+      'user_role',
+      'userId',
+      'userRoles',
+      'teacher_Info',
+      'agentInfo'
+    ].forEach(key => wx.removeStorageSync(key));
     
     try {
       const app = getApp();
       if (app && app.globalData) {
         app.globalData.token = null;
         app.globalData.userId = null;
+        app.globalData.agentInfo = null;
+        app.globalData.userInfo = {};
       }
     } catch (e) {}
     
     console.log('[Ext] Token 已清除');
+  }
+
+  static handleTokenExpired() {
+    if (tokenExpiredRedirecting) return;
+    tokenExpiredRedirecting = true;
+    this.clearToken();
+    wx.hideLoading();
+    wx.reLaunch({
+      url: '/pages/roleSelect/roleSelect?manual=1&tokenExpired=1',
+      complete: () => {
+        setTimeout(() => {
+          tokenExpiredRedirecting = false;
+        }, 1000);
+      }
+    });
   }
 
   // 8. 检查是否登录

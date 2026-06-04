@@ -1,3 +1,4 @@
+/* pages/agent/home/home.wxss */
 page {
   height: 100vh;
   overflow: hidden;
@@ -121,22 +122,27 @@ page {
   margin-top: 8rpx;
 }
 
+/* 横向滑动区域 */
+.func-scroll {
+  width: 100%;
+  white-space: nowrap;
+}
+
 .func-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  margin-bottom: 4rpx;
+  display: inline-flex;
+  gap: 20rpx;
+  padding-right: 30rpx;
 }
 
 .func-item {
-  width: calc(25% - 12rpx);
+  width: 156rpx;
   min-height: 156rpx;
   border-radius: 24rpx;
-  padding: 24rpx 8rpx 20rpx;
+  padding: 24rpx 12rpx 20rpx;
   text-align: center;
-  margin-bottom: 20rpx;
   box-sizing: border-box;
   transition: transform 180ms ease, opacity 180ms ease;
+  flex-shrink: 0;
 }
 
 .func-item:active {
@@ -162,6 +168,8 @@ page {
   color: #333;
   display: block;
   line-height: 1.25;
+  white-space: normal;
+  word-break: keep-all;
 }
 
 .order-preview {
@@ -188,6 +196,7 @@ page {
   font-size: 36rpx;
   font-weight: bold;
   color: #ff6b6b;
+  
 }
 
 .preview-divider {

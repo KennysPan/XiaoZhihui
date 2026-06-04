@@ -47,6 +47,113 @@ page {
   padding: 18rpx 30rpx 48rpx;
 }
 
+.selector-scroll {
+  padding-top: 24rpx;
+}
+
+.selector-panel {
+  padding: 30rpx;
+  border-radius: 28rpx;
+  background: #ffffff;
+  box-shadow: 0 10rpx 30rpx rgba(31, 67, 91, 0.08);
+}
+
+.selector-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24rpx;
+}
+
+.selector-title {
+  display: block;
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #1f2d36;
+}
+
+.selector-subtitle {
+  display: block;
+  margin-top: 10rpx;
+  font-size: 25rpx;
+  color: #7a8993;
+}
+
+.class-select-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+}
+
+.class-select-item {
+  min-height: 132rpx;
+  padding: 22rpx;
+  border-radius: 22rpx;
+  background: #f7fafb;
+  border: 2rpx solid transparent;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+}
+
+.class-select-item:active {
+  background: #dcf4ee;
+  border-color: #2a9d8f;
+}
+
+.class-select-avatar {
+  width: 84rpx;
+  height: 84rpx;
+  border-radius: 20rpx;
+  margin-right: 22rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.class-select-initial {
+  color: #ffffff;
+  font-size: 34rpx;
+  font-weight: 700;
+}
+
+.class-select-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.class-select-name {
+  display: block;
+  color: #1f2d36;
+  font-size: 31rpx;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.class-select-meta {
+  display: block;
+  margin-top: 10rpx;
+  color: #7a8993;
+  font-size: 24rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.class-select-arrow {
+  margin-left: 16rpx;
+  color: #91a0aa;
+  font-size: 44rpx;
+  flex-shrink: 0;
+}
+
+.selector-empty {
+  padding: 100rpx 0;
+}
+
 .class-card,
 .form-section,
 .ranking-section,
@@ -117,6 +224,23 @@ page {
   margin-top: 12rpx;
   color: #6b7b86;
   font-size: 26rpx;
+}
+
+.change-class-btn {
+  width: 132rpx;
+  height: 58rpx;
+  line-height: 58rpx;
+  margin: 0 0 0 16rpx;
+  padding: 0;
+  border-radius: 999rpx;
+  background: #e7f6ff;
+  color: #1688c7;
+  font-size: 24rpx;
+  flex-shrink: 0;
+}
+
+.change-class-btn::after {
+  border: 0;
 }
 
 .summary-row {

@@ -1,4 +1,5 @@
 const dataService = require('../../../../utils/dataService.js');
+const Ext = require('../../../../utils/Ext.js');
 
 const ANNOUNCEMENT_STORAGE_KEY = 'home_announcement_records_v2';
 
@@ -39,6 +40,11 @@ Page({
   },
 
   onLoad() {
+    if (!Ext.isLogin()) {
+      Ext.handleTokenExpired();
+      return;
+    }
+
     this.loadHomeData();
   },
 

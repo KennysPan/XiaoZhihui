@@ -6,6 +6,7 @@
   <view class="header">
     <text class="title">智慧校园</text>
     <text class="subtitle">请选择进入的端口</text>
+    <text class="token-notice" wx:if="{{tokenNotice}}">{{tokenNotice}}</text>
   </view>
   <view class="role-card">
     <view class="role-item" wx:for="{{entries}}" wx:key="role" bindtap="chooseRole" data-item="{{item}}">

@@ -15,6 +15,10 @@ function getApiMessage(response, fallback = '请求失败') {
   return response && response.message ? response.message : fallback;
 }
 
+function isTokenExpiredResponse(response) {
+  return response && Number(response.code) === 401;
+}
+
 function clone(data) {
   return JSON.parse(JSON.stringify(data));
 }
@@ -109,6 +113,12 @@ function apiRequest(method, path, options = {}) {
           statusCode: res.statusCode,
           data: sanitizeLogData(res.data)
         });
+
+        if (res.statusCode === 401 || isTokenExpiredResponse(res.data)) {
+          Ext.handleTokenExpired();
+          reject(new Error('token失效重新选择登录'));
+          return;
+        }
 
         if (res.statusCode >= 200 && res.statusCode < 300) {
           resolve(res.data);

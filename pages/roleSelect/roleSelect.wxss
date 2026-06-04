@@ -11,6 +11,7 @@ page { overflow-x: hidden;
 .header { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; margin-bottom: 44rpx; }
 .title { font-size: 104rpx; color: #1E3A8A; font-family: "阿里妈妈东方大楷 Regular", sans-serif; letter-spacing: 8rpx; line-height: 1.08; }
 .subtitle { margin-top: 18rpx; font-size: 28rpx; color: #4b5563; }
+.token-notice { margin-top: 16rpx; padding: 10rpx 22rpx; border-radius: 999rpx; background: rgba(255, 255, 255, 0.82); color: #c2410c; font-size: 26rpx; line-height: 1.4; }
 .role-card { position: relative; z-index: 3; width: 85%; max-width: 600rpx; margin: 0 auto; padding: 34rpx 30rpx; background: #ffffff; border-radius: 56rpx; box-shadow: 0 10rpx 40rpx rgba(0, 0, 0, 0.08); box-sizing: border-box; }
 .role-item { min-height: 126rpx; padding: 26rpx 24rpx; border-radius: 28rpx; background: #f7fbff; display: flex; align-items: center; justify-content: space-between; box-sizing: border-box; }
 .role-item + .role-item { margin-top: 24rpx; }

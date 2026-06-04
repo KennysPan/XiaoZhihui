@@ -1,5 +1,7 @@
 // utils/Ext.js
 const MockData = require('./mockData.js');
+
+let tokenExpiredRedirecting = false;
 class Ext {
   static Role = { role: 0 };
   static Url = 'https://sms.kennyspan.xyz:8665';
@@ -143,13 +145,7 @@ class Ext {
     if (res.statusCode >= 200 && res.statusCode < 300) {
       resolve(res.data);
     } else if (res.statusCode === 401) {
-      this.clearToken();
-      wx.showModal({
-        title: '登录过期',
-        content: '请重新登录',
-        showCancel: false,
-        success: () => wx.reLaunch({ url: '/pages/teacher/auth/login/login' })
-      });
+      this.handleTokenExpired();
       reject(new Error('Unauthorized'));
     } else {
       reject(new Error(res.data.message || `HTTP错误: ${res.statusCode}`));
@@ -248,11 +244,34 @@ class Ext {
       // 2. 重置内存中的静态变量（防止切换账号不刷新页面导致的逻辑错误）
       this.Role.role = 0;
       this.User = { id: '', name: '', gender: '' };
+      try {
+        const app = getApp();
+        if (app && app.globalData) {
+          app.globalData.token = null;
+          app.globalData.agentInfo = null;
+          app.globalData.userInfo = {};
+        }
+      } catch (e) {}
 
       console.log('--- [安全退出] 所有登录凭证已销毁 ---');
     } catch (e) {
       console.error('清除Token异常:', e);
     }
+  }
+
+  static handleTokenExpired() {
+    if (tokenExpiredRedirecting) return;
+    tokenExpiredRedirecting = true;
+    this.clearToken();
+    wx.hideLoading();
+    wx.reLaunch({
+      url: '/pages/roleSelect/roleSelect?manual=1&tokenExpired=1',
+      complete: () => {
+        setTimeout(() => {
+          tokenExpiredRedirecting = false;
+        }, 1000);
+      }
+    });
   }
   // --- 其他工具 ---
 

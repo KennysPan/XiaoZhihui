@@ -6,7 +6,45 @@
   <text class="back-text" style="position: relative; left: 5rpx; top: 34rpx">学生评价</text>
 </view>
 
-  <scroll-view scroll-y class="content-scroll">
+  <scroll-view scroll-y class="content-scroll selector-scroll" wx:if="{{!showAppraiseForm}}">
+    <view class="selector-panel">
+      <view class="selector-head">
+        <view>
+          <text class="selector-title">选择评价学生</text>
+          <text class="selector-subtitle">先按班级筛选，再选择学生进行评价</text>
+        </view>
+      </view>
+
+      <view class="class-filter">
+        <text class="filter-label">班级</text>
+        <picker class="class-picker" mode="selector" range="{{classOptions}}" value="{{selectedClassIndex}}" bindchange="onClassChange">
+          <view class="class-picker-value">
+            <text>{{classOptions[selectedClassIndex]}}</text>
+            <text class="class-picker-arrow">›</text>
+          </view>
+        </picker>
+      </view>
+
+      <view class="student-grid" wx:if="{{filteredStudents.length > 0}}">
+        <view
+          class="student-select-item"
+          wx:for="{{filteredStudents}}"
+          wx:key="id"
+          data-id="{{item.id}}"
+          bindtap="onStudentCardTap"
+        >
+          <image class="student-select-avatar" src="{{item.photo || 'https://www.kennyspan.xyz:8082/icon.png'}}" mode="aspectFill"></image>
+          <text class="student-select-name">{{item.name}}</text>
+          <text class="student-select-class">{{item.className || '未分班'}}</text>
+          <text class="student-select-number">学号 {{item.studentNumber || item.id}}</text>
+        </view>
+      </view>
+
+      <view class="empty-tip selector-empty" wx:else>当前班级暂无学生</view>
+    </view>
+  </scroll-view>
+
+  <scroll-view scroll-y class="content-scroll" wx:else>
     <view class="student-card">
       <view class="student-main">
         <image class="avatar" src="{{selectedStudent.photo || 'https://www.kennyspan.xyz:8082/icon.png'}}" mode="aspectFill"></image>
@@ -19,6 +57,7 @@
           </picker>
           <text class="student-meta">{{selectedStudent.className}} · 学号 {{selectedStudent.studentNumber || selectedStudent.id}}</text>
         </view>
+        <button class="change-student-btn" bindtap="backToStudentSelect">选学生</button>
       </view>
 
       <view class="summary-row">

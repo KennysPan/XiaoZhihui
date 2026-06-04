@@ -1,7 +1,10 @@
+/* 页面容器，顶部动态适配状态栏高度 */
 .container {
   width: 100%;
   min-height: 100vh;
   background: linear-gradient(to bottom, #87CEFA, #ffffff);
+  /* 顶部内边距：CSS 变量（由 JS 动态设置状态栏高度） + 额外 20rpx */
+  padding-top: calc(var(--status-bar-height, 0px) + 1rpx);
   padding-bottom: calc(32rpx + env(safe-area-inset-bottom));
   box-sizing: border-box;
 }
@@ -13,24 +16,26 @@
   overflow: visible;
 }
 
-/* 轮播图样式 */
+/* 轮播图样式 - 防止图片变形 */
 .top-swiper {
   width: 100%;
-  height: 400rpx;
+  height: 56.25vw;   /* 16:9 比例：高度 = 宽度 × 9/16 */
   border-radius: 0 0 60rpx 60rpx;
   overflow: hidden;
   box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+  background-color: #f0f4f8;
 }
 
 .swiper-image {
   width: 100%;
   height: 100%;
+  /* aspectFill 保证图片填满容器且不变形，配合背景色使用 */
 }
 
-/* 弧形遮罩 - 实现底部凹陷弧线效果 */
+/* 弧形遮罩 - 优化贴合圆角 */
 .arc-mask {
   position: absolute;
-  bottom: -2rpx;
+  bottom: -4rpx;
   left: 0;
   width: 100%;
   height: 40rpx;
@@ -162,6 +167,7 @@
 .func-item.disabled .func-text {
   color: #b0bec5;
 }
+
 /* ========= 底部抽屉样式 ========= */
 .drawer-mask {
   position: fixed;

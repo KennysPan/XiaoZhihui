@@ -32,6 +32,11 @@ Page({
   },
 
   onShow() {
+    if (!Ext.isLogin()) {
+      Ext.handleTokenExpired();
+      return;
+    }
+
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 2 });
     }

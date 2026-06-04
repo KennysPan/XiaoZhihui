@@ -1,3 +1,5 @@
+const Ext = require('../../../../utils/Ext.js');
+
 Page({
   data: {
     scanning: false,
@@ -5,6 +7,11 @@ Page({
   },
 
   onShow() {
+    if (!Ext.isLogin()) {
+      Ext.handleTokenExpired();
+      return;
+    }
+
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 1 });
     }

@@ -6,7 +6,39 @@
   <text class="back-text" style="position: relative; left: 5rpx; top: 34rpx">班级评比</text>
 </view>
 
-  <scroll-view scroll-y class="content-scroll">
+  <scroll-view scroll-y class="content-scroll selector-scroll" wx:if="{{!showAppraiseForm}}">
+    <view class="selector-panel">
+      <view class="selector-head">
+        <view>
+          <text class="selector-title">选择评价班级</text>
+          <text class="selector-subtitle">先选择班级，再进入班级评价</text>
+        </view>
+      </view>
+
+      <view class="class-select-list" wx:if="{{classes.length > 0}}">
+        <view
+          class="class-select-item"
+          wx:for="{{classes}}"
+          wx:key="classId"
+          data-id="{{item.classId}}"
+          bindtap="onClassCardTap"
+        >
+          <view class="class-select-avatar" style="background: {{item.bgColor || '#74E2B6'}};">
+            <text class="class-select-initial">{{item.name ? item.name[0] : '班'}}</text>
+          </view>
+          <view class="class-select-info">
+            <text class="class-select-name">{{item.name || '未命名班级'}}</text>
+            <text class="class-select-meta">{{item.courseName || '课程'}} · {{item.studentCount || 0}}人 · {{item.roomNo || '未设置'}}教室</text>
+          </view>
+          <text class="class-select-arrow">›</text>
+        </view>
+      </view>
+
+      <view class="empty-tip selector-empty" wx:else>暂无可评价班级</view>
+    </view>
+  </scroll-view>
+
+  <scroll-view scroll-y class="content-scroll" wx:else>
     <view class="class-card">
       <view class="class-main">
         <view class="class-avatar" style="background: {{selectedClass.bgColor || '#74E2B6'}};">
@@ -21,6 +53,7 @@
           </picker>
           <text class="class-meta">{{selectedClass.courseName}} · {{studentCount}}人 · {{selectedClass.roomNo}}教室</text>
         </view>
+        <button class="change-class-btn" bindtap="backToClassSelect">选班级</button>
       </view>
 
       <view class="summary-row">

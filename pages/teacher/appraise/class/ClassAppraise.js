@@ -22,7 +22,8 @@ Page({
     menuButtonHeight: 32,
     classes: [],
     classNames: [],
-    classIndex: 0,
+    showAppraiseForm: false,
+    classIndex: -1,
     selectedClass: {},
     studentCount: 0,
     evaluateDate: getToday(),
@@ -70,34 +71,73 @@ Page({
     this.setMenuButtonLayout();
     const classes = await dataService.getClasses();
     const optionClassId = options.classId || options.id;
-    const classIndex = Math.max(0, classes.findIndex(item => String(item.classId) === String(optionClassId)));
+    const optionClassIndex = classes.findIndex(item => String(item.classId) === String(optionClassId));
+    const hasOptionClass = optionClassIndex >= 0;
 
     this.setData({
       classes,
       classNames: classes.map(item => item.name),
-      classIndex,
-      selectedClass: classes[classIndex] || {}
+      classIndex: hasOptionClass ? optionClassIndex : -1,
+      selectedClass: hasOptionClass ? classes[optionClassIndex] : {},
+      showAppraiseForm: hasOptionClass
     }, () => {
-      this.refreshClassInfo();
-      this.refreshScore();
-      this.loadRecords();
+      if (hasOptionClass) {
+        this.refreshClassInfo();
+        this.refreshScore();
+        this.loadRecords();
+      }
     });
   },
 
   onShow() {
-    this.loadRecords();
+    if (this.data.showAppraiseForm) {
+      this.loadRecords();
+    }
   },
 
   onClassChange(e) {
     const classIndex = Number(e.detail.value);
+    const selectedClass = this.data.classes[classIndex];
+    if (selectedClass) {
+      this.selectClass(selectedClass);
+    }
+  },
+
+  onClassCardTap(e) {
+    const classId = e.currentTarget.dataset.id;
+    const selectedClass = this.data.classes.find(item => String(item.classId) === String(classId));
+    if (!selectedClass) {
+      wx.showToast({
+        title: '班级信息不存在',
+        icon: 'none'
+      });
+      return;
+    }
+    this.selectClass(selectedClass);
+  },
+
+  selectClass(selectedClass) {
+    const classIndex = this.data.classes.findIndex(item => String(item.classId) === String(selectedClass.classId));
     this.setData({
       classIndex,
-      selectedClass: this.data.classes[classIndex],
-      editingRecordId: ''
+      selectedClass,
+      showAppraiseForm: true,
+      editingRecordId: '',
+      activeRecordId: '',
+      showRecordActionDialog: false
     }, () => {
       this.refreshClassInfo();
       this.resetForm({ keepClass: true });
       this.loadRecords();
+    });
+  },
+
+  backToClassSelect() {
+    this.setData({
+      showAppraiseForm: false,
+      editingRecordId: '',
+      activeRecordId: '',
+      showRecordActionDialog: false
     });
   },
 
@@ -178,6 +218,12 @@ Page({
 
   async refreshClassInfo() {
     const selectedClass = this.data.selectedClass || {};
+    if (!selectedClass.classId) {
+      this.setData({
+        studentCount: 0
+      });
+      return;
+    }
     const students = await dataService.getStudentsByClassId(selectedClass.classId);
 
     this.setData({

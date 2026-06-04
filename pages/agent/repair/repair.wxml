@@ -1,0 +1,122 @@
+<!-- pages/agent/repair/repair.wxml -->
+<view class="container repair-page">
+  <!-- 添加返回按钮 -->
+  <view class="custom-back agent-exit-btn" bindtap="goBack">
+    <view class="back-icon"></view>
+    <text class="back-text">返回</text>
+  </view>
+
+  <view class="agent-page-title">
+    维修管理
+  </view>
+
+  <!-- 加载状态 -->
+  <view wx:if="{{loading}}" class="state-tip">
+    <text>加载中...</text>
+  </view>
+
+  <!-- 空状态 -->
+  <view wx:elif="{{list.length === 0}}" class="state-tip empty">
+    <text>暂无维修申报单</text>
+  </view>
+
+  <!-- 列表 -->
+  <scroll-view wx:else class="repair-scroll" scroll-y="true">
+    <view
+      class="repair-card card-common"
+      wx:for="{{list}}"
+      wx:key="id"
+      bindtap="openDetail"
+      data-item="{{item}}">
+      
+      <view class="row">
+        <text class="label">学校</text>
+        <text class="value">{{item.schoolName}}</text>
+      </view>
+
+      <view class="row">
+        <text class="label">申报人</text>
+        <text class="value">{{item.reportUser}}</text>
+      </view>
+
+      <view class="row">
+        <text class="label">状态</text>
+        <text class="status status-{{item.statusCode || 0}}">
+          {{item.status}}
+        </text>
+      </view>
+
+    </view>
+  </scroll-view>
+</view>
+
+<!-- 底部弹窗 -->
+<view wx:if="{{showDetail}}" class="mask" bindtap="closeDetail">
+  <view class="detail-panel" catchtap="">
+    <view class="panel-header">
+      <view class="panel-title">维修详情</view>
+      <view class="panel-close" bindtap="closeDetail">✕</view>
+    </view>
+
+    <scroll-view class="detail-content" scroll-y="true">
+      <view class="detail-item">
+        <text class="detail-label">学校</text>
+        <text class="detail-value">{{currentItem.schoolName}}</text>
+      </view>
+
+      <view class="detail-item">
+        <text class="detail-label">申报人</text>
+        <text class="detail-value">{{currentItem.reportUser}}</text>
+      </view>
+
+      <view class="detail-item">
+        <text class="detail-label">联系电话</text>
+        <text class="detail-value">{{currentItem.phone || '暂无'}}</text>
+      </view>
+
+      <view class="detail-item">
+        <text class="detail-label">报修内容</text>
+        <text class="detail-value">{{currentItem.content || '无详细描述'}}</text>
+      </view>
+
+      <view class="detail-item">
+        <text class="detail-label">报修时间</text>
+        <text class="detail-value">{{currentItem.createTime || '未知'}}</text>
+      </view>
+
+      <view class="detail-item">
+        <text class="detail-label">当前状态</text>
+        <text class="detail-value status-badge status-{{currentItem.statusCode || 0}}">
+          {{currentItem.status}}
+        </text>
+      </view>
+
+      <view class="status-group">
+        <button 
+          class="status-btn status-btn-0" 
+          data-status="未维修" 
+          data-status-code="0"
+          bindtap="changeStatus"
+          disabled="{{currentItem.status === '未维修'}}">
+          未维修
+        </button>
+        <button 
+          class="status-btn status-btn-1" 
+          data-status="维修中" 
+          data-status-code="1"
+          bindtap="changeStatus"
+          disabled="{{currentItem.status === '维修中'}}">
+          维修中
+        </button>
+        <button 
+          class="status-btn status-btn-2" 
+          data-status="已维修" 
+          data-status-code="2"
+          bindtap="changeStatus"
+          disabled="{{currentItem.status === '已维修'}}">
+          已维修
+        </button>
+      </view>
+    </scroll-view>
+  </view>
+</view>
