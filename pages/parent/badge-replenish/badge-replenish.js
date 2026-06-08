@@ -1,4 +1,8 @@
 const Ext = require('../utils/Ext');
+const {
+  getLocalChildren,
+  mergeStudentsByIdentity
+} = require('../add-child/addChildData');
 
 Page({
   data: {
@@ -10,8 +14,7 @@ Page({
       description: '考勤校徽，可佩戴于左胸'
     },
     childrenList: [],
-    selectedChildrenKeys: [],
-    allSelected: false,
+    selectedChildrenIds: [],
     childQuantities: {},
     totalQuantity: 0,
     totalPrice: 0,
@@ -28,122 +31,103 @@ Page({
 
   async loadChildren() {
     this.setData({ loading: true });
+    let localChildren = [];
+    try {
+      localChildren = getLocalChildren(wx);
+    } catch (err) {
+      console.error('读取本地孩子失败', err);
+    }
+
     try {
       const res = await Ext.Get(`${Ext.Url}/api/parents/me`);
       if ((res.code === 0 || res.code === 20000) && res.data) {
-        const students = res.data.students || [];
-        const childrenList = this.normalizeChildren(students);
+        const students = mergeStudentsByIdentity(res.data.students || [], localChildren);
+        const childrenList = students.map(s => ({
+          id: s.studentId || s.id,
+          name: s.studentName || s.name,
+          className: s.className,
+          gradeName: s.gradeName,
+          avatar: ''
+        }));
         
         const childQuantities = {};
         childrenList.forEach(child => {
-          childQuantities[child.selectKey] = 1;
+          childQuantities[child.id] = 1;
         });
         
-        this.setData({
-          childrenList,
-          selectedChildrenKeys: [],
-          allSelected: false,
-          childQuantities
-        });
+        this.setData({ childrenList, childQuantities });
+      } else {
+        this.applyChildren(localChildren);
       }
     } catch (err) {
       console.error('加载孩子失败', err);
-      wx.showToast({ title: '加载失败', icon: 'none' });
+      this.applyChildren(localChildren);
+      if (localChildren.length === 0) {
+        wx.showToast({ title: '加载失败', icon: 'none' });
+      }
     } finally {
       this.setData({ loading: false });
     }
   },
 
-  normalizeChildren(students) {
-    return (students || []).map((student, index) => {
-      const studentId = this.resolveChildStudentId(student);
-      const keyId = studentId !== null && studentId !== undefined && studentId !== ''
-        ? studentId
-        : (student.studentNumber || `child-${index}`);
-      return {
-        ...student,
-        id: keyId,
-        studentId,
-        selectKey: `${keyId}-${index}`,
-        uniqueKey: `${keyId}-${index}`,
-        name: student.studentName || student.name || '学生',
-        className: student.className || student.class || '',
-        gradeName: student.gradeName || student.grade || '',
-        avatar: student.avatar || '',
-        selected: false
-      };
+  applyChildren(students) {
+    const childrenList = (students || []).map(s => ({
+      id: s.studentId || s.id,
+      name: s.studentName || s.name,
+      className: s.className,
+      gradeName: s.gradeName,
+      avatar: ''
+    }));
+    const childQuantities = {};
+    childrenList.forEach(child => {
+      childQuantities[child.id] = 1;
     });
-  },
-
-  resolveChildStudentId(student) {
-    const keys = ['studentId', 'id', 'childId', 'studentNumber'];
-    for (let i = 0; i < keys.length; i++) {
-      const value = student[keys[i]];
-      if (value !== undefined && value !== null && value !== '') {
-        return value;
-      }
-    }
-    return null;
+    this.setData({ childrenList, childQuantities });
   },
 
   toggleSelectChild(e) {
-    const childKey = e.currentTarget.dataset.key;
-    let selectedKeys = [...this.data.selectedChildrenKeys];
-    const index = selectedKeys.indexOf(childKey);
+    const childId = e.currentTarget.dataset.id;
+    let selectedIds = [...this.data.selectedChildrenIds];
+    const index = selectedIds.indexOf(childId);
     
     if (index === -1) {
-      selectedKeys.push(childKey);
+      selectedIds.push(childId);
     } else {
-      selectedKeys.splice(index, 1);
+      selectedIds.splice(index, 1);
     }
     
-    const childrenList = this.data.childrenList.map(child => ({
-      ...child,
-      selected: selectedKeys.indexOf(child.selectKey) !== -1
-    }));
-
-    this.setData({
-      childrenList,
-      selectedChildrenKeys: selectedKeys,
-      allSelected: childrenList.length > 0 && selectedKeys.length === childrenList.length
-    });
+    this.setData({ selectedChildrenIds: selectedIds });
     this.calculateTotal();
   },
 
   toggleSelectAll() {
-    const nextSelected = !this.data.allSelected;
-    const childrenList = this.data.childrenList.map(child => ({
-      ...child,
-      selected: nextSelected
-    }));
-    const selectedChildrenKeys = nextSelected
-      ? childrenList.map(child => child.selectKey)
-      : [];
-
-    this.setData({
-      childrenList,
-      selectedChildrenKeys,
-      allSelected: nextSelected && childrenList.length > 0
-    });
+    if (this.data.selectedChildrenIds.length === this.data.childrenList.length) {
+      this.setData({ selectedChildrenIds: [] });
+    } else {
+      const allIds = this.data.childrenList.map(child => child.id);
+      this.setData({ selectedChildrenIds: allIds });
+    }
     this.calculateTotal();
   },
 
   decreaseQuantity(e) {
-    const childKey = e.currentTarget.dataset.key;
-    const currentQty = this.data.childQuantities[childKey];
+    const childId = e.currentTarget.dataset.id;
+    const currentQty = this.data.childQuantities[childId];
     if (currentQty > 1) {
-      const childQuantities = { ...this.data.childQuantities, [childKey]: currentQty - 1 };
-      this.setData({ childQuantities });
+      this.setData({
+        [`childQuantities.${childId}`]: currentQty - 1
+      });
       this.calculateTotal();
     }
   },
 
   increaseQuantity(e) {
-    const childKey = e.currentTarget.dataset.key;
-    const currentQty = this.data.childQuantities[childKey];
+    const childId = e.currentTarget.dataset.id;
+    const currentQty = this.data.childQuantities[childId];
     if (currentQty < 10) {
-      const childQuantities = { ...this.data.childQuantities, [childKey]: currentQty + 1 };
-      this.setData({ childQuantities });
+      this.setData({
+        [`childQuantities.${childId}`]: currentQty + 1
+      });
       this.calculateTotal();
     } else {
       wx.showToast({ title: '单个孩子最多补办10枚', icon: 'none' });
@@ -152,10 +136,10 @@ Page({
 
   calculateTotal() {
     let totalQuantity = 0;
-    const selectedKeys = this.data.selectedChildrenKeys;
+    const selectedIds = this.data.selectedChildrenIds;
     
-    selectedKeys.forEach(key => {
-      totalQuantity += this.data.childQuantities[key] || 0;
+    selectedIds.forEach(id => {
+      totalQuantity += this.data.childQuantities[id] || 0;
     });
     
     const totalPrice = (totalQuantity * this.data.badgeInfo.price).toFixed(2);
@@ -172,17 +156,17 @@ Page({
     this.setData({ remark: e.detail.value });
   },
 
-  isSelected(childKey) {
-    return this.data.selectedChildrenKeys.indexOf(childKey) !== -1;
+  isSelected(childId) {
+    return this.data.selectedChildrenIds.indexOf(childId) !== -1;
   },
 
   isAllSelected() {
     return this.data.childrenList.length > 0 && 
-           this.data.selectedChildrenKeys.length === this.data.childrenList.length;
+           this.data.selectedChildrenIds.length === this.data.childrenList.length;
   },
 
   async submitOrder() {
-    if (this.data.selectedChildrenKeys.length === 0) {
+    if (this.data.selectedChildrenIds.length === 0) {
       wx.showToast({ title: '请至少选择一个孩子', icon: 'none' });
       return;
     }
@@ -197,12 +181,11 @@ Page({
     
     try {
       const orderItems = [];
-      for (const childKey of this.data.selectedChildrenKeys) {
-        const child = this.data.childrenList.find(c => c.selectKey === childKey) || {};
+      for (const childId of this.data.selectedChildrenIds) {
         orderItems.push({
-          childId: child.studentId,
-          childName: child.name,
-          quantity: this.data.childQuantities[childKey],
+          childId: childId,
+          childName: this.data.childrenList.find(c => c.id === childId)?.name,
+          quantity: this.data.childQuantities[childId],
           price: this.data.badgeInfo.price,
           badgeId: this.data.badgeInfo.id,
           badgeName: this.data.badgeInfo.name

@@ -1,5 +1,9 @@
 const Ext = require('../utils/Ext');
-const dataService = require('../../../utils/dataService.js');
+const {
+  filterLeaveRecords,
+  getPendingLeaveRecords,
+  unwrapLeaveItems
+} = require('./leaveApprovalData');
 
 Page({
   data: {
@@ -19,26 +23,9 @@ Page({
   async loadLeaveData() {
     this.setData({ loading: true });
     try {
-      const [dictionaries, res] = await Promise.all([
-        dataService.fetchDictionaries(['leave-status', 'leave-types']),
-        Ext.Get(`${Ext.Url}/api/leaves/records`)
-      ]);
+      const res = await Ext.Get(`${Ext.Url}/api/leaves/records`);
       if ((res.code === 0 || res.code === 20000) && res.data) {
-        const records = (res.data.items || []).map(item => ({
-          ...item,
-          statusName: dataService.resolveDictionaryName(
-            dictionaries['leave-status'],
-            item.statusId || item.status || item.approvalStatus,
-            item.statusName || item.statusText,
-            item.statusName || '未知'
-          ),
-          leaveTypeName: dataService.resolveDictionaryName(
-            dictionaries['leave-types'],
-            item.leaveTypeId || item.typeId || item.type,
-            item.leaveTypeName || item.typeName || item.type,
-            item.leaveTypeName || item.typeName || ''
-          )
-        }));
+        const records = unwrapLeaveItems(res.data);
         this.setData({ leaveList: records });
       } else {
         this.setData({ leaveList: [] });
@@ -61,18 +48,8 @@ Page({
 
   filterList() {
     const { leaveList, currentTab } = this.data;
-    let filtered = [];
-    
-    // 状态映射: 1-待审批, 2-已通过, 3-未通过
-    if (currentTab === 0) {
-      filtered = leaveList.filter(item => item.statusId === 1);
-    } else if (currentTab === 1) {
-      filtered = leaveList.filter(item => item.statusId === 2);
-    } else {
-      filtered = leaveList.filter(item => item.statusId === 3);
-    }
-    
-    const pendingCount = leaveList.filter(item => item.statusId === 1).length;
+    const filtered = filterLeaveRecords(leaveList, currentTab);
+    const pendingCount = getPendingLeaveRecords(leaveList).length;
     this.setData({ filteredList: filtered, pendingCount });
   },
 

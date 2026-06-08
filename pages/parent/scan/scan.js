@@ -7,7 +7,7 @@ Page({
 
   onShow() {
     if (!Ext.isLogin()) {
-      Ext.handleTokenExpired();
+      wx.reLaunch({ url: '/pages/roleSelect/roleSelect?manual=1' });
       return;
     }
 

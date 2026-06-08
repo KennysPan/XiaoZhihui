@@ -259,10 +259,57 @@ class Ext {
     }
   }
 
+  static clearAllSavedData() {
+    try {
+      wx.clearStorageSync();
+    } catch (e) {
+      console.error('清空本地缓存异常:', e);
+      this.clearToken();
+    }
+
+    this.Role.role = 0;
+    this.User = { id: '', name: '', gender: '' };
+    this.Studnet = {};
+    this.sourceId = {};
+    try {
+      const app = getApp();
+      if (app && app.globalData) {
+        app.globalData.token = null;
+        app.globalData.agentInfo = null;
+        app.globalData.userInfo = {};
+        app.globalData.selectedRole = 'teacher';
+      }
+    } catch (e) {}
+  }
+
+  static getStoredAccessToken() {
+    const storedToken = wx.getStorageSync('auth_token') || {};
+    const token = wx.getStorageSync('accessToken') || storedToken.accessToken || storedToken.token || '';
+    return String(token || '').trim();
+  }
+
+  static isStoredTokenExpired(now = Date.now()) {
+    const token = this.getStoredAccessToken();
+    if (!token) return false;
+
+    const expireTime = Number(wx.getStorageSync('token_expire'));
+    if (!expireTime) return true;
+
+    return now >= expireTime;
+  }
+
+  static checkTokenOnAppEntry() {
+    if (!this.isStoredTokenExpired()) {
+      return false;
+    }
+    this.handleTokenExpired();
+    return true;
+  }
+
   static handleTokenExpired() {
     if (tokenExpiredRedirecting) return;
     tokenExpiredRedirecting = true;
-    this.clearToken();
+    this.clearAllSavedData();
     wx.hideLoading();
     wx.reLaunch({
       url: '/pages/roleSelect/roleSelect?manual=1&tokenExpired=1',

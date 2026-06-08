@@ -1,11 +1,13 @@
 const Ext = require('../utils/Ext');
+const {
+  getLocalChildren,
+  mergeStudentsByIdentity
+} = require('../add-child/addChildData');
 
 Page({
   data: {
     children: [],
-    selectedChild: null,
     selectedChildId: null,
-    selectedChildIndex: -1,
     currentEvaluation: null,
     evaluationRecords: [],
     loading: false,
@@ -19,81 +21,68 @@ Page({
 
   async loadChildren() {
     this.setData({ loading: true });
+    let localChildren = [];
+    try {
+      localChildren = getLocalChildren(wx);
+    } catch (err) {
+      console.error('[德育评价] 读取本地孩子失败:', err);
+    }
+
     try {
       const res = await Ext.Get(`${Ext.Url}/api/parents/me`);
       console.log('[德育评价] 家长信息:', res);
       
       if ((res.code === 0 || res.code === 20000) && res.data) {
-        const students = res.data.students || [];
-        const children = this.normalizeChildren(students);
+        const students = mergeStudentsByIdentity(res.data.students || [], localChildren);
+        const children = students.map(s => ({
+          id: s.studentId || s.id,
+          name: s.studentName || s.name,
+          className: s.className
+        }));
         
         this.setData({ children });
         
         if (children.length > 0) {
-          this.setData({
-            selectedChild: children[0],
-            selectedChildId: children[0].studentId,
-            selectedChildIndex: 0
-          });
+          this.setData({ selectedChildId: children[0].id });
           this.loadEvaluationData();
         }
       } else {
-        this.setData({ children: [], selectedChild: null, selectedChildId: null, selectedChildIndex: -1 });
+        this.applyChildren(localChildren);
       }
     } catch (err) {
       console.error('[德育评价] 加载孩子失败:', err);
-      this.setData({ children: [], selectedChild: null, selectedChildId: null, selectedChildIndex: -1 });
-      wx.showToast({ title: '加载失败', icon: 'none' });
+      this.applyChildren(localChildren);
+      if (localChildren.length === 0) {
+        wx.showToast({ title: '加载失败', icon: 'none' });
+      }
     } finally {
       this.setData({ loading: false });
     }
   },
 
-  normalizeChildren(students) {
-    return (students || []).map((student, index) => {
-      const studentId = this.resolveChildStudentId(student);
-      const keyId = studentId !== null && studentId !== undefined && studentId !== ''
-        ? studentId
-        : (student.studentNumber || `child-${index}`);
-      return {
-        ...student,
-        id: keyId,
-        studentId,
-        uniqueKey: `${keyId}-${index}`,
-        name: student.studentName || student.name || '学生',
-        className: student.className || student.class || ''
-      };
-    });
-  },
+  applyChildren(students) {
+    const children = (students || []).map(s => ({
+      id: s.studentId || s.id,
+      name: s.studentName || s.name,
+      className: s.className
+    }));
+    this.setData({ children });
 
-  resolveChildStudentId(student) {
-    const keys = ['studentId', 'id', 'childId', 'studentNumber'];
-    for (let i = 0; i < keys.length; i++) {
-      const value = student[keys[i]];
-      if (value !== undefined && value !== null && value !== '') {
-        return value;
-      }
+    if (children.length > 0) {
+      this.setData({ selectedChildId: children[0].id });
+      this.loadEvaluationData();
     }
-    return null;
   },
 
   selectChild(e) {
-    const index = Number(e.currentTarget.dataset.index);
-    const child = this.data.children[index];
-    if (!child) return;
-
-    this.setData({
-      selectedChild: child,
-      selectedChildId: child.studentId,
-      selectedChildIndex: index,
-      loading: true
-    });
+    const childId = e.currentTarget.dataset.id;
+    this.setData({ selectedChildId: childId, loading: true });
     this.loadEvaluationData();
   },
 
   async loadEvaluationData() {
     const childId = this.data.selectedChildId;
-    if (childId === null || childId === undefined || childId === '') {
+    if (!childId) {
       this.setData({ loading: false });
       return;
     }

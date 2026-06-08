@@ -1,11 +1,13 @@
 const Ext = require('../utils/Ext.js');
+const {
+  getLocalChildren,
+  mergeStudentsByIdentity
+} = require('../add-child/addChildData');
 
 Page({
   data: {
     children: [],
-    selectedChild: null,
     selectedChildId: null,
-    selectedChildIndex: -1,
     weekdays: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
     coursePeriods: [
       { index: 1, timeRange: '08:00-08:40' },
@@ -45,22 +47,31 @@ Page({
   // 加载孩子列表 - 修复接口
   async loadChildren() {
     this.setData({ loading: true });
+    let localChildren = [];
+    try {
+      localChildren = getLocalChildren(wx);
+    } catch (err) {
+      console.error('[课程表] 读取本地孩子失败:', err);
+    }
+
     try {
       // 使用正确的接口 /api/parents/me
       const res = await Ext.Get(`${Ext.Url}/api/parents/me`);
       console.log('[课程表] 家长信息:', res);
       
       if ((res.code === 0 || res.code === 20000) && res.data) {
-        const students = res.data.students || [];
-        const children = this.normalizeChildren(students);
+        const students = mergeStudentsByIdentity(res.data.students || [], localChildren);
+        const children = students.map(s => ({
+          id: s.studentId || s.id,
+          name: s.studentName || s.name,
+          className: s.className
+        }));
         
         this.setData({ children });
         
         if (children.length > 0) {
           this.setData({
-            selectedChild: children[0],
-            selectedChildId: children[0].studentId,
-            selectedChildIndex: 0,
+            selectedChildId: children[0].id,
             weekOffset: 0,
             monthOffset: 0,
             tableType: 'week'
@@ -68,55 +79,46 @@ Page({
           this.loadCourseTable();
         }
       } else {
-        this.setData({ children: [], selectedChild: null, selectedChildId: null, selectedChildIndex: -1 });
-        wx.showToast({ title: '获取孩子信息失败', icon: 'none' });
+        this.applyChildren(localChildren);
+        if (localChildren.length === 0) {
+          wx.showToast({ title: '获取孩子信息失败', icon: 'none' });
+        }
       }
     } catch (err) {
       console.error('[课程表] 加载孩子失败:', err);
-      this.setData({ children: [], selectedChild: null, selectedChildId: null, selectedChildIndex: -1 });
-      wx.showToast({ title: '加载失败', icon: 'none' });
+      this.applyChildren(localChildren);
+      if (localChildren.length === 0) {
+        wx.showToast({ title: '加载失败', icon: 'none' });
+      }
     } finally {
       this.setData({ loading: false });
     }
   },
 
-  normalizeChildren(students) {
-    return (students || []).map((student, index) => {
-      const studentId = this.resolveChildStudentId(student);
-      const keyId = studentId !== null && studentId !== undefined && studentId !== ''
-        ? studentId
-        : (student.studentNumber || `child-${index}`);
-      return {
-        ...student,
-        id: keyId,
-        studentId,
-        uniqueKey: `${keyId}-${index}`,
-        name: student.studentName || student.name || '学生',
-        className: student.className || student.class || ''
-      };
-    });
-  },
+  applyChildren(students) {
+    const children = (students || []).map(s => ({
+      id: s.studentId || s.id,
+      name: s.studentName || s.name,
+      className: s.className
+    }));
 
-  resolveChildStudentId(student) {
-    const keys = ['studentId', 'id', 'childId', 'studentNumber'];
-    for (let i = 0; i < keys.length; i++) {
-      const value = student[keys[i]];
-      if (value !== undefined && value !== null && value !== '') {
-        return value;
-      }
+    this.setData({ children });
+
+    if (children.length > 0) {
+      this.setData({
+        selectedChildId: children[0].id,
+        weekOffset: 0,
+        monthOffset: 0,
+        tableType: 'week'
+      });
+      this.loadCourseTable();
     }
-    return null;
   },
 
   selectChild(e) {
-    const index = Number(e.currentTarget.dataset.index);
-    const child = this.data.children[index];
-    if (!child) return;
-
+    const childId = e.currentTarget.dataset.id;
     this.setData({
-      selectedChild: child,
-      selectedChildId: child.studentId,
-      selectedChildIndex: index,
+      selectedChildId: childId,
       weekOffset: 0,
       monthOffset: 0,
       tableType: 'week'
@@ -126,7 +128,7 @@ Page({
   },
 
   async loadCourseTable() {
-    if (this.data.selectedChildId === null || this.data.selectedChildId === undefined || this.data.selectedChildId === '') return;
+    if (!this.data.selectedChildId) return;
     this.setData({ loading: true });
     
     try {

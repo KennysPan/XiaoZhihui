@@ -1,5 +1,9 @@
 // pages/parent-management-student/parent-management-student.js
 const Ext = require('../utils/Ext');
+const {
+  getLocalChildren,
+  mergeStudentsByIdentity
+} = require('../add-child/addChildData');
 
 Page({
   data: {
@@ -17,6 +21,13 @@ Page({
   // 加载孩子列表
   async loadChildren() {
     this.setData({ loading: true });
+    let localChildren = [];
+    try {
+      localChildren = getLocalChildren(wx);
+    } catch (err) {
+      console.error('[孩子管理] 读取本地孩子失败:', err);
+    }
+
     try {
       // 调用 /api/parents/me 接口获取家长信息和孩子列表
       const res = await Ext.Get(`${Ext.Url}/api/parents/me`);
@@ -25,15 +36,19 @@ Page({
       if ((res.code === 0 || res.code === 20000) && res.data) {
         // 从返回数据中提取 students 数组
         const students = res.data.students || [];
-        this.processChildrenData(students);
+        this.processChildrenData(mergeStudentsByIdentity(students, localChildren));
       } else {
-        this.setData({ children: [], presentCount: 0 });
-        wx.showToast({ title: res.message || '获取孩子信息失败', icon: 'none' });
+        this.processChildrenData(localChildren);
+        if (localChildren.length === 0) {
+          wx.showToast({ title: res.message || '获取孩子信息失败', icon: 'none' });
+        }
       }
     } catch (err) {
       console.error('[孩子管理] 加载孩子失败:', err);
-      this.setData({ children: [], presentCount: 0 });
-      wx.showToast({ title: '网络异常，请稍后重试', icon: 'none' });
+      this.processChildrenData(localChildren);
+      if (localChildren.length === 0) {
+        wx.showToast({ title: '网络异常，请稍后重试', icon: 'none' });
+      }
     } finally {
       this.setData({ loading: false });
     }

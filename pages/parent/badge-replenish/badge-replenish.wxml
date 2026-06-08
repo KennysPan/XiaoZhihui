@@ -31,7 +31,7 @@
     <view class="section-header">
       <text class="section-title">选择孩子</text>
       <view class="select-all" bindtap="toggleSelectAll">
-        <view class="checkbox {{allSelected ? 'checked' : ''}}"></view>
+        <view class="checkbox {{isAllSelected() ? 'checked' : ''}}"></view>
         <text class="select-all-text">全选</text>
       </view>
     </view>
@@ -40,11 +40,11 @@
       <view 
         class="child-item" 
         wx:for="{{childrenList}}" 
-        wx:key="uniqueKey"
+        wx:key="id"
         wx:for-item="child"
       >
-        <view class="child-select" bindtap="toggleSelectChild" data-key="{{child.selectKey}}">
-          <view class="checkbox {{child.selected ? 'checked' : ''}}"></view>
+        <view class="child-select" bindtap="toggleSelectChild" data-id="{{child.id}}">
+          <view class="checkbox {{selectedChildrenIds.indexOf(child.id) !== -1 ? 'checked' : ''}}"></view>
           <view class="child-avatar">
             <text class="avatar-text">{{child.name[0]}}</text>
           </view>
@@ -55,10 +55,10 @@
         </view>
         
         <!-- 数量选择器（仅选中时显示） -->
-        <view class="quantity-control" wx:if="{{child.selected}}">
-          <view class="qty-btn minus" bindtap="decreaseQuantity" data-key="{{child.selectKey}}">-</view>
-          <text class="qty-number">{{childQuantities[child.selectKey]}}</text>
-          <view class="qty-btn plus" bindtap="increaseQuantity" data-key="{{child.selectKey}}">+</view>
+        <view class="quantity-control" wx:if="{{selectedChildrenIds.indexOf(child.id) !== -1}}">
+          <view class="qty-btn minus" bindtap="decreaseQuantity" data-id="{{child.id}}">-</view>
+          <text class="qty-number">{{childQuantities[child.id]}}</text>
+          <view class="qty-btn plus" bindtap="increaseQuantity" data-id="{{child.id}}">+</view>
         </view>
       </view>
     </view>

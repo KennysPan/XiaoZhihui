@@ -8,7 +8,6 @@ Page({
     xueSheng: '管理孩子',
     kaoQin: '考勤查询',
     qingJia: '申请请假',
-    statusBarHeight: 44,
     bannerList: [
       'https://www.kennyspan.xyz:8082/home/轮播图1.png',
       'https://www.kennyspan.xyz:8082/home/轮播图2.png'
@@ -42,10 +41,10 @@ Page({
     ]
   },
 
+
   onShow() {
-    this.setStatusBarHeight();
     if (!Ext.isLogin()) {
-      Ext.handleTokenExpired();
+      wx.reLaunch({ url: '/pages/roleSelect/roleSelect?manual=1' });
       return;
     }
     if (!Ext.isParent()) {
@@ -62,18 +61,6 @@ Page({
     }
     this.loadParentInfo();
     this.updateTabBarSelected();
-  },
-
-  setStatusBarHeight() {
-    try {
-      const app = getApp();
-      const statusBarHeight = app && app.globalData && app.globalData.statusBarHeight
-        ? app.globalData.statusBarHeight
-        : (wx.getSystemInfoSync().statusBarHeight || 44);
-      this.setData({ statusBarHeight });
-    } catch (err) {
-      console.error('[Home] 设置状态栏高度失败:', err);
-    }
   },
 
   async loadParentInfo() {

@@ -1,8 +1,13 @@
 const dataService = require('./utils/dataService.js');
+const Ext = require('./utils/Ext.js');
 const MockData = require('./utils/mockData.js');
 
 App({
   onLaunch() {
+    if (Ext.checkTokenOnAppEntry()) {
+      return;
+    }
+
     const logs = wx.getStorageSync('logs') || [];
     logs.unshift(Date.now());
     wx.setStorageSync('logs', logs);
@@ -21,6 +26,10 @@ App({
         this.globalData.userInfo = userInfo;
       }).catch(() => {});
     }
+  },
+
+  onShow() {
+    Ext.checkTokenOnAppEntry();
   },
 
   setLoginStatus(token, agentInfo) {

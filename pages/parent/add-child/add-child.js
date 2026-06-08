@@ -1,4 +1,7 @@
-const Ext = require('../utils/Ext');
+const {
+  createMockStudentByIdCard,
+  saveLocalChild
+} = require('./addChildData');
 
 Page({
   data: {
@@ -17,7 +20,7 @@ Page({
     const value = e.detail.value.toUpperCase();
     this.setData({ 
       idCard: value,
-      canSearch: this.validateIdCard(value)
+      canSearch: value.trim().length > 0
     });
   },
 
@@ -30,7 +33,7 @@ Page({
   async nextStep() {
     if (this.data.step === 1) {
       if (!this.data.canSearch) {
-        wx.showToast({ title: '请输入正确的18位身份证号', icon: 'none' });
+        wx.showToast({ title: '请输入身份证号', icon: 'none' });
         return;
       }
       
@@ -38,19 +41,14 @@ Page({
       wx.showLoading({ title: '查询中...', mask: true });
       
       try {
-        // 根据身份证号查询学生信息
-        const res = await Ext.Get(`${Ext.Url}/api/child/info`, { idCard: this.data.idCard });
-        if ((res.code === 0 || res.code === 20000) && res.data) {
-          this.setData({ 
-            searchResult: res.data,
-            isRealData: true,
-            step: 2
-          });
-        } else {
-          wx.showToast({ title: res.message || '未找到该学生', icon: 'none' });
-        }
+        const student = createMockStudentByIdCard(this.data.idCard);
+        this.setData({
+          searchResult: student,
+          isRealData: false,
+          step: 2
+        });
       } catch (err) {
-        console.error('查询学生失败', err);
+        console.error('生成本地学生失败', err);
         wx.showToast({ title: '查询失败，请重试', icon: 'none' });
       } finally {
         this.setData({ searching: false });
@@ -77,18 +75,13 @@ Page({
     wx.showLoading({ title: '绑定中...', mask: true });
     
     try {
-      const res = await Ext.Post(`${Ext.Url}/api/parent/add-child`, {
-        childId: this.data.searchResult.id,
-        relationName: this.data.relationOptions[this.data.relationIndex],
-        idCard: this.data.idCard
-      });
-      
-      if (res.code === 0 || res.code === 20000) {
-        this.setData({ step: 3 });
-        wx.showToast({ title: '绑定成功', icon: 'success' });
-      } else {
-        wx.showToast({ title: res.message || '绑定失败', icon: 'none' });
-      }
+      saveLocalChild(
+        this.data.searchResult,
+        this.data.relationOptions[this.data.relationIndex],
+        wx
+      );
+      this.setData({ step: 3 });
+      wx.showToast({ title: '绑定成功', icon: 'success' });
     } catch (err) {
       console.error('绑定孩子失败', err);
       wx.showToast({ title: '绑定失败，请重试', icon: 'none' });
@@ -111,7 +104,7 @@ Page({
 
   backToList() {
     const pages = getCurrentPages();
-    const targetPage = pages.find(page => page.route === 'pages/parent-management-student/parent-management-student');
+    const targetPage = pages.find(page => page.route === 'pages/parent/parent-management-student/parent-management-student');
     if (targetPage && targetPage.loadChildren) {
       targetPage.loadChildren();
     }

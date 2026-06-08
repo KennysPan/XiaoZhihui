@@ -1,5 +1,8 @@
 const Ext = require('../utils/Ext');
-const dataService = require('../../../utils/dataService.js');
+const {
+  getLocalChildren,
+  mergeStudentsByIdentity
+} = require('../add-child/addChildData');
 
 
 Page({
@@ -17,7 +20,6 @@ Page({
       leave: 0
     },
     attendanceRecords: [],
-    attendanceStatusDict: [],
     showTimelineModal: false,
     timelineData: [],
     selectedDate: null,
@@ -52,50 +54,18 @@ Page({
 
   onLoad(options) {
     console.log('[Attendance] 页面加载');
-    if (!Ext.isLogin()) {
-      Ext.handleTokenExpired();
-      return;
-    }
     if (options.childId) {
       this.setData({ selectedChildId: parseInt(options.childId) });
     }
-    this.loadAttendanceDictionaries();
     this.loadChildren();
     this.setStatusBarHeight();
   },
 
   onShow() {
     console.log('[Attendance] 页面显示');
-    if (!Ext.isLogin()) {
-      Ext.handleTokenExpired();
-      return;
-    }
     if (this.data.selectedChildId) {
       this.loadAttendanceData();
     }
-  },
-
-  async loadAttendanceDictionaries() {
-    const dict = await dataService.fetchDictionary('attendance-statuses');
-    const attendanceTypes = { ...this.data.attendanceTypes };
-
-    dict.forEach(item => {
-      const key = String(item.value);
-      attendanceTypes[key] = {
-        ...(attendanceTypes[key] || this.data.attendanceTypes[12]),
-        name: item.name
-      };
-    });
-
-    this.setData({
-      attendanceStatusDict: dict,
-      attendanceTypes
-    });
-    return dict;
-  },
-
-  getAttendanceType(statusId) {
-    return this.data.attendanceTypes[statusId] || this.data.attendanceTypes[12];
   },
 
   // 设置状态栏高度
@@ -118,15 +88,22 @@ Page({
   // 加载孩子列表
   async loadChildren() {
     this.setData({ loading: true });
+    let localChildren = [];
+    try {
+      localChildren = getLocalChildren(wx);
+    } catch (err) {
+      console.error('[Attendance] 读取本地孩子失败:', err);
+    }
+
     try {
       const res = await Ext.Get(`${Ext.Url}/api/parents/me`);
       console.log('[Attendance] 家长信息:', res);
       
       if ((res.code === 0 || res.code === 20000) && res.data) {
-        const students = res.data.students || [];
+        const students = mergeStudentsByIdentity(res.data.students || [], localChildren);
         const children = students.map((s, index) => ({
           id: s.studentId,
-          uniqueKey: `${s.studentId || s.studentNumber || s.id || 'child'}-${index}`,
+          uniqueKey: `${s.studentId}-${index}`,
           name: s.studentName,
           className: s.className,
           relationName: s.relationName
@@ -156,14 +133,47 @@ Page({
         }
       } else {
         console.log('[Attendance] 无孩子数据');
-        this.setData({ children: [] });
+        this.applyChildren(localChildren);
       }
     } catch (err) {
       console.error('[Attendance] 加载孩子失败:', err);
-      this.setData({ children: [] });
-      wx.showToast({ title: '加载失败', icon: 'none' });
+      this.applyChildren(localChildren);
+      if (localChildren.length === 0) {
+        wx.showToast({ title: '加载失败', icon: 'none' });
+      }
     } finally {
       this.setData({ loading: false });
+    }
+  },
+
+  applyChildren(students) {
+    const children = (students || []).map((s, index) => ({
+      id: s.studentId || s.id,
+      uniqueKey: `${s.studentId || s.id}-${index}`,
+      name: s.studentName || s.name,
+      className: s.className,
+      relationName: s.relationName
+    }));
+
+    this.setData({ children });
+
+    let selectedChild = null;
+    let selectedChildIndex = -1;
+    if (this.data.selectedChildId) {
+      selectedChildIndex = children.findIndex(c => c.id === this.data.selectedChildId);
+      selectedChild = children[selectedChildIndex];
+    }
+    if (!selectedChild && children.length > 0) {
+      selectedChildIndex = 0;
+      selectedChild = children[0];
+    }
+    if (selectedChild) {
+      this.setData({
+        selectedChild,
+        selectedChildId: selectedChild.id,
+        selectedChildIndex
+      });
+      this.loadAttendanceData();
     }
   },
 
@@ -194,21 +204,18 @@ Page({
     const endDate = `${filterYear}-${String(filterMonth).padStart(2, '0')}-${lastDay}`;
     
     try {
-      const [statusDict, res] = await Promise.all([
-        this.loadAttendanceDictionaries(),
-        Ext.Get(`${Ext.Url}/api/attendances/results`, {
-          studentId: this.data.selectedChildId,
-          startDate: startDate,
-          endDate: endDate
-        })
-      ]);
+      const res = await Ext.Get(`${Ext.Url}/api/attendances/results`, {
+        studentId: this.data.selectedChildId,
+        startDate: startDate,
+        endDate: endDate
+      });
       
       console.log('[Attendance] 考勤数据:', res);
       
       if ((res.code === 0 || res.code === 20000) && res.data) {
         // 提取items数组
         const items = res.data.items || [];
-        this.processAttendanceData(items, statusDict);
+        this.processAttendanceData(items);
       } else {
         this.setData({ 
           attendanceRecords: [], 
@@ -224,7 +231,7 @@ Page({
   },
 
   // 处理考勤数据（适配真实API字段）
-  processAttendanceData(records, statusDict = this.data.attendanceStatusDict) {
+  processAttendanceData(records) {
     // 统计各状态数量
     const statistics = {
       totalDays: records.length,
@@ -274,12 +281,7 @@ Page({
         dateStr: dateStr,
         weekday: weekday,
         statusId: record.resultStatus,
-        statusName: dataService.resolveDictionaryName(
-          statusDict,
-          record.resultStatus,
-          record.resultStatusName,
-          '未知'
-        ),
+        statusName: this.data.attendanceTypes[record.resultStatus]?.name || record.resultStatusName || '未知',
         checkInTime: checkInTime,
         checkOutTime: checkOutTime,
         periodText: record.periodText,
@@ -327,16 +329,15 @@ Page({
   // 生成时间线数据
   generateTimeline(record) {
     const timeline = [];
-    const statusType = this.getAttendanceType(record.statusId);
     
     // 请假
     if (record.statusId === 6) {
       timeline.push({ 
         time: '--:--', 
-        title: record.statusName || statusType.name,
-        description: record.remark || `已${record.statusName || statusType.name}`,
-        icon: statusType.icon,
-        color: statusType.color
+        title: '请假', 
+        description: record.remark || '已请假', 
+        icon: '📝', 
+        color: '#1890ff' 
       });
       return timeline;
     }
@@ -345,10 +346,10 @@ Page({
     if (record.statusId === 4) {
       timeline.push({ 
         time: '全天', 
-        title: record.statusName || statusType.name,
+        title: '缺勤', 
         description: '今日未到校打卡', 
-        icon: statusType.icon,
-        color: statusType.color
+        icon: '❌', 
+        color: '#ff4d4f' 
       });
       return timeline;
     }
@@ -358,9 +359,9 @@ Page({
       timeline.push({ 
         time: record.checkInTime, 
         title: '入校打卡', 
-        description: record.statusId === 2 ? `${record.statusName || statusType.name}打卡` : '正常到校',
-        icon: record.statusId === 2 ? statusType.icon : '🚪',
-        color: record.statusId === 2 ? statusType.color : '#52c41a'
+        description: record.statusId === 2 ? '迟到打卡' : '正常到校', 
+        icon: record.statusId === 2 ? '⏰' : '🚪', 
+        color: record.statusId === 2 ? '#faad14' : '#52c41a' 
       });
     }
     
@@ -368,9 +369,9 @@ Page({
       timeline.push({ 
         time: record.checkOutTime, 
         title: '离校打卡', 
-        description: record.statusId === 3 ? `${record.statusName || statusType.name}离校` : '正常离校',
-        icon: record.statusId === 3 ? statusType.icon : '🏠',
-        color: record.statusId === 3 ? statusType.color : '#52c41a'
+        description: record.statusId === 3 ? '早退离校' : '正常离校', 
+        icon: record.statusId === 3 ? '🏃' : '🏠', 
+        color: record.statusId === 3 ? '#fa8c16' : '#52c41a' 
       });
     }
     

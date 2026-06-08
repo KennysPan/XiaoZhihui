@@ -5,12 +5,12 @@
     <text class="back-text">返回</text>
   </view>
 
-  <view class="page-header">
-    <text class="page-title" style="position: relative; left: 0rpx; top: 50rpx">请假审批</text>
+  <view class="page-header" style="height: 187rpx; display: block; box-sizing: border-box">
+    <text class="page-title" style="position: relative; left: 0rpx; top: -146rpx">请假审批</text>
   </view>
 
   <!-- Tab 切换 -->
-  <view class="tab-bar" style="position: relative; left: 0rpx; top: 66rpx">
+  <view class="tab-bar" style="position: relative; left: 0rpx; top: -70rpx">
     <view class="tab-item {{currentTab === 0 ? 'active' : ''}}" bindtap="switchTab" data-index="0">
       <text>待审批</text>
       <view class="tab-badge" wx:if="{{pendingCount > 0}}">{{pendingCount}}</view>
@@ -29,9 +29,9 @@
   </view>
 
   <!-- 请假列表 -->
-  <view class="leave-list" wx:else style="position: relative; left: 0rpx; top: 81rpx">
+  <view class="leave-list" wx:else style="position: relative; left: 0rpx; top: -75rpx; height: 1110rpx; display: flex; box-sizing: border-box">
     <block wx:if="{{filteredList.length > 0}}">
-      <view class="leave-item" wx:for="{{filteredList}}" wx:key="id" bindtap="viewDetail" data-index="{{index}}" style="position: relative; left: 1rpx; top: 1rpx">
+      <view class="leave-item" wx:for="{{filteredList}}" wx:key="id" bindtap="viewDetail" data-index="{{index}}" style="position: relative; left: 2rpx; top: 0rpx">
         <view class="leave-header">
           <view class="leave-child">
             <view class="child-avatar">{{item.studentName[0]}}</view>

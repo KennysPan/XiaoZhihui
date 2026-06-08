@@ -16,10 +16,10 @@
     <scroll-view class="child-list" scroll-x="{{true}}" show-scrollbar="{{false}}">
       <view 
         wx:for="{{children}}" 
-        wx:key="uniqueKey"
-        class="child-item {{selectedChildIndex === index ? 'active' : ''}}"
+        wx:key="id"
+        class="child-item {{selectedChildId === item.id ? 'active' : ''}}"
         bindtap="selectChild"
-        data-index="{{index}}"
+        data-id="{{item.id}}"
       >
         <view class="child-avatar" style="background: linear-gradient(135deg, #7ee7bc, #5fd9a8)">
           <text>{{item.name[0]}}</text>

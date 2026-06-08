@@ -1,5 +1,9 @@
 // pages/agent/orders/orders.js
 const Ext = require('../../../utils/Ext');
+const {
+  getMockOrders,
+  resolveListData
+} = require('../utils/mockAgentData');
 
 Page({
   data: {
@@ -21,10 +25,11 @@ Page({
     try {
       const res = await Ext.Get(Ext.Url + '/api/agent/orders');
       if (res.code === 200) {
-        this.setData({ orders: res.data });
+        this.setData({ orders: resolveListData(res.data, getMockOrders()) });
       }
     } catch (err) {
       console.error(err);
+      this.setData({ orders: getMockOrders() });
     } finally {
       this.setData({ loading: false });
     }

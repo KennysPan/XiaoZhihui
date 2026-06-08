@@ -116,4 +116,5 @@ Page({
   ClickForgetPwd() {
     wx.navigateTo({ url: '/pages/parent/repassword/repassword' });
   }
+
 });

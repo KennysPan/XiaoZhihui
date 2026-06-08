@@ -16,10 +16,10 @@
     <scroll-view class="child-list" scroll-x="{{true}}" show-scrollbar="{{false}}">
       <view 
         wx:for="{{children}}" 
-        wx:key="uniqueKey"
-        class="child-item {{selectedChildIndex === index ? 'active' : ''}}"
+        wx:key="id"
+        class="child-item {{selectedChildId === item.id ? 'active' : ''}}"
         bindtap="selectChild"
-        data-index="{{index}}"
+        data-id="{{item.id}}"
       >
         <image class="child-avatar" src="/assets/tabbar/user.png" mode="aspectFill"></image>
         <text class="child-name">{{item.name}}</text>
